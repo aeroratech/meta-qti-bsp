@@ -12,6 +12,7 @@ SRC_URI += "file://sysctl.conf"
 SRC_URI += "file://platform.conf"
 SRC_URI += "file://sd-bus-Allow-extra-users-to-communicate.patch"
 SRC_URI += "file://systemd-namespace-mountflags-fix.patch"
+SRC_URI += "file://set-mhi-nodes.rules"
 
 # Custom setup for PACKAGECONFIG to get a slimmer systemd.
 # Removed following:
@@ -97,6 +98,7 @@ do_install_append () {
    install -d ${D}${sysconfdir}/udev/rules.d/
    install -m 0644 ${WORKDIR}/ion.rules -D ${D}${sysconfdir}/udev/rules.d/ion.rules
    install -m 0644 ${WORKDIR}/kgsl.rules -D ${D}${sysconfdir}/udev/rules.d/kgsl.rules
+   install -m 0644 ${WORKDIR}/set-mhi-nodes.rules -D ${D}${sysconfdir}/udev/rules.d/set-mhi-nodes.rules
 
    # Mask dev-ttyS0.device
    ln -sf /dev/null ${D}/etc/systemd/system/dev-ttyS0.device
