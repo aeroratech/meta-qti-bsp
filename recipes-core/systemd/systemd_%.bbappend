@@ -10,6 +10,7 @@ SRC_URI += "file://limit-core.conf"
 SRC_URI += "file://logind.conf"
 SRC_URI += "file://ion.rules"
 SRC_URI += "file://kgsl.rules"
+SRC_URI += "file://platform.conf"
 
 # Custom setup for PACKAGECONFIG to get a slimmer systemd.
 # Removed following:
@@ -84,6 +85,7 @@ do_install_append () {
    install -d /etc/sysctl.d/
    install -m 0644 ${WORKDIR}/sysctl-core.conf -D ${D}/etc/sysctl.d/core.conf
    install -m 0644 ${WORKDIR}/logind.conf -D ${D}/etc/systemd/logind.conf
+   install -m 0644 ${WORKDIR}/platform.conf -D ${D}/etc/tmpfiles.d/platform.conf
    #  Mask journaling services by default.
    #  'systemctl unmask' can be used on device to enable them if needed.
    ln -sf /dev/null ${D}/etc/systemd/system/systemd-journald.service
