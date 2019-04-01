@@ -23,6 +23,8 @@ Supported combinations are listed below.
       |qcs403-som2    | qsap           | debug            |
       |qcs405-som1    |                |                  |
       +---------------+----------------+------------------+
+      |sa2150p        | msm            | debug perf       |
+      +---------------+----------------+------------------+
       |qcs605-32      | concam         | debug perf user  |
       |qcs605-64      |                |                  |
       +---------------+----------------+------------------+
