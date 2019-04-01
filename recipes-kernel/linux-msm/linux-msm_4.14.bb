@@ -3,6 +3,8 @@ require recipes-kernel/linux-msm/linux-msm.inc
 # if is TARGET_KERNEL_ARCH is set inherit qtikernel-arch to compile for that arch.
 inherit ${@bb.utils.contains('TARGET_KERNEL_ARCH', 'aarch64', 'qtikernel-arch', '', d)}
 
+SRC_URI_append_sdmsteppe = " file://sdmsteppe_iot_configs.cfg"
+
 COMPATIBLE_MACHINE = "(qcs40x|sdmsteppe)"
 
 KERNEL_IMAGEDEST = "boot"
