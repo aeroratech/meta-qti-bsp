@@ -10,7 +10,7 @@ IMAGE_INSTALL += "${CORE_IMAGE_EXTRA_INSTALL}"
 #IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES','selinux', 'selinux-config', '', d)}"
 #IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES','selinux', 'refpolicy-mls', '', d)}"
 
-#IMAGE_INSTALL += "start-scripts-firmware-links"
+IMAGE_INSTALL += "start-scripts-firmware-links"
 
 #IMAGE_INSTALL += "start-scripts-misc-daemon"
 IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', 'start-script-ab-slot-util', '', d)}"
