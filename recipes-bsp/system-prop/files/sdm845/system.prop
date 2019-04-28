@@ -67,6 +67,9 @@ persist.camera.isp.clock.optmz=0
 #camera hal library suffix
 ro.hardware.camera=qcom
 
+#zsl force contolled by application
+camera.force_control_zsl=1
+
 ##Ambisonic Capture
 persist.vendor.audio.ambisonic.capture=false
 persist.vendor.audio.ambisonic.auto.profile=false
