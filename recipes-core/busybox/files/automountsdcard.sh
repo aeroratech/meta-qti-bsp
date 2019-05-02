@@ -14,7 +14,7 @@ mount_partition()
         if [ ! -d "${destdir}" ]; then
             mkdir "${destdir}"
         fi
-        if ! mount -t auto "/dev/$1" "${destdir}" -o nodev,noexec,nosuid; then
+        if ! mount -t auto "/dev/$1" "${destdir}" -o context=system_u:object_r:sdcard_t:s0,nodev,noexec,nosuid; then
                 # failed to mount
                 exit 1
         fi
