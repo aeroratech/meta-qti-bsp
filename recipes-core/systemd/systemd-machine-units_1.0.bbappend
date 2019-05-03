@@ -42,6 +42,7 @@ fix_sepolicies () {
     sed -i "s#,rootcontext=system_u:object_r:var_t:s0##g"  ${WORKDIR}/var-volatile.mount
     sed -i "s#,rootcontext=system_u:object_r:data_t:s0##g" ${WORKDIR}/data.mount
     sed -i "s#,rootcontext=system_u:object_r:data_t:s0##g" ${WORKDIR}/data-ubi.mount
+    sed -i "s#,rootcontext=system_u:object_r:persist_t:s0##g" ${WORKDIR}/persist-ubi.mount
     sed -i "s#,rootcontext=system_u:object_r:system_data_t:s0##g"  ${WORKDIR}/systemrw.mount
     sed -i "s#,rootcontext=system_u:object_r:system_data_t:s0##g"  ${WORKDIR}/systemrw-ubi.mount
 }
