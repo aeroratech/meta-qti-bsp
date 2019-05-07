@@ -66,6 +66,7 @@ CFLAGS_append = " -fPIC"
 SELECTED_OPTIMIZATION = "-O2 -fexpensive-optimizations -frename-registers -fomit-frame-pointer -ftree-vectorize"
 
 MACHINE_COREDUMP_ENABLE = "${@bb.utils.contains_any('BASEMACHINE', 'qcs605 sdmsteppe', 'true', 'false', d)}"
+MACHINE_SUPPORT_BLOCK_DEVICES = "${@bb.utils.contains_any('BASEMACHINE', 'qcs403-som2 sdxprairie', 'false', 'true', d)}"
 
 # Place systemd-udevd.service in /etc/systemd/system
 do_install_append () {
@@ -83,6 +84,7 @@ do_install_append () {
        -D ${D}/etc/systemd/system/systemd-udevd.service
    install -m 0644 ${WORKDIR}/ffbm.target \
        -D ${D}/etc/systemd/system/ffbm.target
+
    # Enable logind/getty/password-wall service in FFBM mode
    ln -sf /lib/systemd/system/systemd-logind.service ${D}/lib/systemd/system/ffbm.target.wants/systemd-logind.service
    ln -sf /lib/systemd/system/getty.target ${D}/lib/systemd/system/ffbm.target.wants/getty.target
@@ -94,6 +96,7 @@ do_install_append () {
    install -m 0644 ${WORKDIR}/sysctl.conf -D ${D}/etc/sysctl.d/sysctl.conf
    install -m 0644 ${WORKDIR}/logind.conf -D ${D}/etc/systemd/logind.conf
    install -m 0644 ${WORKDIR}/platform.conf -D ${D}/etc/tmpfiles.d/platform.conf
+
    #  Mask journaling services by default.
    #  'systemctl unmask' can be used on device to enable them if needed.
    ln -sf /dev/null ${D}/etc/systemd/system/systemd-journald.service
@@ -102,12 +105,15 @@ do_install_append () {
    install -d ${D}${sysconfdir}/udev/rules.d/
    install -m 0644 ${WORKDIR}/ion.rules -D ${D}${sysconfdir}/udev/rules.d/ion.rules
    install -m 0644 ${WORKDIR}/kgsl.rules -D ${D}${sysconfdir}/udev/rules.d/kgsl.rules
+
    # Mask dev-ttyS0.device
    ln -sf /dev/null ${D}/etc/systemd/system/dev-ttyS0.device
 
    # Remove rules to automount block devices.
-   sed -i '/SUBSYSTEM=="block", TAG+="systemd"/d' ${D}/lib/udev/rules.d/99-systemd.rules
-   sed -i '/SUBSYSTEM=="block", ACTION=="add", ENV{DM_UDEV_DISABLE_OTHER_RULES_FLAG}=="1", ENV{SYSTEMD_READY}="0"/d' ${D}/lib/udev/rules.d/99-systemd.rules
+   if [ "${MACHINE_SUPPORT_BLOCK_DEVICES}" == "false" ]; then
+       sed -i '/SUBSYSTEM=="block", TAG+="systemd"/d' ${D}/lib/udev/rules.d/99-systemd.rules
+       sed -i '/SUBSYSTEM=="block", ACTION=="add", ENV{DM_UDEV_DISABLE_OTHER_RULES_FLAG}=="1", ENV{SYSTEMD_READY}="0"/d' ${D}/lib/udev/rules.d/99-systemd.rules
+   fi
 }
 
 # Run fsck as part of local-fs-pre.target instead of local-fs.target
