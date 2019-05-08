@@ -8,6 +8,7 @@ ${LICENSE};md5=89aea4e17d99a7cacdbeed46a0096b10"
 
 SRC_URI = "git://source.codeaurora.org/quic/la/platform/system/core;protocol=git;nobranch=1;rev=fb09a4583339baba8eff9ec52f30710572c9632c;subpath=libcrypto_utils"
 SRC_URI += "file://Add-autotool-make-files-for-libcrypto_utils.patch"
+SRC_URI += "file://0001-openssl-1.1.1-compatibility.patch"
 
 S = "${WORKDIR}/libcrypto_utils"
 
