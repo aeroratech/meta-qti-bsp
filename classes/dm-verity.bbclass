@@ -1,7 +1,6 @@
 # This class provides utilities to generate and append verity metadata
 # into images as required by device-mapper-verity feature.
 
-VERITY_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '1', '0', d)}"
 DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'verity-utils-native', '', d)}"
 
 FIXED_SALT = "aee087a5be3b982978c923f566a94613496b417f2af592639bc80d141e34dfe7"
@@ -20,7 +19,7 @@ SIZE_IN_SECTORS = ""
 FEC_OFFSET = "0"
 FEC_SIZE = "0"
 
-FEC_SUPPORT = "${@bb.utils.contains('VERITY_ENABLED', '1', '1', '0', d)}"
+FEC_SUPPORT = "1"
 DEPENDS += " ${@bb.utils.contains('FEC_SUPPORT', '1', 'fec-native', '', d)}"
 
 VERITY_IMAGE_DIR     = "${DEPLOY_DIR_IMAGE}/verity"

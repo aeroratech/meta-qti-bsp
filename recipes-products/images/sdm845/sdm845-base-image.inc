@@ -1,4 +1,3 @@
-inherit dm-verity
 # Enable Bootloader
 RDEPENDS += "${@bb.utils.contains('TARGET_ARCH', 'arm','lib64-edk2','edk2',d)}"
 
