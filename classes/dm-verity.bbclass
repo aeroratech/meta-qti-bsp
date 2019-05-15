@@ -1,7 +1,6 @@
 # This class provides utilities to generate and append verity metadata
 # into images as required by device-mapper-verity feature.
 
-VERITY_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '1', '0', d)}"
 DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'verity-utils-native', '', d)}"
 
 FIXED_SALT = "aee087a5be3b982978c923f566a94613496b417f2af592639bc80d141e34dfe7"
@@ -20,7 +19,7 @@ SIZE_IN_SECTORS = ""
 FEC_OFFSET = "0"
 FEC_SIZE = "0"
 
-FEC_SUPPORT = "${@bb.utils.contains('VERITY_ENABLED', '1', '1', '0', d)}"
+FEC_SUPPORT = "1"
 DEPENDS += " ${@bb.utils.contains('FEC_SUPPORT', '1', 'fec-native', '', d)}"
 
 VERITY_IMAGE_DIR     = "${DEPLOY_DIR_IMAGE}/verity"
@@ -80,17 +79,19 @@ def get_verity_size(d, partition_size, fec_support):
     bvt_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/build_verity_tree'
     cmd = bvt_bin_path + " -s %s " % partition_size
     try:
-        verity_tree_size =  int(subprocess.check_output(cmd, shell=True).strip())
+        verity_tree_size =  int(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True).strip())
     except subprocess.CalledProcessError as e:
-        bb.fatal("Error in calculating verity tree size:\n%s" % e.output)
+        bb.debug(1, "cmd: %s" % (cmd))
+        bb.fatal("Error in calculating verity tree size: %s\n%s" % (e.returncode, e.output.decode("utf-8")))
 
     # Get verity metadata size
     bvmd_script_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/build_verity_metadata.py'
     cmd = bvmd_script_path + " size %s " % partition_size
     try:
-        verity_metadata_size = int(subprocess.check_output(cmd, shell=True).strip())
+        verity_metadata_size = int(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True).strip())
     except subprocess.CalledProcessError as e:
-        bb.fatal("Error in calculating verity metadata size:\n%s" % e.output)
+        bb.debug(1, "cmd: %s" % (cmd))
+        bb.fatal("Error in calculating verity metadata size: %s\n%s" % (e.returncode, e.output.decode("utf-8")))
 
     verity_size = verity_tree_size + verity_metadata_size
 
@@ -99,9 +100,10 @@ def get_verity_size(d, partition_size, fec_support):
         fec_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/fec'
         cmd = fec_bin_path + " -s %s " % (partition_size + verity_size)
         try:
-            fec_size =  int(subprocess.check_output(cmd, shell=True).strip())
+            fec_size =  int(subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True).strip())
         except subprocess.CalledProcessError as e:
-            bb.fatal("Error in calculating fec size:\n%s" % e.output)
+            bb.debug(1, "cmd: %s" % (cmd))
+            bb.fatal("Error in calculating fec size: %s\n%s" % (e.returncode, e.output.decode("utf-8")))
         d.setVar('FEC_SIZE', str(fec_size))
         return verity_size + fec_size
     return verity_size
@@ -121,10 +123,11 @@ python make_verity_enabled_system_image () {
     bvt_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/build_verity_tree'
     cmd = bvt_bin_path + " -A %s %s %s " % (d.getVar("FIXED_SALT",True), sparse_img, verity_img)
     try:
-        [root_hash, salt] = (subprocess.check_output(cmd, shell=True)).split()
-        d.setVar('ROOT_HASH', root_hash.decode('UTF-8'))
+        [root_hash, salt] = (subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)).split()
     except subprocess.CalledProcessError as e:
-        bb.fatal("Error in building verity tree :\n%s" % e.output)
+        bb.debug(1, "cmd %s" % (cmd))
+        bb.fatal("Error in building verity tree : %s\n%s" % (e.returncode, e.output.decode("utf-8")))
+    d.setVar('ROOT_HASH', root_hash.decode('UTF-8'))
     bb.debug(1, "Value of root hash is %s" % root_hash)
     bb.debug(1, "Value of salt is %s" % salt)
 
@@ -182,7 +185,7 @@ python make_verity_enabled_system_image () {
 
     # Write cmdline to a tmp file
     verity_cmd = d.getVar('VERITY_CMDLINE', True)
-    subprocess.check_output("echo '%s' > %s" % (cmdline, verity_cmd), shell=True)
+    subprocess.check_output("echo '%s' > %s" % (cmdline, verity_cmd), stderr=subprocess.STDOUT, shell=True)
 
 }
 

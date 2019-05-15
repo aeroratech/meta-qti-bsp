@@ -70,3 +70,6 @@ ro.hardware.camera=qcom
 ##Ambisonic Capture
 persist.vendor.audio.ambisonic.capture=false
 persist.vendor.audio.ambisonic.auto.profile=false
+
+#ubwc
+persist.qmmf.ubwcstream.enable=1

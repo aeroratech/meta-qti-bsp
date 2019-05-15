@@ -16,7 +16,7 @@ PREFERRED_PROVIDER_virtual/egl ?= "adreno"
 PREFERRED_PROVIDER_virtual/libgles1 ?= "adreno"
 PREFERRED_PROVIDER_virtual/libgles2 ?= "adreno"
 
-SERIAL_CONSOLE ?= "${@['', '115200 ttyMSM0'][d.getVar('VARIANT', True) == ('perf' or 'debug')]}"
+SERIAL_CONSOLE ?= "${@['', '115200 ttyMSM0'][d.getVar('VARIANT', True) == ('' or 'debug')]}"
 
 DISTRO ?= "msm"
 

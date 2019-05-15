@@ -1,4 +1,8 @@
-inherit core-image dm-verity
+inherit core-image
+
+# Only when verity feature is enabled, start including related tasks.
+VERITY_PROVIDER ?= "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'dm-verity', '', d)}"
+inherit ${VERITY_PROVIDER}
 
 #  Function to get most suitable .inc file with list of packages
 #  to be installed into root filesystem from layer it is called.
