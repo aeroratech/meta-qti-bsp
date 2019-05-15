@@ -49,7 +49,7 @@ PACKAGECONFIG = " \
     hibernate \
     hostnamed \
     ima \
-    kmod \
+    ${@bb.utils.contains('DISTRO_NAME', 'mdm', '', 'kmod', d)} \
     logind \
     randomseed \
     sysusers \
