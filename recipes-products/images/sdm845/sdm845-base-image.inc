@@ -39,7 +39,6 @@ IMAGE_INSTALL += "libstdc++"
 IMAGE_INSTALL += "coreutils"
 IMAGE_INSTALL += "media-headers"
 IMAGE_INSTALL += "protobuf"
-IMAGE_INSTALL += "kptr-restrict"
 IMAGE_INSTALL += "openssh"
 
 #Install virtualization support packages

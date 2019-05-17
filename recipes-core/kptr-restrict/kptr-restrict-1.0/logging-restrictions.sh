@@ -1,5 +1,5 @@
 #!/bin/sh
-#Copyright (c) 2018, The Linux Foundation. All rights reserved.
+#Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
 #
 #Redistribution and use in source and binary forms, with or without
 #modification, are permitted provided that the following conditions are
@@ -26,8 +26,10 @@
 #OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 #IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# logging-restrictions.sh      script to change the kernel restrict values from 0 to 2
-#                              and dmesg restrict values from 0 to 1.
+# logging-restrictions.sh      script to change userspace reachable kernel configurations
+#
 
 echo 2 > /proc/sys/kernel/kptr_restrict
 echo 1 > /proc/sys/kernel/dmesg_restrict
+echo 1 > /proc/sys/kernel/panic_on_oops
+echo 2 > /proc/sys/kernel/randomize_va_space

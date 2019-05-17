@@ -38,7 +38,6 @@ IMAGE_INSTALL += "openssl"
 # IMAGE_INSTALL += "powerapp-shutdown"
 IMAGE_INSTALL += "start-scripts-firmware-links"
 IMAGE_INSTALL += "coreutils"
-IMAGE_INSTALL += "kptr-restrict"
 
 IMAGE_INSTALL += "libgomp"
 TOOLCHAIN_TARGET_TASK_append += " libgomp-dev libgomp-staticdev libstdc++-staticdev"
