@@ -37,7 +37,6 @@ IMAGE_INSTALL += "openssl"
 # IMAGE_INSTALL += "powerapp-reboot"
 # IMAGE_INSTALL += "powerapp-shutdown"
 IMAGE_INSTALL += "start-scripts-firmware-links"
-IMAGE_INSTALL += "systemd-coredump"
 IMAGE_INSTALL += "coreutils"
 IMAGE_INSTALL += "kptr-restrict"
 

@@ -5,8 +5,6 @@ SRC_URI += "file://mountpartitions.rules"
 SRC_URI += "file://systemd-udevd.service"
 SRC_URI += "file://ffbm.target"
 SRC_URI += "file://mtpserver.rules"
-SRC_URI += "file://sysctl-core.conf"
-SRC_URI += "file://limit-core.conf"
 SRC_URI += "file://ion.rules"
 SRC_URI += "file://kgsl.rules"
 SRC_URI += "file://set-usb-nodes.rules"
@@ -56,6 +54,10 @@ PACKAGECONFIG = " \
     timedated \
     xz \
 "
+
+# Enable coredump support when needed
+PACKAGECONFIG_append = " ${@bb.utils.contains('SYSTEMD_ENABLE_COREDUMP', '1', 'coredump', '', d)}"
+
 EXTRA_OEMESON += " -Defi=false"
 EXTRA_OEMESON += " -Dhwdb=false"
 
@@ -65,21 +67,15 @@ CFLAGS_append = " -fPIC"
 # So temporarily revert to default optimizations for systemd.
 SELECTED_OPTIMIZATION = "-O2 -fexpensive-optimizations -frename-registers -fomit-frame-pointer -ftree-vectorize"
 
-MACHINE_COREDUMP_ENABLE = "${@bb.utils.contains_any('BASEMACHINE', 'qcs605 sdmsteppe', 'true', 'false', d)}"
 MACHINE_SUPPORT_BLOCK_DEVICES = "${@bb.utils.contains_any('BASEMACHINE', 'qcs403-som2 sdxprairie', 'false', 'true', d)}"
 
-# Place systemd-udevd.service in /etc/systemd/system
 do_install_append () {
-
-   if [ "${MACHINE_COREDUMP_ENABLE}" == "true" ]; then
-       sed -i "s#var\/tmp#data\/coredump#g" ${WORKDIR}/sysctl-core.conf
-       #create coredump folder in data
-       install -d ${D}${userfsdatadir}/coredump
-   fi
    install -d ${D}/etc/systemd/system/
    install -d ${D}/lib/systemd/system/ffbm.target.wants
    install -d ${D}/etc/systemd/system/ffbm.target.wants
    rm ${D}/lib/udev/rules.d/60-persistent-v4l.rules
+
+   # Place systemd-udevd.service in /etc/systemd/system
    install -m 0644 ${WORKDIR}/systemd-udevd.service \
        -D ${D}/etc/systemd/system/systemd-udevd.service
    install -m 0644 ${WORKDIR}/ffbm.target \
@@ -89,10 +85,7 @@ do_install_append () {
    ln -sf /lib/systemd/system/systemd-logind.service ${D}/lib/systemd/system/ffbm.target.wants/systemd-logind.service
    ln -sf /lib/systemd/system/getty.target ${D}/lib/systemd/system/ffbm.target.wants/getty.target
    ln -sf /lib/systemd/system/systemd-ask-password-wall.path ${D}/lib/systemd/system/ffbm.target.wants/systemd-ask-password-wall.path
-   install -d ${D}/etc/security/limits.d/
-   install -m 0644 ${WORKDIR}/limit-core.conf -D ${D}/etc/security/limits.d/core.conf
    install -d /etc/sysctl.d/
-   install -m 0644 ${WORKDIR}/sysctl-core.conf -D ${D}/etc/sysctl.d/core.conf
    install -m 0644 ${WORKDIR}/sysctl.conf -D ${D}/etc/sysctl.d/sysctl.conf
    install -m 0644 ${WORKDIR}/platform.conf -D ${D}/etc/tmpfiles.d/platform.conf
 
@@ -126,11 +119,7 @@ do_install_append () {
 RRECOMMENDS_${PN}_remove += "systemd-extra-utils"
 PACKAGES_remove += "${PN}-extra-utils"
 
-do_install_append_robot-som-ros () {
-    rm ${D}/etc/sysctl.d/core.conf
-}
+RDEPENDS_${PN} += "systemd-machine-units"
 
-PACKAGES +="${PN}-coredump"
 FILES_${PN} += "/etc/initscripts \
                 ${sysconfdir}/udev/rules.d ${userfsdatadir}/*"
-FILES_${PN}-coredump = "/etc/sysctl.d/core.conf /etc/security/limits.d/core.conf  ${userfsdatadir}/coredump"
