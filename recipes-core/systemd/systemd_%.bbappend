@@ -7,7 +7,6 @@ SRC_URI += "file://ffbm.target"
 SRC_URI += "file://mtpserver.rules"
 SRC_URI += "file://sysctl-core.conf"
 SRC_URI += "file://limit-core.conf"
-SRC_URI += "file://logind.conf"
 SRC_URI += "file://ion.rules"
 SRC_URI += "file://kgsl.rules"
 SRC_URI += "file://set-usb-nodes.rules"
@@ -95,7 +94,6 @@ do_install_append () {
    install -d /etc/sysctl.d/
    install -m 0644 ${WORKDIR}/sysctl-core.conf -D ${D}/etc/sysctl.d/core.conf
    install -m 0644 ${WORKDIR}/sysctl.conf -D ${D}/etc/sysctl.d/sysctl.conf
-   install -m 0644 ${WORKDIR}/logind.conf -D ${D}/etc/systemd/logind.conf
    install -m 0644 ${WORKDIR}/platform.conf -D ${D}/etc/tmpfiles.d/platform.conf
 
    #  Mask journaling services by default.
