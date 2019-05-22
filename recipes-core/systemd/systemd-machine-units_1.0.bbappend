@@ -66,19 +66,17 @@ do_install_append () {
     # a <partition-mount>.service invokes mounting the A/B partition as detected at the time of boot.
     for entry in ${MNT_POINTS}; do
         if [ "$entry" == "$userfsdatadir" ]; then
-            if ${@bb.utils.contains('DISTRO_FEATURES', 'full-disk-encryption', 'false', 'true', d)}; then
-                if ${@bb.utils.contains('DISTRO_FEATURES','nand-boot','false','true',d)}; then
-                    install -m 0644 ${WORKDIR}/data.mount ${D}${systemd_unitdir}/system/data.mount
+            if ${@bb.utils.contains('DISTRO_FEATURES','nand-boot','false','true',d)}; then
+                install -m 0644 ${WORKDIR}/data.mount ${D}${systemd_unitdir}/system/data.mount
 
-                    # Run fsck at boot
-                    install -d 0644 ${D}${systemd_unitdir}/system/local-fs-pre.target.requires
-                    ln -sf ${systemd_unitdir}/system/systemd-fsck@.service \
-                       ${D}${systemd_unitdir}/system/local-fs-pre.target.requires/systemd-fsck@dev-disk-by\\x2dpartlabel-userdata.service
-                else
-                    install -m 0644 ${WORKDIR}/data-ubi.mount ${D}${systemd_unitdir}/system/data.mount
-                fi
-                ln -sf ${systemd_unitdir}/system/data.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/data.mount
+                # Run fsck at boot
+                install -d 0644 ${D}${systemd_unitdir}/system/local-fs-pre.target.requires
+                ln -sf ${systemd_unitdir}/system/systemd-fsck@.service \
+                   ${D}${systemd_unitdir}/system/local-fs-pre.target.requires/systemd-fsck@dev-disk-by\\x2dpartlabel-userdata.service
+            else
+                install -m 0644 ${WORKDIR}/data-ubi.mount ${D}${systemd_unitdir}/system/data.mount
             fi
+            ln -sf ${systemd_unitdir}/system/data.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/data.mount
         fi
 
         if [ "$entry" == "/systemrw" ]; then
