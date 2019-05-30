@@ -49,9 +49,6 @@ IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'cgr
 IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', 'recovery-bin', '', d)}"
 IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', 'recovery', '', d)}"
 
-IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'full-disk-encryption', 'openssl', '', d)}"
-IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'full-disk-encryption', 'libscrypt', '', d)}"
-
 # Below is to generate sparse ext4 system image (OE by default supports raw ext4 images)
 do_makesystem() {
     cp ${THISDIR}/${BASEMACHINE}/sdm845-fsconfig.conf ${WORKDIR}/rootfs-fsconfig.conf
