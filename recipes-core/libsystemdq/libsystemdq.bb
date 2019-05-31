@@ -42,6 +42,7 @@ SRC_URI += "file://remove-udev-references-from-meson-build.patch \
           file://remove-libsystemd-network-from-meson-build.patch \
           file://remove-udev-and-libudev.patch \
           file://meson-build-remove-git-ls-files-check.patch \
+          file://update-libsystemd-pc-in.patch \
           "
 
 # Helper variables to clarify locations.  This mirrors the logic in systemd's
@@ -120,6 +121,16 @@ EXTRA_OEMESON += "-Denvironment-d=false \
 do_install() {
    meson_do_install
    install -d ${D}/${base_sbindir}
+   rm -rf ${D}/usr/share/zsh/
+   rm -rf ${D}/usr/lib/systemd/
+   rm -rf ${D}/usr/bin/
+   rm -rf ${D}/bin/
+   rm -rf ${D}/lib/systemd/
+   rm -rf ${D}/var/
+   rm -rf ${D}/lib/systemd/system-generators/
+   rm -rf ${D}/sbin/
+   rm -rf ${D}/usr/share/
+   mv ${D}/usr/include/systemd ${D}/usr/include/systemdq
 }
 
 
