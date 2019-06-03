@@ -20,7 +20,6 @@ EXTRA_OECONF = " --with-host-os=${HOST_OS} --with-glib"
 EXTRA_OECONF_append = " --with-sanitized-headers=${STAGING_KERNEL_BUILDDIR}/usr/include"
 EXTRA_OECONF_append = " --with-logd-logging"
 EXTRA_OECONF_append = " --disable-debuggerd"
-EXTRA_OECONF_append_apq8053 = " --enable-logd-privs"
 
 #Disable default libsync in system/core for 4.4 above kernels
 EXTRA_OECONF_append += "${@oe.utils.version_less_or_equal('PREFERRED_VERSION_linux-msm', '4.4', '', ' --disable-libsync', d)}"
@@ -70,7 +69,6 @@ do_install_append() {
    install -b -m 0644 /dev/null -D ${D}${sysconfdir}/build.prop
    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
       install -m 0750 ${S}/adb/start_adbd -D ${D}${sysconfdir}/initscripts/adbd
-      install -m 0750 ${S}/logd/start_logd -D ${D}${sysconfdir}/initscripts/logd
       install -m 0755 ${S}/usb/start_usb -D ${D}${sysconfdir}/initscripts/usb
       install -m 0750 ${S}/rootdir/etc/init.qcom.post_boot.sh -D ${D}${sysconfdir}/initscripts/init_post_boot
       install -d ${D}${systemd_unitdir}/system/
@@ -79,9 +77,6 @@ do_install_append() {
       install -m 0644 ${S}/adb/adbd.service -D ${D}${systemd_unitdir}/system/adbd.service
       ln -sf ${systemd_unitdir}/system/adbd.service ${D}${systemd_unitdir}/system/multi-user.target.wants/adbd.service
       ln -sf ${systemd_unitdir}/system/adbd.service ${D}${systemd_unitdir}/system/ffbm.target.wants/adbd.service
-      install -m 0644 ${S}/logd/logd.service -D ${D}${systemd_unitdir}/system/logd.service
-      ln -sf ${systemd_unitdir}/system/logd.service ${D}${systemd_unitdir}/system/multi-user.target.wants/logd.service
-      ln -sf ${systemd_unitdir}/system/logd.service ${D}${systemd_unitdir}/system/ffbm.target.wants/logd.service
       install -m 0644 ${S}/usb/usb.service -D ${D}${systemd_unitdir}/system/usb.service
       ln -sf ${systemd_unitdir}/system/usb.service ${D}${systemd_unitdir}/system/multi-user.target.wants/usb.service
       ln -sf ${systemd_unitdir}/system/usb.service ${D}${systemd_unitdir}/system/ffbm.target.wants/usb.service
@@ -102,11 +97,27 @@ do_install_append() {
           ${D}${systemd_unitdir}/system/ffbm.target.wants/leprop.service
    else
       install -m 0755 ${S}/adb/start_adbd -D ${D}${sysconfdir}/init.d/adbd
-      if [ ${BASEMACHINE} != "apq8053" ]; then
-          install -m 0755 ${S}/logd/start_logd -D ${D}${sysconfdir}/init.d/logd
-      fi
       install -m 0755 ${S}/usb/start_usb -D ${D}${sysconfdir}/init.d/usb
       install -m 0755 ${S}/rootdir/etc/init.qcom.post_boot.sh -D ${D}${sysconfdir}/init.d/init_post_boot
+   fi
+}
+
+# Install logd specific files into rootfs
+do_install_append() {
+   if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
+      install -m 0644 ${S}/logd/logd.path -D ${D}${systemd_unitdir}/system/logd.path
+      install -m 0644 ${S}/logd/earlyinit-logd.service -D ${D}${systemd_unitdir}/system/earlyinit-logd.service
+      install -m 0644 ${S}/logd/logd.service -D ${D}${systemd_unitdir}/system/logd.service
+
+      ln -sf ${systemd_unitdir}/system/logd.path ${D}${systemd_unitdir}/system/multi-user.target.wants/logd.path
+      ln -sf ${systemd_unitdir}/system/earlyinit-logd.service \
+             ${D}${systemd_unitdir}/system/multi-user.target.wants/earlyinit-logd.service
+
+      ln -sf ${systemd_unitdir}/system/logd.path ${D}${systemd_unitdir}/system/ffbm.target.wants/logd.path
+      ln -sf ${systemd_unitdir}/system/earlyinit-logd.service \
+             ${D}${systemd_unitdir}/system/ffbm.target.wants/earlyinit-logd.service
+   else
+      install -m 0750 ${S}/logd/start_logd -D ${D}${sysconfdir}/init.d/logd
    fi
 }
 
@@ -206,7 +217,9 @@ INSANE_SKIP_${PN}-post-boot = "file-rdeps"
 PACKAGES =+ "${PN}-logd-dbg ${PN}-logd"
 FILES_${PN}-logd-dbg  = "${base_sbindir}/.debug/logd"
 FILES_${PN}-logd      = "${sysconfdir}/init.d/logd ${base_sbindir}/logd"
-FILES_${PN}-logd     += "${systemd_unitdir}/system/logd.service ${systemd_unitdir}/system/multi-user.target.wants/logd.service ${systemd_unitdir}/system/ffbm.target.wants/logd.service ${sysconfdir}/initscripts/logd"
+FILES_${PN}-logd     += "${systemd_unitdir}/system/earlyinit-logd.service ${systemd_unitdir}/system/logd.path ${systemd_unitdir}/system/logd.service"
+FILES_${PN}-logd     += "${systemd_unitdir}/system/multi-user.target.wants/earlyinit-logd.service ${systemd_unitdir}/system/multi-user.target.wants/logd.path"
+FILES_${PN}-logd     += "${systemd_unitdir}/system/ffbm.target.wants/earlyinit-logd.service ${systemd_unitdir}/system/ffbm.target.wants/logd.path"
 
 PACKAGES =+ "${PN}-debuggerd-dbg ${PN}-debuggerd"
 FILES_${PN}-debuggerd-dbg  = "${base_sbindir}/.debug/debuggerd ${base_sbindir}/.debug/debuggerd64 "
