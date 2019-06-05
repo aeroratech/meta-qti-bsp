@@ -32,6 +32,7 @@ Description=Mount bluetooth partition to /bt_firmware mount point
 # Hence wait for both _a & _b dev nodes before attepting to mount
 BindsTo=dev-disk-by\x2dpartlabel-bluetooth_a.device dev-disk-by\x2dpartlabel-bluetooth_b.device
 After=dev-disk-by\x2dpartlabel-bluetooth_a.device dev-disk-by\x2dpartlabel-bluetooth_b.device
+DefaultDependencies=no
 
 IgnoreOnIsolate=true
 
