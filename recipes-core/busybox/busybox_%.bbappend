@@ -24,12 +24,12 @@ SRC_URI += "\
 SRC_URI_append_apq8053 += "file://apq8053/mdev.conf"
 SRC_URI_append += "${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'file://0001-Remove-readprofile-and-brctl-from-busybox.links-file.patch', '', d)}"
 
-BUSYBOX_SPLIT_SUID = "0"
-FILES_${PN} += "/usr/bin/env"
+# By default, we now split BusyBox into two binaries.
+# One that is suid root for those components that need it.
+# Another for the rest of the components.
+BUSYBOX_SPLIT_SUID = "1"
 
-do_compile_append_mdm() {
-    sed -i '/modprobe/d' ./busybox.links
-}
+FILES_${PN} += "/usr/bin/env"
 
 do_install_append() {
     # systemd is udev compatible.
