@@ -48,12 +48,23 @@ fix_sepolicies () {
 }
 do_install[prefuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '', 'fix_sepolicies', d)}"
 
+# Install var-volatile.mount for tmpfs
+do_install_append () {
+    install -d 0644 ${D}${systemd_unitdir}/system
+    install -d 0644 ${D}${systemd_unitdir}/system/local-fs.target.wants
+    install -m 0644 ${WORKDIR}/var-volatile.mount \
+            ${D}${systemd_unitdir}/system/var-volatile.mount
+
+    ln -sf ${systemd_unitdir}/system/var-volatile.mount \
+           ${D}${systemd_unitdir}/system/local-fs.target.wants/var-volatile.mount
+}
+
+# Install mount and service units for mounting hard parititions.
 MNT_POINTS  = "${@d.getVar('MACHINE_MNT_POINTS') or ""}"
 # /data is default. /systemrw is applicable only when rootfs is read only.
 MNT_POINTS += " /data"
 MNT_POINTS += " ${@bb.utils.contains('DISTRO_FEATURES', 'ro-rootfs', '/systemrw', '', d)}"
 
-# Install various mount and service units for mounting parititions.
 do_install_append () {
     install -d 0644 ${D}${sysconfdir}/initscripts
     install -d 0644 ${D}${systemd_unitdir}/system
