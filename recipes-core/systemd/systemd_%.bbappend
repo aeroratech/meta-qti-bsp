@@ -119,7 +119,5 @@ do_install_append () {
 RRECOMMENDS_${PN}_remove += "systemd-extra-utils"
 PACKAGES_remove += "${PN}-extra-utils"
 
-RDEPENDS_${PN} += "systemd-machine-units"
-
 FILES_${PN} += "/etc/initscripts \
                 ${sysconfdir}/udev/rules.d ${userfsdatadir}/*"
