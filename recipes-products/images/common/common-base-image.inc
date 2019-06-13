@@ -21,6 +21,7 @@ IMAGE_INSTALL += "system-core-leprop"
 IMAGE_INSTALL += "system-core-logd"
 IMAGE_INSTALL += "system-core-post-boot"
 IMAGE_INSTALL += "system-core-usb"
+IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd-machine-units', '', d)}"
 
 IMAGE_EXT4_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES','selinux',' -S ${SELINUX_FILE_CONTEXTS} ','',d)}"
 
