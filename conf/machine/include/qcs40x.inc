@@ -61,3 +61,4 @@ KERNEL_CMD_PARAMS ?= "noinitrd ro rootwait console=ttyMSM0,115200,n8 no_console_
 # Userspace needs below given macro to support libion after kernel 4.12.
 TARGET_CFLAGS_append = " -DTARGET_ION_ABI_VERSION=2 "
 TARGET_CXXFLAGS_append = " -DTARGET_ION_ABI_VERSION=2 "
+DISTRO_FEATURES_append = " audio-only-libav "
