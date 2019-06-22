@@ -105,6 +105,16 @@ do_install_append () {
    if [ "${MACHINE_SUPPORT_BLOCK_DEVICES}" == "false" ]; then
        sed -i '/SUBSYSTEM=="block", TAG+="systemd"/d' ${D}/lib/udev/rules.d/99-systemd.rules
        sed -i '/SUBSYSTEM=="block", ACTION=="add", ENV{DM_UDEV_DISABLE_OTHER_RULES_FLAG}=="1", ENV{SYSTEMD_READY}="0"/d' ${D}/lib/udev/rules.d/99-systemd.rules
+
+       # Remove generator binaries and ensure that we don't rely on generators for mount or service files.
+       rm -rf ${D}/lib/systemd/system-generators/systemd-debug-generator
+       rm -rf ${D}/lib/systemd/system-generators/systemd-fstab-generator
+       rm -rf ${D}/lib/systemd/system-generators/systemd-getty-generator
+       rm -rf ${D}/lib/systemd/system-generators/systemd-gpt-auto-generator
+       rm -rf ${D}/lib/systemd/system-generators/systemd-hibernate-resume-generator
+       rm -rf ${D}/lib/systemd/system-generators/systemd-rc-local-generator
+       rm -rf ${D}/lib/systemd/system-generators/systemd-system-update-generator
+       rm -rf ${D}/lib/systemd/system-generators/systemd-sysv-generator
    fi
 }
 
