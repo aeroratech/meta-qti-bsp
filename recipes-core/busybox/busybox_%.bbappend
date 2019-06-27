@@ -48,7 +48,7 @@ do_configure_append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'virtualization','true','false',d)}; then
         for var in ${VIRT_RM_BIN_LIST}
         do
-            sed -i "/$var=y/d" ${S}/.config
+            sed -i "s/$var=y/# $var is not set/g" ${S}/.config
         done
         cml1_do_configure
     fi
