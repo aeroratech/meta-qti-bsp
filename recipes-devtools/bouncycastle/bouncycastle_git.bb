@@ -68,32 +68,6 @@ base_do_unpack_append () {
 #######################################
 BC_BUILD="${WORKDIR}/build"
 
-check_java_version() {
-
-    valid_version="1.7"
-    ver=`java -version 2>&1 | grep -oP "([1-1]{1,}\.)+([2-8]{1,})"`
-    version=`echo $ver | grep -oP "^1\.[1-8]{1,}"`
-
-    if [ "$valid_version" = "$version" ]; then
-        echo "Found Java $version"
-    else
-        echo "Checking if Java 1.7 is installed"
-        if [ -d /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin ]; then
-            echo "Java 1.7 is present using it temporarily"
-            export PATH=/usr/lib/jvm/java-1.7.0-openjdk-amd64/bin:$PATH
-        fi
-
-        ver=`java -version 2>&1 | grep -oP "([1-1]{1,}\.)+([2-8]{1,})"`
-        version=`echo $ver | grep -oP "^1\.[1-8]{1,}"`
-        if [ "$valid_version" = "$version" ]; then
-             echo "Found valid Java $version"
-        else
-             echo "Invalid version $version, Please install Java 1.7"
-             exit 1
-        fi
-    fi
-}
-
 do_precompile() {
     rm -fr ${BC_BUILD}/classes
     rm -fr ${BC_BUILD}/libs
@@ -123,8 +97,6 @@ do_bc_compile() {
           -Xmaxerrs 9999999      \
           -encoding UTF-8        \
           -g                     \
-          -source 1.7            \
-          -target 1.7            \
           -d ${BC_BUILD}/classes \
           @${BC_BUILD}/sources/bcprov_java_source_list
 
@@ -141,8 +113,6 @@ do_bc_compile() {
           -Xmaxerrs 9999999 \
           -encoding UTF-8   \
           -g                \
-          -source 1.7       \
-          -target 1.7     \
           -classpath ${BC_BUILD}/libs/bcprov_jar.jar  \
           -d ${BC_BUILD}/classes \
           @${BC_BUILD}/sources/bcpkix_java_source_list
@@ -168,8 +138,6 @@ do_verity_compile () {
           -Xmaxerrs 9999999  \
           -encoding UTF-8    \
           -g                 \
-          -source 1.7      \
-          -target 1.7        \
           -classpath ${BC_BUILD}/libs/bcprov_bcpkix_jar.jar  \
           -d ${BC_BUILD}/classes \
           @${BC_BUILD}/sources/VeritySigner_source
@@ -197,7 +165,6 @@ do_verity_compile () {
 
 do_compile () {
 
-    check_java_version
     do_precompile
     do_bc_compile
     do_verity_compile
