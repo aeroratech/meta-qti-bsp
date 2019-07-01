@@ -9,6 +9,8 @@ require ${COREBASE}/meta-qti-bsp/conf/distro/include/security_flags.inc
 
 include conf/machine/include/arm/arch-armv8.inc
 
+#usb composition to be used by qcs40x devices.
+USBCOMPOSITION      = "901D"
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
 PREFERRED_VERSION_linux-msm = "4.14"
@@ -54,7 +56,6 @@ DISTRO_FEATURES_append = " vble"
 KERNEL_DTS_NAME = "qcs405-rumi"
 KERNEL_BASE = "0x80000000"
 KERNEL_TAGS_OFFSET = "0x1e00000"
-KERNEL_CONFIG = "${@['vendor/qcs405-perf_defconfig', 'vendor/qcs405_defconfig'][d.getVar('VARIANT', True) == ('' or 'debug')]}"
 
 KERNEL_CMD_PARAMS ?= "noinitrd ro rootwait console=ttyMSM0,115200,n8 no_console_suspend=1 androidboot.hardware=qcom androidboot.console=ttyMSM0 lpm_levels.sleep_disabled=1 service_locator.enable=1 firmware_class.path=/lib/firmware/updates msm_rtb.filter=0x237"
 

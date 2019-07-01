@@ -38,16 +38,16 @@ CPPFLAGS_append_apq8096 += " -DTARGET_IS_64_BIT"
 CPPFLAGS_append_apq8098 += " -DTARGET_IS_64_BIT"
 CPPFLAGS_remove_apq8053-32 = " -DTARGET_IS_64_BIT"
 
-COMPOSITION         = "9025"
-COMPOSITION_apq8009 = "9091"
-COMPOSITION_apq8053 = "901D"
-COMPOSITION_apq8096 = "901D"
-COMPOSITION_apq8098 = "901D"
-COMPOSITION_qcs605 = "901D"
-COMPOSITION_sdm845 = "901D"
-COMPOSITION_sdxpoorwills = "90DB"
-COMPOSITION_sdxprairie = "90DB"
-COMPOSITION_sdmsteppe = "901D"
+USBCOMPOSITION         ?= "9025"
+USBCOMPOSITION_apq8009 = "9091"
+USBCOMPOSITION_apq8053 = "901D"
+USBCOMPOSITION_apq8096 = "901D"
+USBCOMPOSITION_apq8098 = "901D"
+USBCOMPOSITION_qcs605 = "901D"
+USBCOMPOSITION_sdm845 = "901D"
+USBCOMPOSITION_sdxpoorwills = "90DB"
+USBCOMPOSITION_sdxprairie = "90DB"
+USBCOMPOSITION_sdmsteppe = "901D"
 
 QPERM_SERVICE = "${S}/logd/logd.service ${S}/leproperties/leprop.service"
 
@@ -57,7 +57,7 @@ do_install_append() {
    install -d ${D}${sysconfdir}/usb/
    install -b -m 0644 /dev/null ${D}${sysconfdir}/usb/boot_hsusb_comp
    install -b -m 0644 /dev/null ${D}${sysconfdir}/usb/boot_hsic_comp
-   echo ${COMPOSITION} > ${D}${sysconfdir}/usb/boot_hsusb_comp
+   echo ${USBCOMPOSITION} > ${D}${sysconfdir}/usb/boot_hsusb_comp
    install -m 0755 ${S}/usb/usb_composition -D ${D}${base_sbindir}/
    install -d ${D}${base_sbindir}/usb/compositions/
    install -m 0755 ${S}/usb/compositions/* -D ${D}${base_sbindir}/usb/compositions/
