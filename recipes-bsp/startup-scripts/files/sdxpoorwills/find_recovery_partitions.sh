@@ -169,5 +169,7 @@ else
 fi
 
 FindAndMountMTD misc /misc
+# set selinux to permissive mode before we start recovery executable
+/usr/sbin/setenforce 0
 
 exit
