@@ -39,7 +39,7 @@ Supported combinations are listed below.
       +---------------+----------------+------------------+
       |sdmsteppe      | concam         | debug perf user  |
       +---------------+----------------+------------------+
-      |sdm845         | robot          | debug            |
+      |sdm845         | robot          | debug perf       |
       +---------------+----------------+------------------+
 
 Once ready run 'bitbake <pkg-name>' to build required package or
