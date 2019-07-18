@@ -23,7 +23,7 @@ do_update_files() {
             path="$(cut -d ":" -f 1 <<< $each_file)"
             user="$(cut -d ":" -f 2 <<< $each_file)"
             group="$(cut -d ":" -f 3 <<< $each_file)"
-            chown $user:$group ${D}$path
+            chown -R $user:$group ${D}$path
         done
     fi
 }
