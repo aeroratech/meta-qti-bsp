@@ -30,8 +30,6 @@ EXTRA_OECONF_remove_sdmsteppe = "--enable-32bit-binder-ipc"
 
 CFLAGS += "-I${STAGING_INCDIR}/libselinux"
 
-QPERM_SERVICE = "${WORKDIR}/servicemanager.service"
-
 do_install_append() {
    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
        install -d ${D}${systemd_unitdir}/system/
