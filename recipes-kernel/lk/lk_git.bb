@@ -31,7 +31,7 @@ BOOTLOADER_NAME = "${@bb.utils.contains('DISTRO_FEATURES', 'emmc-boot', 'emmc_ap
 
 emmc_bootloader = "${@bb.utils.contains('DISTRO_FEATURES', 'emmc-boot', '1', '0', d)}"
 
-LIBGCC = "${STAGING_LIBDIR}/${TARGET_SYS}/6.4.0/libgcc.a"
+LIBGCC = "${STAGING_LIBDIR}/${TARGET_SYS}/8.2.0/libgcc.a"
 
 # Disable display for nodisplay products
 DISPLAY_SCREEN = "1"

@@ -1,7 +1,5 @@
 require recipes-kernel/linux-msm/linux-msm.inc
 
-inherit sdllvm
-
 # if is TARGET_KERNEL_ARCH is set inherit qtikernel-arch to compile for that arch.
 inherit ${@bb.utils.contains('TARGET_KERNEL_ARCH', 'aarch64', 'qtikernel-arch', '', d)}
 

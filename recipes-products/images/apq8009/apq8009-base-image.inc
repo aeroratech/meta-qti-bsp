@@ -4,14 +4,12 @@ DEPENDS += "lk"
 
 # Compute sha1sum of unsparsed recovery&recoveryfs images
 # only after recoveryfs.ext4 image creation has already happened.
-do_rootfs[depends] += "machine-recovery-image:do_makesystem"
+#do_rootfs[depends] += "machine-recovery-image:do_makesystem"
 
 IMAGE_INSTALL += "packagegroup-core-boot"
 
 #IMAGE_INSTALL += "${ROOTFS_PKGMANAGE_BOOTSTRAP}"
 IMAGE_INSTALL += "${CORE_IMAGE_EXTRA_INSTALL}"
-
-IMAGE_INSTALL += "start-scripts-misc-daemon"
 
 # The MSM Linux minimal boot image files.
 
@@ -42,15 +40,12 @@ IMAGE_INSTALL += "system-core-usb"
 IMAGE_INSTALL += "system-core-post-boot"
 IMAGE_INSTALL += "system-prop"
 IMAGE_INSTALL += "systemd-machine-units"
-IMAGE_INSTALL += "wireless-tools"
 IMAGE_INSTALL += "volatile-binds"
 
 # Install recovery(fs)-updater only for non-A/B variants
 IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', '', 'start-scripts-recovery-updater', d)}"
 
 # Install recovery and its libs in system image if A/B boot is supported
-IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', 'recovery-bin', '', d)}"
-IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', 'recovery', '', d)}"
 #IMAGE_INSTALL += "${@bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', 'lib32-recovery', '', d)}"
 
 # Don't install GDB and related pacakges in production builds.

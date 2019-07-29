@@ -1,5 +1,4 @@
 require recipes-kernel/linux-msm/linux-msm.inc
-inherit sdllvm
 COMPATIBLE_MACHINE = "(sdm710)"
 
 KERNEL_IMAGEDEST = "boot"
