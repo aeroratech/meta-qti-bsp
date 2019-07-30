@@ -85,11 +85,6 @@ do_install_append() {
           ${D}${systemd_unitdir}/system/multi-user.target.wants/init_post_boot.service
       ln -sf ${systemd_unitdir}/system/init_post_boot.service \
           ${D}${systemd_unitdir}/system/ffbm.target.wants/init_post_boot.service
-      install -m 0644 ${S}/debuggerd/init_debuggerd.service -D ${D}${systemd_unitdir}/system/init_debuggerd.service
-      ln -sf ${systemd_unitdir}/system/init_debuggerd.service \
-          ${D}${systemd_unitdir}/system/multi-user.target.wants/init_debuggerd.service
-      ln -sf ${systemd_unitdir}/system/init_debuggerd.service \
-          ${D}${systemd_unitdir}/system/ffbm.target.wants/init_debuggerd.service
       install -m 0644 ${S}/leproperties/leprop.service -D ${D}${systemd_unitdir}/system/leprop.service
       ln -sf ${systemd_unitdir}/system/leprop.service \
           ${D}${systemd_unitdir}/system/multi-user.target.wants/leprop.service
@@ -131,58 +126,10 @@ do_install_append_mdm() {
    fi
 }
 
-do_install_append_apq8009() {
-   if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)}; then
-    install -m 0755 ${S}/debuggerd/start_debuggerd -D ${D}${sysconfdir}/init.d/init_debuggerd
-   else
-    install -m 0755 ${S}/debuggerd/start_debuggerd -D ${D}${sysconfdir}/initscripts/init_debuggerd
-   fi
-}
-
-#Install rules specific to apq8053 target
-do_install_append_apq8053(){
-
-  DEBUGGERD_NO_INSTALL=${@bb.utils.contains('USER_BUILD','1','no-debuggerd','',d)}
-  if [ "x$DEBUGGERD_NO_INSTALL" == "x" ]; then
-    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)}; then
-      install -m 0755 ${S}/debuggerd/start_debuggerd64 -D ${D}${sysconfdir}/init.d/init_debuggerd
-    else
-      install -m 0755 ${S}/debuggerd/start_debuggerd64 -D ${D}${sysconfdir}/initscripts/init_debuggerd
-    fi
-  fi
-}
-
-do_install_append_apq8096() {
-  if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)}; then
-    install -m 0755 ${S}/debuggerd/start_debuggerd64 -D ${D}${sysconfdir}/init.d/init_debuggerd
-  else
-    install -m 0755 ${S}/debuggerd/start_debuggerd64 -D ${D}${sysconfdir}/initscripts/init_debuggerd
-  fi
-}
-do_install_append_apq8017(){
-  if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)}; then
-   install -m 0755 ${S}/debuggerd/start_debuggerd64 -D ${D}${sysconfdir}/init.d/init_debuggerd
-  else
-   install -m 0755 ${S}/debuggerd/start_debuggerd64 -D ${D}${sysconfdir}/initscripts/init_debuggerd
-  fi
-}
-
-do_install_append_apq8098(){
-  if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'false', 'true', d)}; then
-   install -m 0755 ${S}/debuggerd/start_debuggerd64 -D ${D}${sysconfdir}/init.d/init_debuggerd
-  else
-   install -m 0755 ${S}/debuggerd/start_debuggerd64 -D ${D}${sysconfdir}/initscripts/init_debuggerd
-  fi
-}
 INITSCRIPT_PACKAGES =+ "${PN}-usb"
 INITSCRIPT_NAME_${PN}-usb = "usb"
 INITSCRIPT_PARAMS_${PN}-usb = "start 30 2 3 4 5 ."
 INITSCRIPT_PARAMS_${PN}-usb_mdm = "start 30 S ."
-
-INITSCRIPT_PACKAGES =+ "${PN}-debuggerd"
-INITSCRIPT_NAME_${PN}-debuggerd = "init_debuggerd"
-INITSCRIPT_PARAMS_${PN}-debuggerd = "start 31 2 3 4 5 ."
-INITSCRIPT_PARAMS_${PN}-debuggerd += "stop 38 6 ."
 
 INITSCRIPT_PACKAGES =+ "${PN}-logd"
 INITSCRIPT_NAME_${PN}-logd = "logd"
@@ -220,11 +167,6 @@ FILES_${PN}-logd      = "${sysconfdir}/init.d/logd ${base_sbindir}/logd"
 FILES_${PN}-logd     += "${systemd_unitdir}/system/earlyinit-logd.service ${systemd_unitdir}/system/logd.path ${systemd_unitdir}/system/logd.service"
 FILES_${PN}-logd     += "${systemd_unitdir}/system/multi-user.target.wants/earlyinit-logd.service ${systemd_unitdir}/system/multi-user.target.wants/logd.path"
 FILES_${PN}-logd     += "${systemd_unitdir}/system/ffbm.target.wants/earlyinit-logd.service ${systemd_unitdir}/system/ffbm.target.wants/logd.path"
-
-PACKAGES =+ "${PN}-debuggerd-dbg ${PN}-debuggerd"
-FILES_${PN}-debuggerd-dbg  = "${base_sbindir}/.debug/debuggerd ${base_sbindir}/.debug/debuggerd64 "
-FILES_${PN}-debuggerd      = "${sysconfdir}/init.d/init_debuggerd ${sysconfdir}/initscripts/init_debuggerd ${base_sbindir}/debuggerd ${base_sbindir}/debuggerd64"
-FILES_${PN}-debuggerd     += "${systemd_unitdir}/system/init_debuggerd.service ${systemd_unitdir}/system/multi-user.target.wants/init_debuggerd.service ${systemd_unitdir}/system/ffbm.target.wants/init_debuggerd.service"
 
 PACKAGES =+ "${PN}-leprop-dbg ${PN}-leprop"
 FILES_${PN}-leprop-dbg  = "${base_sbindir}/.debug/leprop-service ${bindir}/.debug/getprop ${bindir}/.debug/setprop"
