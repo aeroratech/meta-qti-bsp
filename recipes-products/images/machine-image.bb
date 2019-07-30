@@ -9,8 +9,6 @@ include ${@get_bblayer_img_inc('base', d)}
 require include/mdm-bootimg.inc
 DEPENDS += " mkbootimg-native"
 
-MULTILIBRE_ALLOW_REP =. "/usr/include/python2.7/*|${base_bindir}|${base_sbindir}|${bindir}|${sbindir}|${libexecdir}|${sysconfdir}|${nonarch_base_libdir}/udev|/lib/modules/[^/]*/modules.*|"
-
 do_fsconfig() {
  chmod go-r ${IMAGE_ROOTFS}/etc/passwd || :
  chmod -R o-rwx ${IMAGE_ROOTFS}/etc/init.d/ || :
