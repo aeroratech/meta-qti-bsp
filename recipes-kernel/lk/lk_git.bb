@@ -14,6 +14,8 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 FILESPATH =+ "${WORKSPACE}:"
 
 SRC_URI   =  "file://bootable/bootloader/lk"
+SRC_URI  +=  "file://0001-Add-instructionset-extension.patch"
+
 S         =  "${WORKDIR}/bootable/bootloader/lk"
 
 MY_TARGET_mdm9650 = "mdm9640"
