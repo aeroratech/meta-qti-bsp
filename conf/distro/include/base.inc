@@ -11,7 +11,6 @@ DISTROOVERRIDES =. "${@['', '${BASEDISTRO}:']['${BASEDISTRO}' != '']}"
 
 # DISTRO FEATURE SELECTION
 MICRO_GOLD ?= "ld-is-gold"
-MICRO_GOLD_apq8017 = ""
 
 USE_DEVFS = "0"
 
@@ -56,8 +55,6 @@ LDCONFIGDEPEND = ""
 COMMERCIAL_LICENSE_DEPENDEES = ""
 
 PREFERRED_VERSION_readline = "5.2"
-
-PRODUCT ??= "base"
 
 # Retain existing directory structure for msm or mdm distro images.
 # Append variants like '-perf', '-user' etc to deploy dir.
