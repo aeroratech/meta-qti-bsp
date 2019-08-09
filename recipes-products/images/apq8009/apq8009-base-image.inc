@@ -4,7 +4,6 @@ DEPENDS += "lk"
 
 IMAGE_INSTALL += "packagegroup-core-boot"
 
-#IMAGE_INSTALL += "${ROOTFS_PKGMANAGE_BOOTSTRAP}"
 IMAGE_INSTALL += "${CORE_IMAGE_EXTRA_INSTALL}"
 
 # The MSM Linux minimal boot image files.
@@ -27,7 +26,6 @@ IMAGE_INSTALL += "liblog"
 
 IMAGE_INSTALL += "libxml2"
 
-#IMAGE_INSTALL += "start-scripts-find-partitions"
 IMAGE_INSTALL += "start-scripts-firmware-links"
 IMAGE_INSTALL += "system-core-adbd"
 IMAGE_INSTALL += "system-core-logd"
@@ -36,7 +34,6 @@ IMAGE_INSTALL += "system-core-usb"
 IMAGE_INSTALL += "system-core-post-boot"
 IMAGE_INSTALL += "system-prop"
 IMAGE_INSTALL += "systemd-machine-units"
-IMAGE_INSTALL += "volatile-binds"
 
 
 # Don't install GDB and related pacakges in production builds.
@@ -48,5 +45,4 @@ IMAGE_INSTALL += "${@oe.utils.conditional('USER_BUILD', '1', '', 'gdbserver', d)
 do_makesystem() {
     cp ${THISDIR}/${BASEMACHINE}/apq8009-fsconfig.conf ${WORKDIR}/rootfs-fsconfig.conf
     make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf -B ${DEPLOY_DIR_IMAGE}/system.map -s ${IMAGE_EXT4_SELINUX_OPTIONS} -b 4096 -l ${SYSTEM_SIZE_EXT4} ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
-    make_ext4fs  -b 4096 -a /systemrw ${IMAGE_EXT4_SELINUX_OPTIONS} -l ${SYSTEMRW_SIZE_EXT4} ${DEPLOY_DIR_IMAGE}/${SYSTEMRWIMAGE_TARGET}
 }
