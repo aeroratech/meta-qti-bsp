@@ -39,11 +39,5 @@ USERDATA_SIZE_EXT4 ?= "524288000"
 CACHE_SIZE_EXT4 ?= "524288000"
 RECOVERYFS_SIZE_EXT4 ?= "136000000"
 
-#Enable Recovery image generation
-RECOVERY_IMAGE ?= "1"
-
 # Formats of root filesystem images.
 IMAGE_FSTYPES += "ext4"
-
-#Enable SDK feature
-# SDK_IMAGE ?= "1"

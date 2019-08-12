@@ -25,14 +25,14 @@ ARM_INSTRUCTION_SET       ?= "arm"
 # Optimization flags.
 ##################################################################
 COMMON_OPTIMIZATION = " \
-  -Wa,--noexecstack -fexpensive-optimizations \
+  -g -Wa,--noexecstack -fexpensive-optimizations \
   -frename-registers -ftree-vectorize \
   -finline-functions -finline-limit=64 \
   -Wno-error=maybe-uninitialized -Wno-error=unused-result \
-  "
+"
 
-FULL_OPTIMIZATION         = "-O2 -fomit-frame-pointer ${COMMON_OPTIMIZATION} "
-DEBUG_OPTIMIZATION_append = " ${COMMON_OPTIMIZATION} "
+FULL_OPTIMIZATION  = " -O2 ${COMMON_OPTIMIZATION} "
+DEBUG_OPTIMIZATION = " ${FULL_OPTIMIZATION} "
 
 # NLS
 USE_NLS = "no"
