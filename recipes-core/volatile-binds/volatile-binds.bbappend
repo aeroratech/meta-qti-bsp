@@ -50,6 +50,8 @@ VOLATILE_BINDS_append_qcs40x = "\
 /systemrw/var/lib/pulse /var/lib/pulse/ \n\
 "
 
+VOLATILE_BINDS_open-q-212a-homehub = ""
+
 INITSCRIPT_PACKAGES =+ "${PN}"
 INITSCRIPT_NAME_${PN} = "robind"
 INITSCRIPT_PARAMS_${PN} = "start 37 S 2 3 4 5 ."

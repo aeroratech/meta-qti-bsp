@@ -9,6 +9,7 @@ dirs755_append = " /media/cf /media/net /media/ram \
 # userdata mount point is present by default in all machines.
 # TODO: Add this path to MACHINE_MNT_POINTS in machine conf.
 dirs755_append = " ${userfsdatadir}"
+dirs755_append = " /cache /persist"
 
 dirs755_append = " ${MACHINE_MNT_POINTS}"
 

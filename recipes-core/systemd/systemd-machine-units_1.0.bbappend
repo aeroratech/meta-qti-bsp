@@ -62,7 +62,7 @@ do_install_append () {
 # Install mount and service units for mounting hard parititions.
 MNT_POINTS  = "${@d.getVar('MACHINE_MNT_POINTS') or ""}"
 # /data is default. /systemrw is applicable only when rootfs is read only.
-MNT_POINTS += " /data"
+MNT_POINTS += " ${@bb.utils.contains('DISTRO_FEATURES', 'userdata', '/data', '', d)}"
 MNT_POINTS += " ${@bb.utils.contains('DISTRO_FEATURES', 'ro-rootfs', '/systemrw', '', d)}"
 
 do_install_append () {
