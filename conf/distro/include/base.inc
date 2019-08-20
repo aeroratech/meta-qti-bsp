@@ -1,7 +1,7 @@
 #############################################################################
 #@COMMENT: This distribution configuration defines an OE Linux based
 #@COMMENT: distribution. The matching buildable image target (machine-image)
-#@COMMENT: basically consists of: libc, busybox, udev, sysv init, and a few
+#@COMMENT: basically consists of: libc, busybox, udev and a few
 #@COMMENT: init scripts for running up the system on qti chipsets.
 #############################################################################
 BASEDISTRO ??= ""
@@ -57,10 +57,9 @@ COMMERCIAL_LICENSE_DEPENDEES = ""
 PREFERRED_VERSION_readline = "5.2"
 
 # Retain existing directory structure for msm or mdm distro images.
-# Append variants like '-perf', '-user' etc to deploy dir.
-DEPLOY_NAME_BASE = "${MACHINE}${@bb.utils.contains_any('DISTRO', 'msm mdm', '', '-' + d.getVar('DISTRO'), d)}"
-DEPLOY_NAME = "${DEPLOY_NAME_BASE}${@['-' + d.getVar('VARIANT', True), ''][d.getVar('VARIANT', True) == ('' or 'debug')]}"
-DEPLOY_DIR_IMAGE = "${DEPLOY_DIR}/images/${DEPLOY_NAME}"
+DEPLOY_NAME_BASE  = "${MACHINE}${@bb.utils.contains_any('DISTRO', 'msm mdm', '', '-' + d.getVar('DISTRO'), d)}"
+DEPLOY_NAME      ?= "${DEPLOY_NAME_BASE}"
+DEPLOY_DIR_IMAGE  = "${DEPLOY_DIR}/images/${DEPLOY_NAME}"
 
 # Add qti custom permissions
 USERADDEXTENSION = "qpermissions"
