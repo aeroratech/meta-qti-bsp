@@ -15,6 +15,7 @@ FILESPATH =+ "${WORKSPACE}:"
 
 SRC_URI   =  "file://bootable/bootloader/lk"
 SRC_URI  +=  "file://0001-Add-instructionset-extension.patch"
+SRC_URI  +=  "file://0001-app-aboot-mount-rootfs-as-read-write.patch"
 
 S         =  "${WORKDIR}/bootable/bootloader/lk"
 
