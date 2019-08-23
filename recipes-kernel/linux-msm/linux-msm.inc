@@ -1,4 +1,4 @@
-inherit kernel kernel-yocto
+inherit kernel
 
 DESCRIPTION = "CAF Linux Kernel"
 LICENSE = "GPLv2"
@@ -12,7 +12,7 @@ python __anonymous () {
       d.setVar("KERNEL_IMAGETYPE_FOR_MAKE", "")
 }
 
-DEPENDS += " mkbootimg-native openssl-native kern-tools-native"
+DEPENDS += " mkbootimg-native openssl-native"
 RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
 
 LDFLAGS_aarch64 = "-O1 --hash-style=gnu --as-needed"
@@ -36,20 +36,35 @@ SRC_URI_append_sdm845 += "${@bb.utils.contains('DISTRO_FEATURES', 'virtualizatio
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 PACKAGES = "kernel kernel-base kernel-vmlinux kernel-dev kernel-modules"
 
-KBRANCH ?= ""
-KMETA = "kernel-meta"
-KMACHINE ?= "${MACHINE}"
-KCONFIG_MODE = "--alldefconfig"
-KBUILD_DEFCONFIG ?= "${KERNEL_CONFIG}"
-LINUX_VERSION_EXTENSION = "${@['-perf', ''][d.getVar('VARIANT', True) == ('' or 'debug')]}"
-
-do_kernel_checkout[noexec] = "1"
-
-# extra task for configuration checks
-addtask kernel_configcheck after do_configure before do_compile
+LINUX_VERSION_EXTENSION_qperf = "-perf"
 
 do_compile () {
     oe_runmake CC="${KERNEL_CC}" LD="${KERNEL_LD}" ${KERNEL_EXTRA_ARGS} $use_alternate_initrd
+}
+
+# returns all the elements from the src uri that are config fragments
+def find_sccs(d):
+    sources=src_patches(d, True)
+    sources_list=[]
+    for s in sources:
+        base, ext = os.path.splitext(os.path.basename(s))
+        if ext and ext in [".scc", ".cfg"]:
+            sources_list.append(s)
+
+    return sources_list
+
+
+do_configure_prepend() {
+
+    if [ ! -f "${S}/arch/${ARCH}/configs/${KERNEL_CONFIG}" ]; then
+        bbfatal "KERNEL_CONFIG '${KERNEL_CONFIG}' was specified, but not present in the source tree"
+    fi
+
+    sccs_from_src_uri="${@" ".join(find_sccs(d))}"
+    ${S}/scripts/kconfig/merge_config.sh -m -r -O ${B} ${S}/arch/${ARCH}/configs/${KERNEL_CONFIG} ${sccs_from_src_uri} 1>&2
+
+    echo "# Global settings from linux recipe" >> ${B}/.config
+    echo "CONFIG_LOCALVERSION="\"${LINUX_VERSION_EXTENSION}\" >> ${B}/.config
 }
 
 do_deploy() {
