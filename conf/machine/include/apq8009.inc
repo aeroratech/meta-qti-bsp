@@ -13,8 +13,6 @@ PREFERRED_VERSION_linux-msm ?= "4.9"
 
 SERIAL_CONSOLE ?= "115200 ttyHSL0"
 
-MACHINE_FEATURES += "wlan"
-
 PAGE_SIZE ?= '4096'
 
 # Max supported inodes

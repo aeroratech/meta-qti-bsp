@@ -63,3 +63,27 @@ DEPLOY_DIR_IMAGE  = "${DEPLOY_DIR}/images/${DEPLOY_NAME}"
 
 # Add qti custom permissions
 USERADDEXTENSION = "qpermissions"
+
+# list of distro features
+# use systemd init manager.
+# use selinux for mandatory access control(MAC).
+# Embedded Application Binary Interface(EABI).
+# Basic networking tools - ipv6,ipv4.
+# LargeFile support in Linux.
+# Linker can detect thumb function called from ARM state and alter call, return sequences, insert
+# interworking decoratives to change processor state as necessary.
+# Extended attributes(xattr) to filesystem.
+# Distro features specific to C library.
+DISTRO_FEATURES   += " selinux systemd eabi ipv6 ipv4 largefile thumb-interwork xattr ${DISTRO_FEATURES_LIBC}"
+#selinux in disabled state
+DEFAULT_ENFORCING ?= "disabled"
+
+# Consider sysVinit for backfilling systemd.
+DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
+VIRTUAL-RUNTIME_dev_manager = "udev"
+VIRTUAL-RUNTIME_init_manager = "systemd"
+
+# Change Image features for systemd.
+IMAGE_DEV_MANAGER = "udev"
+IMAGE_INIT_MANAGER = "systemd"
+IMAGE_INITSCRIPTS = ""
