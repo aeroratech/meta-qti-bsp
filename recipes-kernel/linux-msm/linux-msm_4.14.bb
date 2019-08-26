@@ -64,14 +64,15 @@ do_shared_workdir_append () {
 
         cp ${STAGING_KERNEL_DIR}/scripts/gen_initramfs_list.sh $kerneldir/scripts/
 
-        # Copy vmlinux and zImage into deplydir for boot.img creation
-        install -m 0644 ${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE} ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}
-        install -m 0644 vmlinux ${DEPLOY_DIR_IMAGE}
-
         # Generate kernel headers
         oe_runmake_call -C ${STAGING_KERNEL_DIR} ARCH=${ARCH} CC="${KERNEL_CC}" LD="${KERNEL_LD}" headers_install O=${STAGING_KERNEL_BUILDDIR}
 }
 
-do_shared_workdir[dirs] = "${DEPLOY_DIR_IMAGE}"
+do_deploy_append () {
+        # Copy vmlinux and zImage into deplydir for boot.img creation
+        install -d ${DEPLOYDIR}
+        install -m 0644 ${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE} ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
+        install -m 0644 vmlinux ${DEPLOYDIR}
+}
 
 INHIBIT_PACKAGE_STRIP = "1"
