@@ -44,6 +44,14 @@ IMAGE_INSTALL_ATTEMPTONLY[type] = "list"
 # to ensure dependencies are not messed up in case package is absent.
 PACKAGE_INSTALL_ATTEMPTONLY = "${IMAGE_INSTALL_ATTEMPTONLY} ${FEATURE_INSTALL_OPTIONAL}"
 
+IMAGE_LINGUAS = ""
+
+#Exclude packages
+PACKAGE_EXCLUDE += "readline"
+
+# Use busybox as login manager
+IMAGE_LOGIN_MANAGER = "busybox-static"
+
 # Check and remove empty packages before rootfs creation
 do_rootfs[prefuncs] += "rootfs_ignore_packages"
 python rootfs_ignore_packages() {
@@ -68,6 +76,25 @@ python rootfs_ignore_packages() {
     d.setVar("PACKAGE_INSTALL_ATTEMPTONLY", ' '.join(atmt_only_pkgs))
 }
 
+ROOTFS_POSTPROCESS_COMMAND += "gen_buildprop;do_fsconfig;"
+
+gen_buildprop() {
+   mkdir -p ${IMAGE_ROOTFS}/cache
+   echo ro.build.version.release=`cat ${IMAGE_ROOTFS}/etc/version ` >> ${IMAGE_ROOTFS}/build.prop
+   echo ro.product.name=${BASEMACHINE}-${DISTRO} >> ${IMAGE_ROOTFS}/build.prop
+   echo ${MACHINE} >> ${IMAGE_ROOTFS}/target
+}
+
+do_fsconfig() {
+ chmod go-r ${IMAGE_ROOTFS}/etc/passwd || :
+ chmod -R o-rwx ${IMAGE_ROOTFS}/etc/init.d/ || :
+}
+
+do_fsconfig_append_qti-distro-user() {
+ rm ${IMAGE_ROOTFS}/lib/systemd/system/sys-kernel-debug.mount
+}
+
+
 # Call function makesystem to generate sparse ext4 image
 python __anonymous () {
     machine = d.getVar("MACHINE", True)
@@ -80,6 +107,13 @@ python __anonymous () {
 do_makesystem[prefuncs]  += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'adjust_system_size_for_verity', '', d)}"
 do_makesystem[postfuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'make_verity_enabled_system_image', '', d)}"
 do_makesystem[dirs]       = "${DEPLOY_DIR_IMAGE}"
+
+
+do_makesystem() {
+    cp ${THISDIR}/${BASEMACHINE}/${BASEMACHINE}-fsconfig.conf ${WORKDIR}/rootfs-fsconfig.conf
+    make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf -B ${DEPLOY_DIR_IMAGE}/system.map -s ${IMAGE_EXT4_SELINUX_OPTIONS} -b 4096 -l ${SYSTEM_SIZE_EXT4} ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
+}
+
 
 ################################################
 ############# Generate boot.img ################
