@@ -9,8 +9,6 @@ SRC_URI_append_sdmsteppe = " file://sdmsteppe_iot_configs.cfg"
 
 COMPATIBLE_MACHINE = "(qcs40x|sdxprairie|sdmsteppe)"
 
-KERNEL_IMAGEDEST = "boot"
-
 SRC_DIR   =  "${WORKSPACE}/kernel/msm-4.14"
 S         =  "${WORKDIR}/kernel/msm-4.14"
 PR = "r0"
