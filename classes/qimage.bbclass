@@ -108,7 +108,10 @@ python do_make_bootimg () {
 
     bb.debug(1, "do_make_bootimg cmd: %s" % (cmd))
 
-    subprocess.call(cmd, shell=True)
+    ret = subprocess.call(cmd, shell=True)
+    if ret != 0:
+        bb.error("Running: %s failed." % cmd)
+
 }
 do_make_bootimg[dirs]      = "${DEPLOY_DIR_IMAGE}"
 # Make sure native tools and vmlinux ready to create boot.img
@@ -145,7 +148,9 @@ python do_make_veritybootimg () {
 
     bb.debug(1, "do_make_veritybootimg cmd: %s" % (cmd))
 
-    subprocess.call(cmd, shell=True)
+    ret = subprocess.call(cmd, shell=True)
+    if ret != 0:
+        bb.error("Running: %s failed." % cmd)
 }
 do_make_veritybootimg[depends]  += "${PN}:do_makesystem"
 do_make_veritybootimg[dirs]      = "${DEPLOY_DIR_IMAGE}"

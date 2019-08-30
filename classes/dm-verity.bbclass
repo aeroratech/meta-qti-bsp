@@ -136,7 +136,9 @@ python make_verity_enabled_system_image () {
     image_size = d.getVar("SYSTEM_SIZE_EXT4",True)
     bvmd_script_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/build_verity_metadata.py'
     cmd = bvmd_script_path + " build %s %s %s %s %s %s %s " % (image_size, verity_md_img, root_hash, salt, blk_dev, signer_path, signer_key)
-    subprocess.call(cmd, shell=True)
+    ret = subprocess.call(cmd, shell=True)
+    if ret != 0:
+        bb.error("Running: %s failed." % cmd)
 
     # Append verity metadata to verity image.
     bb.debug(1, "appending verity_img to verity_md_img .... ")
@@ -158,7 +160,9 @@ python make_verity_enabled_system_image () {
         fec_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/fec'
         fec_img_path = d.getVar('VERITY_FEC_IMG', True)
         cmd = fec_bin_path + " -e -p %s %s %s %s" % (padding_size, sparse_img, verity_md_img, fec_img_path)
-        subprocess.call(cmd, shell=True)
+        ret = subprocess.call(cmd, shell=True)
+        if ret != 0:
+            bb.error("Running: %s failed." % cmd)
 
         bb.debug(1, "appending fec_img_path to verity_md_img.... ")
         with open(verity_md_img, "ab") as out_file:
@@ -169,7 +173,9 @@ python make_verity_enabled_system_image () {
     # Almost done. Append verity img to sparse system img.
     append2simg_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/append2simg'
     cmd = append2simg_path + " %s %s " % (sparse_img, verity_md_img)
-    subprocess.call(cmd, shell=True)
+    ret = subprocess.call(cmd, shell=True)
+    if ret != 0:
+        bb.error("Running: %s failed." % cmd)
 
     #system image is ready. Update verity cmdline.
     dm_prefix = d.getVar('DM_KEY_PREFIX', True)
