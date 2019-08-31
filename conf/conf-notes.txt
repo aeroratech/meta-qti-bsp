@@ -1,15 +1,11 @@
 
 ### Shell environment ready to run bitake commands. ###
 
-Ensure MACHINE, DISTRO & VARIANT are appropriately set before proceeding.
-Supported combinations are listed below.
+You can now run 'bitbake <target>'
 
-      +---------------+----------------+------------------+
-      | MACHINE       | DISTRO         |  VARIANT         |
-      +---------------+----------------+------------------+
-      |apq8009        | robot-som      | debug perf user  |
-      +---------------+----------------+------------------+
+Common targets that build full machine image are:
+    machine-image
 
-Once ready run 'bitbake <pkg-name>' to build required package or
-run 'bitbake machine-image' to build complete image.
+Run 'bitbake <pkg-name>' to build a required package, example:
+    bitbake lk
 
