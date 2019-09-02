@@ -16,4 +16,4 @@ do_install_append(){
            mv ${D}/chcon ${D}${bindir}/chcon;
 	fi
 }
-FILES_${PN}_qcs403-som2 = "${base_bindir}/*  ${bindir}/chcon.coreutils"
+FILES_${PN} = "${base_bindir}/*  ${bindir}/chcon.coreutils"
