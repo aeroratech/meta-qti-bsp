@@ -4,10 +4,14 @@
 #@COMMENT: basically consists of: libc, busybox, udev and a few
 #@COMMENT: init scripts for running up the system on qti chipsets.
 #############################################################################
-BASEDISTRO ??= ""
 
-# Add BASEDISTRO to overrides
-DISTROOVERRIDES =. "${@['', '${BASEDISTRO}:']['${BASEDISTRO}' != '']}"
+# Pull in security flags
+require ${COREBASE}/meta-qti-bsp/conf/distro/include/security_flags.inc
+
+# DISTRO CONFIGURATION
+DISTRO_VERSION ?= "${BUILDNAME}"
+
+DISTROOVERRIDES =. "qti-distro-base:"
 
 # DISTRO FEATURE SELECTION
 MICRO_GOLD ?= "ld-is-gold"
