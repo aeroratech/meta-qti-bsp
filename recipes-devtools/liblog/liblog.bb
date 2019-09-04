@@ -25,7 +25,3 @@ do_install_append() {
        install -m 0644 -D ../50-log.rules ${D}${sysconfdir}/udev/rules.d/50-log.rules
     fi
 }
-
-FILES_${PN}-dbg = "${libdir}/.debug/* ${bindir}/.debug/*"
-FILES_${PN}     = "${libdir}/pkgconfig/* ${libdir}/* ${sysconfdir}/*"
-FILES_${PN}-dev = "${libdir}/*.so ${libdir}/*.la ${includedir}/*"

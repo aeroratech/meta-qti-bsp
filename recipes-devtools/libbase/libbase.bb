@@ -18,7 +18,3 @@ SRC_URI   = "file://base"
 S = "${WORKDIR}/base"
 
 EXTRA_OECONF += "--with-core-sourcedir=${WORKSPACE}/system/core"
-
-FILES_${PN}-dbg    = "${libdir}/.debug/libbase.*"
-FILES_${PN}        = "${libdir}/libbase.so.* ${libdir}/pkgconfig/*"
-FILES_${PN}-dev    = "${libdir}/libbase.so ${libdir}/libbase.la ${includedir}"

@@ -32,11 +32,6 @@ EXTRA_OECONF_remove_sdmsteppe = "--enable-32bit-binder-ipc"
 
 CFLAGS += "-I${STAGING_INCDIR}/libselinux"
 
-FILES_${PN}-dbg    = "${libdir}/.debug/libbinder.* ${bindir}/.debug/servicemanager ${bindir}/test_binder"
-FILES_${PN}        = "${libdir}/libbinder.so.* ${libdir}/pkgconfig/* ${bindir}/servicemanager"
-FILES_${PN}-dev    = "${libdir}/libbinder.so ${libdir}/libbinder.la ${includedir}"
-FILES_${PN}-static = "${libdir}/libbinder.a"
-
 QPERM_SERVICE = "${WORKDIR}/servicemanager.service"
 
 do_install_append() {

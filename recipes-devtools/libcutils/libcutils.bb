@@ -23,7 +23,3 @@ EXTRA_OECONF += " --disable-static"
 
 EXTRA_OECONF_append_msm = " --enable-leproperties"
 EXTRA_OECONF_append_msm = " LE_PROPERTIES_ENABLED=true"
-
-FILES_${PN}-dbg    = "${libdir}/.debug/libcutils.*"
-FILES_${PN}        = "${libdir}/libcutils.so.* ${libdir}/pkgconfig/*"
-FILES_${PN}-dev    = "${libdir}/libcutils.so ${libdir}/libcutils.la ${includedir}"
