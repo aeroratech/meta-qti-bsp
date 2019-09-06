@@ -21,5 +21,5 @@ EXTRA_OECONF += " --with-core-includes=${WORKSPACE}/system/core/include"
 EXTRA_OECONF += " --with-host-os=${HOST_OS}"
 EXTRA_OECONF += " --disable-static"
 
-EXTRA_OECONF_append_msm = " --enable-leproperties"
-EXTRA_OECONF_append_msm = " LE_PROPERTIES_ENABLED=true"
+EXTRA_OECONF_append = " --enable-leproperties"
+EXTRA_OECONF_append = " LE_PROPERTIES_ENABLED=true"
