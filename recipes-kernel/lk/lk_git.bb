@@ -80,11 +80,10 @@ FILES_${PN} = "/boot"
 FILES_${PN}-dbg = "/boot/.debug"
 
 do_deploy() {
-        mkdir -p ${DEPLOY_DIR_IMAGE}
-        install ${S}/build-${MY_TARGET}/*.mbn ${DEPLOY_DIR_IMAGE}
+        install -d ${DEPLOYDIR}
+        install build-${MY_TARGET}/*.mbn ${DEPLOYDIR}
 }
 
-do_deploy[dirs] = "${S} ${DEPLOYDIR}"
 addtask deploy before do_build after do_install
 
 PACKAGE_STRIP = "no"
