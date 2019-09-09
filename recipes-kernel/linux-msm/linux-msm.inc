@@ -64,12 +64,20 @@ do_configure_prepend() {
     echo "CONFIG_LOCALVERSION="\"${LINUX_VERSION_EXTENSION}\" >> ${B}/.config
 }
 
-do_deploy() {
-    if [[ ${KERNEL_IMAGETYPE} != *-dtb ]]; then
-        bberror "${PN}: Only appended DTB supported; Change KERNEL_IMAGETYPE to ${KERNEL_IMAGETYPE}-dtb in your kernel config."
-        return
-    fi
+# append DTB
+do_compile_append() {
+    for dtbf in ${KERNEL_DTB_NAMES}; do
+        if ! [ -e ${B}/arch/${ARCH}/boot/dts/$dtbf ] ; then
+            oe_runmake $dtbf
+        fi
+        dtbs="$dtbs arch/${ARCH}/boot/dts/$dtbf"
+    done
+    cp arch/${ARCH}/boot/${KERNEL_IMAGETYPE} arch/${ARCH}/boot/${KERNEL_IMAGETYPE}.backup
+    cat arch/${ARCH}/boot/${KERNEL_IMAGETYPE}.backup $dtbs > arch/${ARCH}/boot/${KERNEL_IMAGETYPE}
+    rm -f arch/${ARCH}/boot/${KERNEL_IMAGETYPE}.backup
+}
 
+do_deploy() {
     if [ -f ${D}/${KERNEL_IMAGEDEST}/-${KERNEL_VERSION} ]; then
         mv ${D}/${KERNEL_IMAGEDEST}/-${KERNEL_VERSION} ${D}/${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}-${KERNEL_VERSION}
     fi
