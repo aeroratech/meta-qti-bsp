@@ -22,5 +22,4 @@ EXTRA_OECONF += "\
             --with-host-os=${HOST_OS} \
             --disable-static \
             --enable-leproperties \
-            LE_PROPERTIES_ENABLED=true \
 "
