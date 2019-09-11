@@ -57,10 +57,6 @@ USE_LDCONFIG = "0"
 LDCONFIGDEPEND = ""
 COMMERCIAL_LICENSE_DEPENDEES = ""
 
-# Directory structure for distro images.
-DEPLOY_NAME      ?= "${MACHINE}-${DISTRO}"
-DEPLOY_DIR_IMAGE  = "${DEPLOY_DIR}/images/${DEPLOY_NAME}"
-
 # Add qti custom user permissions
 USERADDEXTENSION = "qpermissions"
 
