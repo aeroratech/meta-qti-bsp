@@ -8,6 +8,10 @@ inherit ${VERITY_PROVIDER}
 # can be used as sysroot during remote gdb debgging
 RM_WORK_EXCLUDE += "${PN}"
 
+# generate a companion debug archive containing symbols from the -dbg packages
+IMAGE_GEN_DEBUGFS = "1"
+IMAGE_FSTYPES_DEBUGFS = "tar.bz2"
+
 #  Function to get most suitable .inc file with list of packages
 #  to be installed into root filesystem from layer it is called.
 #  Following is the order of priority.
