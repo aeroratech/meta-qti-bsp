@@ -4,6 +4,10 @@ inherit core-image
 VERITY_PROVIDER ?= "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'dm-verity', '', d)}"
 inherit ${VERITY_PROVIDER}
 
+# The work directory for image recipes is retained as the 'rootfs' directory
+# can be used as sysroot during remote gdb debgging
+RM_WORK_EXCLUDE += "${PN}"
+
 #  Function to get most suitable .inc file with list of packages
 #  to be installed into root filesystem from layer it is called.
 #  Following is the order of priority.
