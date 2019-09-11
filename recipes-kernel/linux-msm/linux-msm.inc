@@ -4,7 +4,7 @@ DESCRIPTION = "CAF Linux Kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-DEPENDS += " mkbootimg-native openssl-native"
+DEPENDS += " mkbootimg-native openssl-native mod-signing-keys"
 RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
 
 LDFLAGS_aarch64 = "-O1 --hash-style=gnu --as-needed"
@@ -50,6 +50,7 @@ do_configure_prepend() {
 
     echo "# Global settings from linux recipe" >> ${B}/.config
     echo "CONFIG_LOCALVERSION="\"${LINUX_VERSION_EXTENSION}\" >> ${B}/.config
+    echo "CONFIG_MODULE_SIG_KEY="\"${STAGING_DIR_TARGET}/kernel-certs/signing_key.pem\" >> ${B}/.config
 }
 
 # append DTB
@@ -67,6 +68,14 @@ do_compile_append() {
     cp arch/${ARCH}/boot/${KERNEL_IMAGETYPE} arch/${ARCH}/boot/${KERNEL_IMAGETYPE}.backup
     cat arch/${ARCH}/boot/${KERNEL_IMAGETYPE}.backup $dtbs > arch/${ARCH}/boot/${KERNEL_IMAGETYPE}
     rm -f arch/${ARCH}/boot/${KERNEL_IMAGETYPE}.backup
+}
+
+# when using our own module signing key kernel.bbclass will fail to copy the public part of the key
+# since it checks if the .pem file exists which is not the case, so we need to explicitely copy
+# the x509 (public key) file
+do_shared_workdir_append () {
+        mkdir -p $kerneldir/certs
+        cp certs/signing_key.x509 $kerneldir/certs/
 }
 
 do_deploy() {
