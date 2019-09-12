@@ -60,6 +60,15 @@ PACKAGE_EXCLUDE += "readline"
 # Use busybox as login manager
 IMAGE_LOGIN_MANAGER = "busybox-static"
 
+DEPENDS += "\
+             ext4-utils-native \
+             mkbootimg-native \
+             mtd-utils-native \
+             openssl-native \
+             pkgconfig-native \
+             virtual/bootloader \
+"
+
 # Check and remove empty packages before rootfs creation
 do_rootfs[prefuncs] += "rootfs_ignore_packages"
 python rootfs_ignore_packages() {
