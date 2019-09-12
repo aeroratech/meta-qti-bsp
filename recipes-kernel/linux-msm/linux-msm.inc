@@ -4,14 +4,6 @@ DESCRIPTION = "CAF Linux Kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-python __anonymous () {
-  # Override KERNEL_IMAGETYPE_FOR_MAKE variable, which is internal
-  # to kernel.bbclass. We override the variable as msm kernel can't
-  # support alternate image builds
-  if d.getVar("KERNEL_IMAGETYPE", True):
-      d.setVar("KERNEL_IMAGETYPE_FOR_MAKE", "")
-}
-
 DEPENDS += " mkbootimg-native openssl-native"
 RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
 
@@ -34,10 +26,6 @@ SRC_URI   =  "file://kernel \
 SRC_URI_append_sdm845 += "${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'file://virtualization_robomaker.cfg', '', d)}"
 
 LINUX_VERSION_EXTENSION_qperf = "-perf"
-
-do_compile () {
-    oe_runmake CC="${KERNEL_CC}" LD="${KERNEL_LD}" ${KERNEL_EXTRA_ARGS} $use_alternate_initrd
-}
 
 # returns all the elements from the src uri that are config fragments
 def find_sccs(d):
@@ -65,11 +53,15 @@ do_configure_prepend() {
 }
 
 # append DTB
+# msm kernel trees have a special treatment for DTS, and both arm and
+# arm64 DTS are located in arch/arm64/boot/dts/qcom folder, which
+# confuses kernel-devicetree class, so we can't use it. Instead let's
+# make sure that we generate all DTBs using the kernel 'dtbs' target,
+# then we can append the DTBs that we need for $MACHINE.
+KERNEL_EXTRA_ARGS += "dtbs"
+
 do_compile_append() {
     for dtbf in ${KERNEL_DTB_NAMES}; do
-        if ! [ -e ${B}/arch/${ARCH}/boot/dts/$dtbf ] ; then
-            oe_runmake $dtbf
-        fi
         dtbs="$dtbs arch/${ARCH}/boot/dts/$dtbf"
     done
     cp arch/${ARCH}/boot/${KERNEL_IMAGETYPE} arch/${ARCH}/boot/${KERNEL_IMAGETYPE}.backup
