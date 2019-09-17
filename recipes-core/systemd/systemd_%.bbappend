@@ -46,12 +46,10 @@ PACKAGECONFIG = " \
     acl \
     binfmt \
     hibernate \
-    hostnamed \
     ima \
-    ${@bb.utils.contains('DISTRO_NAME', 'mdm', '', 'kmod', d)} \
+    kmod \
     logind \
     randomseed \
-    sysusers \
     timedated \
     xz \
 "
