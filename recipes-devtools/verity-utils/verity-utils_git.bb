@@ -17,9 +17,11 @@ SRC_URI = "file://verity"
 
 S = "${WORKDIR}/verity"
 
-EXTRA_OECONF =  "--with-coreheader-includes=${WORKSPACE}/system/core/include"
-EXTRA_OECONF += "--with-mkbootimgheader-includes=${WORKSPACE}/system/core/mkbootimg"
-EXTRA_OECONF += "--with-ext4utils-includes=${WORKSPACE}/system/extras/ext4_utils"
+EXTRA_OECONF +=  "\
+                --with-coreheader-includes=${WORKSPACE}/system/core/include \
+                --with-mkbootimgheader-includes=${WORKSPACE}/system/core/mkbootimg \
+                --with-ext4utils-includes=${WORKSPACE}/system/extras/ext4_utils \
+"
 
 editveritysigner () {
     sed -i -e '/^java/d' ${S}/verity_signer

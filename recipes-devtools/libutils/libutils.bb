@@ -15,9 +15,7 @@ S = "${WORKDIR}/libutils"
 
 DEPENDS += "safe-iop"
 
-EXTRA_OECONF += "--with-system-core-includes=${WORKSPACE}/system/core/include"
-EXTRA_OECONF += "--with-liblog-includes=${WORKSPACE}/system/core/liblog"
-
-FILES_${PN}-dbg    = "${libdir}/.debug/libutils.*"
-FILES_${PN}        = "${libdir}/libutils.so.* ${libdir}/pkgconfig/*"
-FILES_${PN}-dev    = "${libdir}/libutils.so ${libdir}/libutils.la ${includedir}"
+EXTRA_OECONF += "\
+            --with-system-core-includes=${WORKSPACE}/system/core/include \
+            --with-liblog-includes=${WORKSPACE}/system/core/liblog \
+"

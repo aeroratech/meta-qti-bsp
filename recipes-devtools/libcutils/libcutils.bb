@@ -17,9 +17,10 @@ SRC_URI   = "file://libcutils"
 
 S = "${WORKDIR}/libcutils"
 
-EXTRA_OECONF += " --with-core-includes=${WORKSPACE}/system/core/include"
-EXTRA_OECONF += " --with-host-os=${HOST_OS}"
-EXTRA_OECONF += " --disable-static"
-
-EXTRA_OECONF_append_msm = " --enable-leproperties"
-EXTRA_OECONF_append_msm = " LE_PROPERTIES_ENABLED=true"
+EXTRA_OECONF += "\
+            --with-core-includes=${WORKSPACE}/system/core/include \
+            --with-host-os=${HOST_OS} \
+            --disable-static \
+            --enable-leproperties \
+            LE_PROPERTIES_ENABLED=true \
+"
