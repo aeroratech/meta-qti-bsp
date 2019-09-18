@@ -23,6 +23,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               libxml2 \
               packagegroup-android-utils \
               packagegroup-qti-data \
+              packagegroup-qti-wifi \
               packagegroup-startup-scripts \
               systemd-machine-units \
 "
