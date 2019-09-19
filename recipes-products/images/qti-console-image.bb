@@ -10,22 +10,9 @@ inherit qimage
 # specify IMAGE_FEATURES += "ssh-server-openssh" to bring in
 #    packagegroup-core-ssh-openssh -> openssh
 
-
-DEPENDS = " \
-             mkbootimg-native \
-             virtual/bootloader \
-             pkgconfig-native \
-             gtk-doc-native \
-             gettext-native \
-             e2fsprogs-native \
-             ext4-utils-native \
-             mtd-utils-native \
-             openssl-native \
-"
-
 IMAGE_FEATURES += "ssh-server-openssh"
 
-CORE_IMAGE_EXTRA_INSTALL = "\
+CORE_IMAGE_EXTRA_INSTALL += "\
               binder \
               chrony \
               e2fsprogs \
