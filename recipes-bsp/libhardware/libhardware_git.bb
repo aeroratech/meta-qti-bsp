@@ -14,8 +14,20 @@ PR = "r6"
 
 DEPENDS += "libcutils liblog system-core"
 
-EXTRA_OECONF_append_apq8053 = " --enable-sensors"
-EXTRA_OECONF_append_concam = " --enable-camera"
-EXTRA_OECONF_append_sdm845 = " --enable-sensors"
-EXTRA_OECONF_append_sdm845 = " --enable-camera"
-EXTRA_OECONF_append_robot-som = " --enable-camera"
+# Set PACKAGECONFIG ?= "${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'aosp-audio', '', d)} ..."
+# to activate extra oe conf options.
+PACKAGECONFIG ?= "\
+        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'aosp-audio', '', d)} \
+        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-camera', 'aosp-camera', '', d)} \
+        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-display', 'aosp-display', '', d)} \
+        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-location', 'aosp-location', '', d)} \
+        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-sensors', 'aosp-sensors', '', d)} \
+"
+
+PACKAGECONFIG[aosp-audio]    = "--enable-audio, --disable-audio"
+PACKAGECONFIG[aosp-camera]   = "--enable-camera, --disable-camera"
+PACKAGECONFIG[aosp-display]  = "--enable-display, --disable-display"
+PACKAGECONFIG[aosp-location] = "--enable-location, --disable-location"
+PACKAGECONFIG[aosp-sensors]  = "--enable-sensors, --disable-sensors"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
