@@ -17,4 +17,4 @@ SRC_URI   = "file://base"
 
 S = "${WORKDIR}/base"
 
-EXTRA_OECONF += "--with-core-sourcedir=${WORKSPACE}/system/core"
+EXTRA_OECONF = " --with-core-sourcedir=${WORKSPACE}/system/core"

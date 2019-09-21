@@ -25,11 +25,11 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               libnl \
               libxml2 \
               start-scripts-firmware-links \
-              system-core-adbd \
-              system-core-leprop \
-              system-core-logd \
-              system-core-post-boot \
-              system-core-usb \
+              start-scripts-post-boot \
+              adbd \
+              leproperties \
+              logd \
+              usb-composition \
               systemd-machine-units \
 "
 # TODO: image featurize mtd to install "mtd-utils-ubifs"
