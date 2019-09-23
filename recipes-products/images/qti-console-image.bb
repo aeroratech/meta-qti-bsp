@@ -24,8 +24,8 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               liblog \
               libnl \
               libxml2 \
-              start-scripts-firmware-links \
-              start-scripts-post-boot \
+              firmware-links \
+              post-boot \
               adbd \
               leproperties \
               logd \
