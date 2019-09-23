@@ -13,23 +13,16 @@ inherit qimage
 IMAGE_FEATURES += "ssh-server-openssh"
 
 CORE_IMAGE_EXTRA_INSTALL += "\
-              binder \
               chrony \
               e2fsprogs \
               e2fsprogs-e2fsck \
               e2fsprogs-mke2fs \
               glib-2.0 \
               kernel-modules \
-              libcutils \
-              liblog \
               libnl \
               libxml2 \
-              firmware-links \
-              post-boot \
-              adbd \
-              leproperties \
-              logd \
-              usb-composition \
+              packagegroup-android-utils \
+              packagegroup-startup-scripts \
               systemd-machine-units \
 "
 # TODO: image featurize mtd to install "mtd-utils-ubifs"
