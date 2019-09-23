@@ -11,7 +11,6 @@ COMPATIBLE_MACHINE = "(qcs40x|sdxprairie|sdmsteppe)"
 
 SRC_DIR   =  "${WORKSPACE}/kernel/msm-4.14"
 S         =  "${WORKDIR}/kernel/msm-4.14"
-PR = "r0"
 
 DEPENDS += "dtc-native llvm-arm-toolchain-native"
 

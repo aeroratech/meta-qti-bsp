@@ -1,7 +1,5 @@
 inherit autotools systemd useradd
 
-PR = "r0"
-
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI   = "file://${BASEMACHINE}/system.prop"

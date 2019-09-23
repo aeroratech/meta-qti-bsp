@@ -8,8 +8,6 @@ SRC_URI +="file://getslotsuffix.sh"
 
 S = "${WORKDIR}/"
 
-PR = "r0"
-
 inherit useradd
 
 do_install() {

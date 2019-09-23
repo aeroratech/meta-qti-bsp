@@ -7,9 +7,6 @@ PRIORITY = "optional"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/LGPL-2.1;md5=1a6d268fd218675ffea8be556788b780"
 FILES_${PN} += "/lib/*"
 
-# Package Revision (update whenever recipe is changed)
-PR = "r0"
-
 SRC_URI = "\
     http://downloads.sourceforge.net/project/libexif/libexif/${PV}/libexif-${PV}.tar.gz \
 "

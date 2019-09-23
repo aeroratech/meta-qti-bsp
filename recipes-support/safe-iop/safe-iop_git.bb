@@ -12,5 +12,3 @@ SRC_URI   = "file://external/safe-iop/"
 SRC_URI  += "file://autotools.patch"
 
 S = "${WORKDIR}/external/safe-iop"
-
-PR = "r0"

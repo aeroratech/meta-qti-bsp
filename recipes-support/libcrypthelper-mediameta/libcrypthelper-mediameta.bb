@@ -8,8 +8,6 @@ LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
 ${LICENSE};md5=3775480a712fc46a69647678acb234cb"
 
-PR = "r0"
-
 SRC_URI   = "file://crypthelper-mediameta"
 SRC_URI  += "file://media-encryption.conf"
 

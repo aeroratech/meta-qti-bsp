@@ -8,8 +8,6 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/${LICENSE};md5
 
 SRC_URI += "file://logging-restrictions.sh"
 
-PR = "r0"
-
 do_configure[noexec] = "1"
 do_compile[noexec]   = "1"
 

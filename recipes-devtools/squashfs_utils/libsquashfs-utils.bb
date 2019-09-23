@@ -6,8 +6,6 @@ LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
 ${LICENSE};md5=89aea4e17d99a7cacdbeed46a0096b10"
 
-PR = "r0"
-
 SRC_URI = "git://source.codeaurora.org/quic/la/platform/system/extras;protocol=git;nobranch=1;rev=d73dc7f88ce6f3b9fa141615870e4e2db22a7c23;subpath=squashfs_utils"
 SRC_URI += "git://source.codeaurora.org/quic/la/platform/external/squashfs-tools;protocol=git;nobranch=1;rev=5b4709ba460869ed66f971115acfa88425a3faf8;subpath=squashfs-tools"
 SRC_URI += "file://Add-autotool-make-files-for-libsquashfs_utils.patch"

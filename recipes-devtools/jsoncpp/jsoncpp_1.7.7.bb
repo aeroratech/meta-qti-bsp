@@ -11,9 +11,6 @@ HOMEPAGE = "http://sourceforge.net/projects/jsoncpp/"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c56ee55c03a55f8105b969d8270632ce"
 
-# The revision of the recipe used to build the package.
-PR = "r0"
-
 FILESPATH =+ "${WORKSPACE}/external/:"
 SRC_URI  := "file://jsoncpp"
 
