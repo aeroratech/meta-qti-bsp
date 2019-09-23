@@ -1,3 +1,5 @@
+inherit native
+
 SUMMARY = "QTI/Linaro partitioning tool"
 HOMEPAGE = "https://git.linaro.org/landing-teams/working/qualcomm/partioning_tool"
 DESCRIPTION = "Linaro partitioning tool, generates the GPT and/or Partition MBN"
@@ -23,4 +25,4 @@ do_install() {
 
 RDEPENDS_${PN} += "python"
 
-BBCLASSEXTEND = "native nativesdk"
+BBCLASSEXTEND = "nativesdk"

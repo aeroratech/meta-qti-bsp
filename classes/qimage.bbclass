@@ -62,6 +62,7 @@ IMAGE_LOGIN_MANAGER = "busybox-static"
 
 DEPENDS += "\
              ext4-utils-native \
+             gen-partitions-native \
              mkbootimg-native \
              mtd-utils-native \
              openssl-native \
