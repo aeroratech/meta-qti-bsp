@@ -22,6 +22,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               libnl \
               libxml2 \
               packagegroup-android-utils \
+              packagegroup-qti-data \
               packagegroup-startup-scripts \
               systemd-machine-units \
 "
