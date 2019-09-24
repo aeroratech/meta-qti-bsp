@@ -1,19 +1,16 @@
-do_install_append_mdm(){
-	mv ${D}${base_bindir}/cp.coreutils ${D}/cp.coreutils;
-	mv ${D}${bindir}/chcon ${D}/chcon;
-	rm -rf ${D}${base_bindir};
-	rm -rf ${D}/usr;
-	install -d ${D}${base_bindir};
-	install -d ${D}${bindir};
-	mv ${D}/cp.coreutils ${D}${base_bindir}/cp.coreutils;
-	mv ${D}/chcon ${D}${bindir}/chcon;
+# Limit packages need to be included as part of the default package.
+# To add more extend bindir_progs, base_bindir_progs by referring
+# original recipe. Accordingly update alternatives to avoid pkg warnings
+bindir_progs = "chcon"
+base_bindir_progs = "cp"
+ALTERNATIVE_${PN} = "${bindir_progs} ${base_bindir_progs} ${sbindir_progs}"
+ALTERNATIVE_${PN}-doc = ""
+
+PACKAGE_PREPROCESS_FUNCS += "remove_extra_progs"
+remove_extra_progs() {
+    cd ${PKGD}${bindir}
+    find . -type f ! -name '${bindir_progs}.${BPN}' -delete
+
+    cd ${PKGD}${base_bindir}
+    find . -type f ! -name '${base_bindir_progs}.${BPN}' -delete
 }
-do_install_append(){
-	if ${@bb.utils.contains('DISTRO_FEATURES', 'no-test-bundle', 'true', 'false', d)}; then
-           mv ${D}${bindir}/chcon  ${D}/chcon;
-           rm -rf ${D}/usr;
-           install -d ${D}${bindir};
-           mv ${D}/chcon ${D}${bindir}/chcon;
-	fi
-}
-FILES_${PN} = "${base_bindir}/*  ${bindir}/chcon.coreutils"
