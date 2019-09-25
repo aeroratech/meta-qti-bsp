@@ -3,7 +3,8 @@ inherit pkgconfig systemd
 DESCRIPTION = "Scripts to set USB compositions"
 HOMEPAGE = "http://codeaurora.org"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
+LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
+${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
 
 FILESEXTRAPATHS_prepend := "${WORKSPACE}/system/core/:"
 SRC_URI   = "file://usb"
@@ -37,8 +38,10 @@ do_install_append() {
    install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
    install -d ${D}${systemd_unitdir}/system/ffbm.target.wants/
    install -m 0644 ${S}/usb.service -D ${D}${systemd_unitdir}/system/usb.service
-   ln -sf ${systemd_unitdir}/system/usb.service ${D}${systemd_unitdir}/system/multi-user.target.wants/usb.service
-   ln -sf ${systemd_unitdir}/system/usb.service ${D}${systemd_unitdir}/system/ffbm.target.wants/usb.service
+   ln -sf ${systemd_unitdir}/system/usb.service \
+        ${D}${systemd_unitdir}/system/multi-user.target.wants/usb.service
+   ln -sf ${systemd_unitdir}/system/usb.service \
+        ${D}${systemd_unitdir}/system/ffbm.target.wants/usb.service
 }
 
 FILES_${PN} += "${systemd_unitdir}/system/"
