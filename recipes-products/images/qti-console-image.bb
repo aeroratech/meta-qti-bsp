@@ -24,5 +24,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-android-utils \
               packagegroup-startup-scripts \
               systemd-machine-units \
+              wlan-setup \
 "
 # TODO: image featurize mtd to install "mtd-utils-ubifs"
