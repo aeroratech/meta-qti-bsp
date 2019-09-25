@@ -132,7 +132,7 @@ do_install_append () {
             else
                 if ${@bb.utils.contains('DISTRO_FEATURES','nand-boot','false','true',d)}; then
                     install -m 0644 ${WORKDIR}/firmware.mount ${D}${systemd_unitdir}/system/firmware.mount
-                    ln -sf ${systemd_unitdir}/system/firmware.mount ${D}${systemd_unitdir}/system/local-fs.target.requires/firmware.mount
+                    ln -sf ${systemd_unitdir}/system/firmware.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/firmware.mount
                 else
                     if ${@bb.utils.contains('DISTRO_FEATURES','nand-squashfs','true','false',d)}; then
                         install -m 0744 ${WORKDIR}/non-hlos-squash.sh ${D}${sysconfdir}/initscripts/firmware-ubi-mount.sh
