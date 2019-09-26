@@ -26,27 +26,7 @@ do_shared_workdir_append () {
                 cp -fR arch/${ARCH}/boot/* $kerneldir/arch/${ARCH}/boot/
         fi
 
-        if [ -d scripts ]; then
-            for i in \
-                scripts/basic/bin2c \
-                scripts/basic/fixdep \
-                scripts/conmakehash \
-                scripts/dtc/dtc \
-                scripts/kallsyms \
-                scripts/kconfig/conf \
-                scripts/mod/mk_elfconfig \
-                scripts/mod/modpost \
-                scripts/recordmcount \
-                scripts/sign-file \
-                scripts/sortextable;
-            do
-                if [ -e $i ]; then
-                    mkdir -p $kerneldir/`dirname $i`
-                    cp $i $kerneldir/$i
-                fi
-            done
-        fi
-
+        mkdir -p $kerneldir/scripts
         cp ${STAGING_KERNEL_DIR}/scripts/gen_initramfs_list.sh $kerneldir/scripts/
 
         # Generate kernel headers

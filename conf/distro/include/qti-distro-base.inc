@@ -91,3 +91,5 @@ VIRTUAL-RUNTIME_init_manager = "systemd"
 IMAGE_DEV_MANAGER = "udev"
 IMAGE_INIT_MANAGER = "systemd"
 IMAGE_INITSCRIPTS = ""
+
+RM_WORK_EXCLUDE += "make-mod-scripts"
