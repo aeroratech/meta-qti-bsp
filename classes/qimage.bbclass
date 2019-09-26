@@ -129,7 +129,7 @@ do_makesystem[dirs]       = "${DEPLOY_DIR_IMAGE}"
 
 do_makesystem() {
     cp ${THISDIR}/${BASEMACHINE}/${BASEMACHINE}-fsconfig.conf ${WORKDIR}/rootfs-fsconfig.conf
-    make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf -B ${DEPLOY_DIR_IMAGE}/system.map -s ${IMAGE_EXT4_SELINUX_OPTIONS} -b 4096 -l ${SYSTEM_SIZE_EXT4} ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
+    make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf -B ${DEPLOY_DIR_IMAGE}/system.map ${IMAGE_EXT4_SELINUX_OPTIONS} -b 4096 -l ${SYSTEM_SIZE_EXT4} ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
 }
 
 
