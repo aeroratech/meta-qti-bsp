@@ -11,10 +11,10 @@ PR = "r1"
 DEPENDS = "binder liblog libcutils libhardware libselinux glib-2.0"
 DEPENDS += " ${@oe.utils.version_less_or_equal('PREFERRED_VERSION_linux-msm', '4.4', '', 'libsync', d)}"
 
-FILESPATH =+ "${WORKSPACE}:"
-SRC_URI   = "file://frameworks/libui"
+FILESPATH =+ "${WORKSPACE}/frameworks:"
+SRC_URI   = "file://libui"
 
-S = "${WORKDIR}/frameworks/libui"
+S = "${WORKDIR}/libui"
 
 EXTRA_OECONF += " --with-core-includes=${WORKSPACE}/system/core/include --with-glib"
 
