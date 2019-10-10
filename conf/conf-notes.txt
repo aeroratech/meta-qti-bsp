@@ -3,8 +3,9 @@
 
 You can now run 'bitbake <target>'
 
-Common targets that build full machine image are:
-    machine-image
+Supported image targets are:
+    qti-console-image
+    qti-multimedia-image
 
 Run 'bitbake <pkg-name>' to build a required package, example:
     bitbake lk
