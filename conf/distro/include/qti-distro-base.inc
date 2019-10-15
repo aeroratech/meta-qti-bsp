@@ -1,9 +1,8 @@
-#############################################################################
-#@COMMENT: This distribution configuration defines an OE Linux based
-#@COMMENT: distribution. The matching buildable image target (machine-image)
-#@COMMENT: basically consists of: libc, busybox, udev and a few
-#@COMMENT: init scripts for running up the system on qti chipsets.
-#############################################################################
+######################################################################
+# This configuration defines an OE Linux based distribution containing
+# basic libraries and utilities like libc, busybox, systemd, udev and
+# a few init scripts required for running the system on qti chipsets.
+######################################################################
 
 # Pull in security flags
 require ${COREBASE}/meta-qti-bsp/conf/distro/include/security_flags.inc
@@ -25,9 +24,9 @@ INHERIT += "recipe_sanity"
 PREFERRED_VERSION_autoconf = "2.68"
 ARM_INSTRUCTION_SET       ?= "arm"
 
-##################################################################
+######################################################################
 # Optimization flags.
-##################################################################
+######################################################################
 COMMON_OPTIMIZATION = " \
   -g -Wa,--noexecstack -fexpensive-optimizations \
   -frename-registers -ftree-vectorize \
@@ -58,28 +57,34 @@ USE_LDCONFIG = "0"
 LDCONFIGDEPEND = ""
 COMMERCIAL_LICENSE_DEPENDEES = ""
 
-PREFERRED_VERSION_readline = "5.2"
-
-# Retain existing directory structure for msm or mdm distro images.
-DEPLOY_NAME_BASE  = "${MACHINE}${@bb.utils.contains_any('DISTRO', 'msm mdm', '', '-' + d.getVar('DISTRO'), d)}"
-DEPLOY_NAME      ?= "${DEPLOY_NAME_BASE}"
+# Directory structure for distro images.
+DEPLOY_NAME      ?= "${MACHINE}-${DISTRO}"
 DEPLOY_DIR_IMAGE  = "${DEPLOY_DIR}/images/${DEPLOY_NAME}"
 
-# Add qti custom permissions
+# Add qti custom user permissions
 USERADDEXTENSION = "qpermissions"
 
+##################################################################
 # list of distro features
-# use systemd init manager.
-# use selinux for mandatory access control(MAC).
-# Embedded Application Binary Interface(EABI).
-# Basic networking tools - ipv6,ipv4.
-# LargeFile support in Linux.
-# Linker can detect thumb function called from ARM state and alter call, return sequences, insert
-# interworking decoratives to change processor state as necessary.
-# Extended attributes(xattr) to filesystem.
-# Distro features specific to C library.
+##################################################################
+# eabi:       Embedded Application Binary Interface(EABI).
+# ipv4,ipv6:  Basic networking tools - ipv6,ipv4.
+# largefile:  LargeFile support in Linux.
+# selinux:    Use selinux for mandatory access control.
+# systemd:    Use systemd init manager.
+# thumb-interwork: Linker can detect thumb function called from ARM
+#             state and alter call, return sequences etc to change
+#             processor state as necessary.
+# xattr:      Extended attributes(xattr) to filesystem.
 DISTRO_FEATURES   += " selinux systemd eabi ipv6 ipv4 largefile thumb-interwork xattr ${DISTRO_FEATURES_LIBC}"
-#selinux in disabled state
+
+## QTI Defined distro features ##
+# emmc-boot:  Support eMMC device
+# qti-wifi:   Support QTI WiFi solution
+#
+DISTRO_FEATURES   += " emmc-boot qti-wifi"
+
+# Set selinux in disabled state
 DEFAULT_ENFORCING ?= "disabled"
 
 # Consider sysVinit for backfilling systemd.
