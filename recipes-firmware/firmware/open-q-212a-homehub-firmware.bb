@@ -57,6 +57,10 @@ QTI_BT = "\
     btnvnpla.bin \
 "
 
+QTI_VIDEO = "\
+    venus.b00 venus.b01 venus.b02 venus.b03 venus.b04 venus.mdt \
+"
+
 do_install () {
     install -m 0755 -d ${D}/firmware
     install -m 0755 -d ${D}/firmware/image
@@ -95,7 +99,12 @@ do_install () {
             install -m 0755 ${S}/${bin} ${D}/firmware/image/${bin}
         done
     fi
-
+#### Install Video firmware
+    if [ ${@bb.utils.contains("COMBINED_FEATURES", "qti-video", "true", "", d)} ]; then
+        for bin in ${QTI_VIDEO}; do
+            install -m 0755 ${S}/${bin} ${D}/firmware/image/${bin}
+        done
+    fi
 }
 
 do_deploy () {
