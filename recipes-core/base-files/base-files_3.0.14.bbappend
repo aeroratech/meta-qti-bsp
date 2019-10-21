@@ -17,6 +17,9 @@ dirs755_append = " ${MACHINE_MNT_POINTS}"
 # Otherwise files can be directly written to / itself.
 dirs755_append = " ${@bb.utils.contains('DISTRO_FEATURES','ro-rootfs','/systemrw','',d)}"
 
+# Overlay
+dirs755_append = " /overlay"
+
 # Explicitly remove sepolicy entries from fstab when selinux is not present.
 fix_sepolicies () {
     #For /run
