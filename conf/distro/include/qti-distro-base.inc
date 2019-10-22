@@ -77,8 +77,8 @@ DISTRO_FEATURES   += " selinux systemd eabi ipv6 ipv4 largefile thumb-interwork 
 ## QTI Defined distro features ##
 # emmc-boot:  Support eMMC device
 # qti-wifi:   Support QTI WiFi solution
-#
-DISTRO_FEATURES   += " emmc-boot qti-wifi"
+# ab-boot-support: Use a/b boot support
+DISTRO_FEATURES   += " emmc-boot qti-wifi ab-boot-support"
 
 # Set selinux in disabled state
 DEFAULT_ENFORCING ?= "disabled"
