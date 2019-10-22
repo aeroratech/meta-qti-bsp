@@ -12,6 +12,18 @@ RM_WORK_EXCLUDE += "${PN}"
 IMAGE_GEN_DEBUGFS = "1"
 IMAGE_FSTYPES_DEBUGFS = "tar.bz2"
 
+# By default support only custom images generation using functions like do_makesystem.
+# Don't build the monolith rootfs image as it pulls in a lot of unused dependencies.
+IMAGE_FSTYPES = ""
+
+### Don't append timestamp to image name
+IMAGE_VERSION_SUFFIX = ""
+
+# Default Image names
+BOOTIMAGE_TARGET ?= "${IMAGE_NAME}-boot.img"
+SYSTEMIMAGE_TARGET ?= "${IMAGE_NAME}-sysfs.ext4"
+SYSTEMIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-sysfs.map"
+
 #  Function to get most suitable .inc file with list of packages
 #  to be installed into root filesystem from layer it is called.
 #  Following is the order of priority.
@@ -129,7 +141,7 @@ do_makesystem[dirs]       = "${DEPLOY_DIR_IMAGE}"
 
 do_makesystem() {
     cp ${THISDIR}/${BASEMACHINE}/${BASEMACHINE}-fsconfig.conf ${WORKDIR}/rootfs-fsconfig.conf
-    make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf -B ${DEPLOY_DIR_IMAGE}/system.map ${IMAGE_EXT4_SELINUX_OPTIONS} -b 4096 -l ${SYSTEM_SIZE_EXT4} ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
+    make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf -B ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_MAP_TARGET} ${IMAGE_EXT4_SELINUX_OPTIONS} -b 4096 -l ${SYSTEM_SIZE_EXT4} ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
 }
 
 
