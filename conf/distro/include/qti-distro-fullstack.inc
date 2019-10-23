@@ -13,10 +13,10 @@ DISTRO_NAME = "QTI Linux full refrence stack distro."
 ##################################################################
 #
 # wayland:  Include the Wayland display server protocol.
-# opengl:   Include the Open Graphics Library,
-#
+# opengl :  Include the Open Graphics Library,
+# fbdev  :  Use fbdev display drivers
 
-DISTRO_FEATURES   += " wayland opengl"
+DISTRO_FEATURES   += " wayland fbdev opengl"
 
 ## QTI defined distro features ##
 # qti-audio:     Support QTI audio solution
