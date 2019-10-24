@@ -14,8 +14,10 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         libxml2 \
         packagegroup-android-utils \
         packagegroup-qti-bluetooth \
+        packagegroup-qti-core-prop \
         packagegroup-qti-data \
         packagegroup-qti-ml \
+        packagegroup-qti-ss-mgr \
         packagegroup-qti-wifi \
         packagegroup-startup-scripts \
         systemd-machine-units \
