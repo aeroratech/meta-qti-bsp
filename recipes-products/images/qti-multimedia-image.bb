@@ -15,6 +15,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         libxml2 \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-video', 'media', '', d)} \
         packagegroup-android-utils \
+        packagegroup-qti-bluetooth \
         packagegroup-qti-data \
         packagegroup-qti-wifi \
         packagegroup-startup-scripts \
