@@ -15,9 +15,12 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-android-utils \
         packagegroup-qti-bluetooth \
         packagegroup-qti-core-prop \
+        packagegroup-qti-camera \
         packagegroup-qti-data \
+        packagegroup-qti-display \
         packagegroup-qti-ml \
         packagegroup-qti-ss-mgr \
+        packagegroup-qti-video \
         packagegroup-qti-wifi \
         packagegroup-startup-scripts \
         systemd-machine-units \
