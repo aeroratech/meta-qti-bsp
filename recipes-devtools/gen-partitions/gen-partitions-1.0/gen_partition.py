@@ -78,13 +78,23 @@ def disk_options(argv):
          disk_params["ALIGN_PARTITIONS_TO_PERFORMANCE_BOUNDARY"] = "true"
          disk_params["PERFORMANCE_BOUNDARY_IN_KB"] = (int(arg)/1024)
 
+def partition_size_in_kb(size):
+    if not re.search('[a-zA-Z]+', size):
+        return int(size)/1024
+    if re.search('([0-9])*(?=([Kk]([Bb])*))', size):
+        return int(re.search('([0-9])*(?=([Kk]([Bb])*))', size).group(0))
+    if re.search('([0-9])*(?=([Mm]([Bb])*))', size):
+        return (int(re.search('([0-9])*(?=([Mm]([Bb])*))', size).group(0)) * 1024)
+    if re.search('([0-9])*(?=([Gg]([Bb])*))', size):
+        return (int(re.search('([0-9])*(?=([Gg]([Bb])*))', size).group(0)) * 1024 * 1024)
+
 def partition_options(argv):
    partition_entry = partition_entry_defaults.copy()
    for (opt, arg) in argv:
       if opt in ['--name']:
          partition_entry["label"] = arg
       elif opt in ['--size']:
-         kbytes = int(arg)/1024
+         kbytes = partition_size_in_kb(arg)
          partition_entry["size_in_kb"] = str(kbytes)
       elif opt in ['--type-guid']:
          partition_entry["type"] = arg
