@@ -20,7 +20,4 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-wifi \
         packagegroup-startup-scripts \
         systemd-machine-units \
-        wayland \
-        weston \
-        weston-init \
 "
