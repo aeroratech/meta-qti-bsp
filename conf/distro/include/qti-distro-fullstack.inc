@@ -16,14 +16,16 @@ DISTRO_NAME = "QTI Linux full refrence stack distro."
 # opengl :  Include the Open Graphics Library,
 # fbdev  :  Use fbdev display drivers
 
-DISTRO_FEATURES   += " wayland fbdev opengl"
+DISTRO_FEATURES_append = " wayland fbdev opengl"
 
 ## QTI defined distro features ##
+# mm-venc:       Support QTI video encode
 # qti-audio:     Support QTI audio solution
 # qti-bluetooth: Support QTI bluetooth solution
 # qti-camera:    Support QTI camera solution
 # qti-display:   Support QTI display solution
+# qti-mm-parser: Support QTI multimeida parsers
 # qti-video:     Support QTI video solution
 #
 
-DISTRO_FEATURES   += " qti-audio qti-bluetooth qti-camera qti-display qti-video"
+DISTRO_FEATURES_append = " mm-venc qti-audio qti-bluetooth qti-camera qti-display qti-mm-parser qti-video"
