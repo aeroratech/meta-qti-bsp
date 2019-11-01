@@ -15,8 +15,9 @@ DISTRO_NAME = "QTI Linux full refrence stack distro."
 # wayland:  Include the Wayland display server protocol.
 # opengl :  Include the Open Graphics Library,
 # fbdev  :  Use fbdev display drivers
+# tensorflow-lite: Include the tensorflow lite inference engine.
 
-DISTRO_FEATURES_append = " wayland fbdev opengl"
+DISTRO_FEATURES_append = " wayland fbdev opengl tensorflow-lite"
 
 ## QTI defined distro features ##
 # mm-venc:       Support QTI video encode
