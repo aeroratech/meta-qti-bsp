@@ -28,4 +28,4 @@ DISTRO_FEATURES_append = " wayland fbdev opengl"
 # qti-video:     Support QTI video solution
 #
 
-DISTRO_FEATURES_append = " mm-venc qti-audio qti-bluetooth qti-camera qti-display qti-mm-parser qti-video"
+DISTRO_FEATURES_append = " qti-video-encoder qti-audio qti-bluetooth qti-camera qti-display qti-mm-parser qti-video"
