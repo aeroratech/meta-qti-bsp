@@ -84,7 +84,7 @@ DISTRO_FEATURES   += " emmc-boot qti-wifi"
 DEFAULT_ENFORCING ?= "disabled"
 
 # Consider sysVinit for backfilling systemd.
-DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit"
+DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit pulseaudio"
 VIRTUAL-RUNTIME_dev_manager = "udev"
 VIRTUAL-RUNTIME_init_manager = "systemd"
 
