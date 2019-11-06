@@ -24,5 +24,4 @@ RDEPENDS_packagegroup-startup-scripts = "\
     firmware-links \
     post-boot \
     usb-composition \
-    ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', 'wlan-setup', '', d)} \
     "
