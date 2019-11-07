@@ -25,3 +25,5 @@ SYSTEM_SIZE_EXT4 ?= "524288000"
 
 # Formats of root filesystem images.
 IMAGE_FSTYPES += "ext4"
+
+MACHINE_FEATURES_BACKFILL_CONSIDERED += "rtc"
