@@ -12,21 +12,22 @@ DISTRO_NAME = "QTI Linux full refrence stack distro."
 # list of distro features
 ##################################################################
 #
-# wayland:  Include the Wayland display server protocol.
-# opengl :  Include the Open Graphics Library,
-# fbdev  :  Use fbdev display drivers
+# fbdev     : Use fbdev display drivers
+# opengl    : Include the Open Graphics Library,
+# pulseaudio: Use pulseaudio audio server
 # tensorflow-lite: Include the tensorflow lite inference engine.
+# wayland   : Include the Wayland display server protocol.
 
-DISTRO_FEATURES_append = " wayland fbdev opengl tensorflow-lite"
+DISTRO_FEATURES_append = " fbdev opengl pulseaudio tensorflow-lite wayland"
 
 ## QTI defined distro features ##
-# mm-venc:       Support QTI video encode
 # qti-audio:     Support QTI audio solution
 # qti-bluetooth: Support QTI bluetooth solution
 # qti-camera:    Support QTI camera solution
 # qti-display:   Support QTI display solution
 # qti-mm-parser: Support QTI multimeida parsers
 # qti-video:     Support QTI video solution
+# qti-video-encoder: Support QTI video encode
 #
 
-DISTRO_FEATURES_append = " qti-video-encoder qti-audio qti-bluetooth qti-camera qti-display qti-mm-parser qti-video"
+DISTRO_FEATURES_append = " qti-audio qti-bluetooth qti-camera qti-display qti-mm-parser qti-video qti-video-encoder"
