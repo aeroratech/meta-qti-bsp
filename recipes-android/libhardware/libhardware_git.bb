@@ -15,13 +15,7 @@ PR = "r7"
 
 DEPENDS += "libcutils libutils liblog system-core-headers"
 
-PACKAGECONFIG ?= "\
-        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'audio', '', d)} \
-        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-camera', 'camera', '', d)} \
-        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-display', 'display', '', d)} \
-        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-location', 'location', '', d)} \
-        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-sensors', 'sensors', '', d)} \
-"
+PACKAGECONFIG ?= "audio camera display location sensors"
 
 PACKAGECONFIG[audio]    = "--enable-audio, --disable-audio"
 PACKAGECONFIG[camera]   = "--enable-camera, --disable-camera"
