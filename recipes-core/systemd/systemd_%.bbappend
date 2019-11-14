@@ -121,6 +121,12 @@ do_install_append () {
        rm -rf ${D}/lib/systemd/system-generators/systemd-system-update-generator
        rm -rf ${D}/lib/systemd/system-generators/systemd-sysv-generator
    fi
+
+   # Update persistent-storage.rules to create bootdevice/by-name symlinks
+   sed -i 's/LABEL="persistent_storage_end"/# block\/bootdevice\/by-name links'"\n"'LABEL="persistent_storage_end"/g' \
+       ${D}/lib/udev/rules.d/60-persistent-storage.rules
+   sed -i 's/LABEL="persistent_storage_end"/ENV{ID_PART_ENTRY_SCHEME}=="gpt", ENV{ID_PART_ENTRY_NAME}=="?*", SYMLINK+="block\/bootdevice\/by-name\/$env{ID_PART_ENTRY_NAME}"'"\n\n"'LABEL="persistent_storage_end"/g' \
+       ${D}/lib/udev/rules.d/60-persistent-storage.rules
 }
 
 # Run fsck as part of local-fs-pre.target instead of local-fs.target
