@@ -35,7 +35,7 @@ from xml.dom import minidom
 from collections import OrderedDict
 
 def usage():
-   print("\n\tUsage: %s <input> <output>\n\tVersion 1.0\n" %(sys.argv[0]))
+   print("\n\tUsage: %s -i <input> -o <output> -m [partition_name1=image_filename1,partition_name2=image_filename2,...]\n\tVersion 1.0\n" %(sys.argv[0]))
    sys.exit(1)
 
 ##################################################################
@@ -63,6 +63,10 @@ partition_entry_defaults = {
 # store entries read from input file
 disk_entry = None
 partition_entries_dict = {}
+# store partition image map passed from command line
+partition_image_map = {}
+input_file = None
+output_xml = None
 
 def disk_options(argv):
    for (opt, arg) in argv:
@@ -108,7 +112,8 @@ def partition_options(argv):
          partition_entry["filename"] = arg
       elif opt in ['--sparse']:
          partition_entry["sparse"] = arg
-
+      if partition_entry["label"] in partition_image_map.keys():
+         partition_entry["filename"] = partition_image_map[partition_entry["label"]]
    return partition_entry
 
 def parse_partition_entry(partition_entry):
@@ -180,8 +185,24 @@ if len(sys.argv) < 3:
 try:
    if sys.argv[1] == "-h" or sys.argv[1] == "--help":
       usage()
-
-   f = open(sys.argv[1])
+   try:
+      opts, rem = getopt.getopt(sys.argv[1:], "i:o:m:")
+      for (opt, arg) in opts:
+        if opt in ["-i"]:
+          input_file=arg
+        elif opt in ["-o"]:
+          output_xml=arg
+        elif opt in ["-m"]:
+          for mapping in arg.split(','):
+            tags=mapping.split("=")
+            if len(tags) > 1:
+              partition_image_map[tags[0]]=tags[1]
+            else:
+              usage()
+   except Exception as argerr:
+      print str(argerr)
+      usage()
+   f = open(input_file)
    line = f.readline()
    partition_index = 0
    while line:
@@ -205,6 +226,6 @@ except Exception as e:
    print("Error: ", e)
    sys.exit(1)
 
-generate_partition_xml(disk_entry, partition_entries_dict, sys.argv[2])
+generate_partition_xml(disk_entry, partition_entries_dict, output_xml)
 
 sys.exit(0)
