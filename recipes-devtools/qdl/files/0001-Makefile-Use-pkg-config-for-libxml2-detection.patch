@@ -1,4 +1,4 @@
-From d0ecd95e8935a9fe3e94921d10bfb153f5e0ce52 Mon Sep 17 00:00:00 2001
+From a9ee2fca676d57217a8fee3fb8453c4496c4b990 Mon Sep 17 00:00:00 2001
 From: Nicolas Dechesne <nicolas.dechesne@linaro.org>
 Date: Wed, 28 Aug 2019 17:54:50 +0200
 Subject: [PATCH] Makefile: Use pkg-config for libxml2 detection.
@@ -9,9 +9,11 @@ Upstream-Status: Inappropriate [configuration]
 
 Signed-off-by: Nicolas Dechesne <nicolas.dechesne@linaro.org>
 ---
- Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Makefile | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/Makefile b/Makefile
+index 86a81f8..470befb 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,14 +1,14 @@
@@ -24,7 +26,7 @@ Signed-off-by: Nicolas Dechesne <nicolas.dechesne@linaro.org>
 +LDFLAGS += `pkg-config --libs libxml-2.0` -ludev
 +prefix ?= /usr/local
  
- SRCS := firehose.c qdl.c sahara.c util.c patch.c program.c ufs.c
+ SRCS := firehose.c qdl.c sahara.c util.c patch.c program.c ufs.c sparse_read.c sparse.c output_stream.c backed_block.c sparse_err.c
  OBJS := $(SRCS:.c=.o)
  
  $(OUT): $(OBJS)
@@ -33,3 +35,6 @@ Signed-off-by: Nicolas Dechesne <nicolas.dechesne@linaro.org>
  
  clean:
  	rm -f $(OUT) $(OBJS)
+-- 
+2.24.0
+
