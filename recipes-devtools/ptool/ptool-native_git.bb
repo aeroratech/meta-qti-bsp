@@ -8,8 +8,11 @@ SECTION = "devel"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=7530c1d01d9cfee94e67d6a55e886db5"
 
+FILESEXTRAPATHS_prepend = "${THISDIR}/files:"
+
 SRCREV = "3484fc0a88088dea00397774fc93f9acd3a23ce0"
 SRC_URI = "git://git.linaro.org/landing-teams/working/qualcomm/partioning_tool.git;branch=master"
+SRC_URI += "file://0001-ptool.py-Generate-zero-files-in-output-folder-when-s.patch"
 
 PV = "0.0+${SRCPV}"
 

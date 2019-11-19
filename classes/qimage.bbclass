@@ -74,13 +74,26 @@ IMAGE_LOGIN_MANAGER = "busybox-static"
 
 DEPENDS += "\
              ext4-utils-native \
-             gen-partitions-native \
+             gen-partitions-tool-native \
              mkbootimg-native \
              mtd-utils-native \
              openssl-native \
              pkgconfig-native \
+             ptool-native \
              virtual/bootloader \
 "
+
+do_gen_partition_bin[dirs]      = "${DEPLOY_DIR_IMAGE}"
+
+do_gen_partition_bin () {
+    python ${STAGING_BINDIR_NATIVE}/gen_partition.py -i ${MACHINE_PARTITION_CONF} \
+-o ${WORKDIR}/partition.xml -m boot="${BOOTIMAGE_TARGET}",system="${SYSTEMIMAGE_TARGET}"
+    python ${STAGING_BINDIR_NATIVE}/ptool.py -x ${WORKDIR}/partition.xml -t ${DEPLOY_DIR_IMAGE}
+    install ${WORKDIR}/partition.xml ${DEPLOY_DIR_IMAGE}
+}
+
+addtask do_gen_partition_bin after do_prepare_recipe_sysroot before do_image
+
 
 # Check and remove empty packages before rootfs creation
 do_rootfs[prefuncs] += "rootfs_ignore_packages"
