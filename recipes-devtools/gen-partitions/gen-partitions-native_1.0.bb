@@ -28,7 +28,7 @@ do_install[noexec] = "1"
 
 python do_compile () {
     import subprocess
-    cmd = ("python gen_partition.py " + d.getVar("MACHINE_PARTITION_CONF", True) + " partition.xml")
+    cmd = ("python gen_partition.py -i " + d.getVar("MACHINE_PARTITION_CONF", True) + " -o partition.xml")
     ret = subprocess.call(cmd, shell=True)
     if ret != 0:
         bb.error("Running: %s failed." % cmd)
