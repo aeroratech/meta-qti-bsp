@@ -17,6 +17,7 @@ RDEPENDS_packagegroup-android-utils = "\
     leproperties \
     logcat \
     logd \
+    system-prop \
     "
 
 # Startup scripts needed during device bootup
