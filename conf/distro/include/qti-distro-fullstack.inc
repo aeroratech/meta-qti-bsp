@@ -24,13 +24,12 @@ DISTRO_FEATURES_append = " fbdev opengl pulseaudio tensorflow-lite wayland"
 # qti-audio:     Support QTI audio solution
 # qti-bluetooth: Support QTI bluetooth solution
 # qti-camera:    Support QTI camera solution
-# qti-display:   Support QTI display solution
 # qti-mm-parser: Support QTI multimeida parsers
 # qti-video:     Support QTI video solution
 # qti-video-encoder: Support QTI video encode
 #
 
-DISTRO_FEATURES_append = " qti-audio qti-bluetooth qti-camera qti-display qti-mm-parser qti-video qti-video-encoder"
+DISTRO_FEATURES_append = " qti-audio qti-bluetooth qti-camera qti-mm-parser qti-video qti-video-encoder"
 
 # inherit distro_featres_check class across the distro
 INHERIT += "distro_features_check"
