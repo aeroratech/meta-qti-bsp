@@ -29,18 +29,6 @@ do_install() {
        install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
        install -m 644 ${WORKDIR}/persist-prop.service ${D}/${systemd_unitdir}/system
        ln -sf ${systemd_unitdir}/system/persist-prop.service ${D}${systemd_unitdir}/system/multi-user.target.wants/persist-prop.service
-    else
-       install -m 0755 ${WORKDIR}/persist-prop.sh -D ${D}${sysconfdir}/init.d/persist-prop
-    fi
-}
-
-pkg_postinst_${PN} () {
-    if ${@bb.utils.contains('DISTRO_FEATURES','systemd','false','true',d)}; then
-        update-alternatives --install ${sysconfdir}/init.d/persist-prop.sh persist-prop.sh  persist-prop 50
-        [ -n "$D" ] && OPT="-r $D" || OPT="-s"
-        # remove all rc.d-links potentially created from alternatives
-        update-rc.d $OPT -f persist-prop.sh remove
-        update-rc.d $OPT persist-prop.sh multiuser
     fi
 }
 
