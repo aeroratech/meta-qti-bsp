@@ -22,7 +22,6 @@ RDEPENDS_packagegroup-android-utils = "\
 
 # Startup scripts needed during device bootup
 RDEPENDS_packagegroup-startup-scripts = "\
-    firmware-links \
     post-boot \
     usb-composition \
     "

@@ -13,10 +13,6 @@ dirs755_append = " /cache /persist"
 
 dirs755_append = " ${MACHINE_MNT_POINTS}"
 
-# /systemrw partition is needed only when system is RO.
-# Otherwise files can be directly written to / itself.
-dirs755_append = " ${@bb.utils.contains('DISTRO_FEATURES','ro-rootfs','/systemrw','',d)}"
-
 # Overlay
 dirs755_append = " /overlay"
 
@@ -43,8 +39,10 @@ do_install_append(){
 
 }
 
-# Don't install fstab for systemd targets
 do_install_append() {
+    install -d ${D}/lib/firmware
+    ln -s /firmware/image ${D}/lib/firmware/updates
+# Don't install fstab for systemd targets
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         rm ${D}${sysconfdir}/fstab
     else
