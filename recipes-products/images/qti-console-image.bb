@@ -26,5 +26,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-wifi \
               packagegroup-startup-scripts \
               systemd-machine-units \
+	      packagegroup-qti-ss-mgr \
+	      packagegroup-qti-core-prop \
 "
 # TODO: image featurize mtd to install "mtd-utils-ubifs"
