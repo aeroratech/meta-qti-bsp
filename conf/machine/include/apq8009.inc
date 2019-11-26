@@ -24,7 +24,7 @@ MACHINE_MNT_POINTS = "/firmware \
 
 # Sizes for EXT4 (in bytes)
 SYSTEM_SIZE_EXT4 ?= "524288000"
-OVERLAY_SIZE_EXT4 ?= "33554432"
+OVERLAY_SIZE_EXT4 ?= "2100000000"
 
 # Formats of root filesystem images.
 IMAGE_FSTYPES += "ext4"
