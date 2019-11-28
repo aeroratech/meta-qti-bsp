@@ -19,6 +19,7 @@ KERNEL_EXTRA_ARGS        += "O=${B}"
 
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI   =  "file://kernel \
+              file://overlayfs.cfg \
 	      ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'file://systemd.cfg', '', d)} \
               ${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'file://virtualization.cfg', '', d)} \
               ${@bb.utils.contains('DISTRO_FEATURES', 'nand-squashfs', 'file://squashfs.cfg', '', d)} \
