@@ -27,6 +27,9 @@ SRC_URI_append += " file://bt_firmware-ubi-mount.service"
 SRC_URI_append += " file://bt_firmware.mount"
 SRC_URI_append += " file://bt_firmware-mount.service"
 SRC_URI_append += " file://non-hlos-squash.sh"
+SRC_URI_append += " file://overlay.mount"
+SRC_URI_append += " file://overlay-etc.mount"
+SRC_URI_append += " file://overlay-data.mount"
 
 SRC_URI_append_batcam += " file://pre_hibernate.sh"
 SRC_URI_append_batcam += " file://post_hibernate.sh"
@@ -41,6 +44,12 @@ fix_sepolicies () {
     sed -i "s#,context=system_u:object_r:adsprpcd_t:s0##g" ${WORKDIR}/dsp-mount.service
     sed -i "s#,rootcontext=system_u:object_r:var_t:s0##g"  ${WORKDIR}/var-volatile.mount
     sed -i "s#,rootcontext=system_u:object_r:data_t:s0##g" ${WORKDIR}/data.mount
+
+    # TODO: figure out the selinux context for the overlays
+    sed -i "s#,rootcontext=system_u:object_r:data_t:s0##g" ${WORKDIR}/overlay.mount
+    sed -i "s#,rootcontext=system_u:object_r:data_t:s0##g" ${WORKDIR}/overlay-etc.mount
+    sed -i "s#,rootcontext=system_u:object_r:data_t:s0##g" ${WORKDIR}/overlay-data.mount
+
     sed -i "s#,rootcontext=system_u:object_r:data_t:s0##g" ${WORKDIR}/data-ubi.mount
     sed -i "s#,rootcontext=system_u:object_r:persist_t:s0##g" ${WORKDIR}/persist-ubi.mount
     sed -i "s#,rootcontext=system_u:object_r:system_data_t:s0##g"  ${WORKDIR}/systemrw.mount
@@ -179,6 +188,16 @@ do_install_append () {
                            ${D}${systemd_unitdir}/system/local-fs.target.requires/bt_firmware-mount.service
                 fi
             fi
+        fi
+
+        if [ "$entry" == "/overlay" ]; then
+            install -m 0644 ${WORKDIR}/overlay.mount ${D}${systemd_unitdir}/system/overlay.mount
+            install -m 0644 ${WORKDIR}/overlay-etc.mount ${D}${systemd_unitdir}/system/etc.mount
+            install -m 0644 ${WORKDIR}/overlay-data.mount ${D}${systemd_unitdir}/system/data.mount
+
+            ln -sf ${systemd_unitdir}/system/overlay.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/overlay.mount
+            ln -sf ${systemd_unitdir}/system/overlay-etc.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/etc.mount
+            ln -sf ${systemd_unitdir}/system/overlay-data.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/data.mount
         fi
     done
 }

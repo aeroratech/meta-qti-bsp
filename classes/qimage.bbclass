@@ -23,6 +23,8 @@ IMAGE_VERSION_SUFFIX = ""
 BOOTIMAGE_TARGET ?= "${IMAGE_NAME}-boot.img"
 SYSTEMIMAGE_TARGET ?= "${IMAGE_NAME}-sysfs.ext4"
 SYSTEMIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-sysfs.map"
+OVERLAYIMAGE_TARGET ?= "${IMAGE_NAME}-overlayfs.ext4"
+OVERLAYIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-overlayfs.map"
 
 #  Function to get most suitable .inc file with list of packages
 #  to be installed into root filesystem from layer it is called.
@@ -120,12 +122,21 @@ python rootfs_ignore_packages() {
 }
 
 ROOTFS_POSTPROCESS_COMMAND += "gen_buildprop;do_fsconfig;"
+ROOTFS_POSTPROCESS_COMMAND += "gen_overlayfs;"
 
 gen_buildprop() {
    mkdir -p ${IMAGE_ROOTFS}/cache
    echo ro.build.version.release=`cat ${IMAGE_ROOTFS}/etc/version ` >> ${IMAGE_ROOTFS}/build.prop
    echo ro.product.name=${BASEMACHINE}-${DISTRO} >> ${IMAGE_ROOTFS}/build.prop
    echo ${MACHINE} >> ${IMAGE_ROOTFS}/target
+}
+
+gen_overlayfs() {
+    mkdir -p ${IMAGE_ROOTFS}/overlay
+    mkdir -p ${IMAGE_ROOTFS}/overlay/etc
+    mkdir -p ${IMAGE_ROOTFS}/overlay/.etc-work
+    mkdir -p ${IMAGE_ROOTFS}/overlay/data
+    mkdir -p ${IMAGE_ROOTFS}/overlay/.data-work
 }
 
 do_fsconfig() {
@@ -155,6 +166,15 @@ do_makesystem() {
                 ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
 }
 addtask do_makesystem after do_rootfs before do_image_complete
+
+### Generate overlay.img ###
+do_makeoverlay[dirs] = "${DEPLOY_DIR_IMAGE}"
+
+do_makeoverlay() {
+    make_ext4fs -B ${DEPLOY_DIR_IMAGE}/${OVERLAYIMAGE_MAP_TARGET} ${IMAGE_EXT4_SELINUX_OPTIONS} -b 4096 -l ${OVERLAY_SIZE_EXT4} ${DEPLOY_DIR_IMAGE}/${OVERLAYIMAGE_TARGET} ${IMAGE_ROOTFS}/overlay
+}
+
+addtask do_makeoverlay after do_rootfs before do_build
 
 ################################################
 ############# Generate boot.img ################
@@ -228,6 +248,7 @@ python do_make_veritybootimg () {
         bb.error("Running: %s failed." % cmd)
 }
 do_make_veritybootimg[depends]  += "${PN}:do_makesystem"
+do_make_veritybootimg[depends]  += "${PN}:do_makeoverlay"
 do_make_veritybootimg[dirs]      = "${DEPLOY_DIR_IMAGE}"
 do_make_veritybootimg[depends] += "virtual/kernel:do_deploy"
 
