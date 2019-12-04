@@ -16,9 +16,13 @@ PAGE_SIZE ?= '4096'
 
 EXTRA_IMAGECMD ?= "-N 2048"
 
-MACHINE_MNT_POINTS = "/firmware"
+MACHINE_MNT_POINTS = "/firmware \
+                      /overlay \
+                     "
 
+# Sizes for EXT4 (in bytes)
 SYSTEM_SIZE_EXT4 ?= "681574400"
+OVERLAY_SIZE_EXT4 ?= "33554432"
 
 # Formats of root filesystem images
 IMAGE_FSTYPES += "ext4"
