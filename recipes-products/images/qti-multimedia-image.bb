@@ -1,3 +1,6 @@
+# QTI Linux multimedia image file.
+# Provides packages required to build an image with
+# all multimedia support enabled.
 
 inherit qimage
 

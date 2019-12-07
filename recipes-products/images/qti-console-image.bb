@@ -1,5 +1,6 @@
-# The MSM Linux minimal boot image files.
-# Rootfs creation.
+# QTI Linux minimal boot image file.
+# Provides packages required to build an image with
+# boot to console and wifi support.
 
 inherit qimage
 
@@ -22,11 +23,10 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               libnl \
               libxml2 \
               packagegroup-android-utils \
+              packagegroup-qti-core-prop \
               packagegroup-qti-data \
+              packagegroup-qti-ss-mgr \
               packagegroup-qti-wifi \
               packagegroup-startup-scripts \
               systemd-machine-units \
-	      packagegroup-qti-ss-mgr \
-	      packagegroup-qti-core-prop \
 "
-# TODO: image featurize mtd to install "mtd-utils-ubifs"
