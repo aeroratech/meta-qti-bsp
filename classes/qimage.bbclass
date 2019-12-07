@@ -88,14 +88,19 @@ DEPENDS += "\
 do_gen_partition_bin[dirs]      = "${DEPLOY_DIR_IMAGE}"
 
 do_gen_partition_bin () {
-    python ${STAGING_BINDIR_NATIVE}/gen_partition.py -i ${MACHINE_PARTITION_CONF} \
--o ${WORKDIR}/partition.xml -m boot="${BOOTIMAGE_TARGET}",system="${SYSTEMIMAGE_TARGET}",userdata="${OVERLAYIMAGE_TARGET}"
-    python ${STAGING_BINDIR_NATIVE}/ptool.py -x ${WORKDIR}/partition.xml -t ${DEPLOY_DIR_IMAGE}
+    # Generate partition.xml using gen_partition utility
+    python ${STAGING_BINDIR_NATIVE}/gen_partition.py \
+        -i ${THISDIR}/partition/${MACHINE_PARTITION_CONF} \
+        -o ${WORKDIR}/partition.xml \
+        -m boot="${BOOTIMAGE_TARGET}",system="${SYSTEMIMAGE_TARGET}",userdata="${OVERLAYIMAGE_TARGET}"
+
     install ${WORKDIR}/partition.xml ${DEPLOY_DIR_IMAGE}
+
+    # Call ptool to generate partition bins
+    python ${STAGING_BINDIR_NATIVE}/ptool.py -x ${WORKDIR}/partition.xml -t ${DEPLOY_DIR_IMAGE}
 }
 
 addtask do_gen_partition_bin after do_prepare_recipe_sysroot before do_image
-
 
 # Check and remove empty packages before rootfs creation
 do_rootfs[prefuncs] += "rootfs_ignore_packages"
