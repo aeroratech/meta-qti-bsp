@@ -165,7 +165,7 @@ do_makesystem() {
     cp ${THISDIR}/fsconfig/${MACHINE_FSCONFIG_CONF} ${WORKDIR}/rootfs-fsconfig.conf
     make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
                 -B ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_MAP_TARGET} \
-                -a / -b 4096 \
+                -a / -b 4096 -s \
                 -l ${SYSTEM_SIZE_EXT4} \
                 ${IMAGE_EXT4_SELINUX_OPTIONS} \
                 ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
@@ -176,7 +176,11 @@ addtask do_makesystem after do_rootfs before do_image_complete
 do_makeoverlay[dirs] = "${DEPLOY_DIR_IMAGE}"
 
 do_makeoverlay() {
-    make_ext4fs -B ${DEPLOY_DIR_IMAGE}/${OVERLAYIMAGE_MAP_TARGET} ${IMAGE_EXT4_SELINUX_OPTIONS} -b 4096 -l ${OVERLAY_SIZE_EXT4} ${DEPLOY_DIR_IMAGE}/${OVERLAYIMAGE_TARGET} ${IMAGE_ROOTFS}/overlay
+    make_ext4fs -B ${DEPLOY_DIR_IMAGE}/${OVERLAYIMAGE_MAP_TARGET} \
+                ${IMAGE_EXT4_SELINUX_OPTIONS} \
+                -s -b 4096 -l ${OVERLAY_SIZE_EXT4} \
+                ${DEPLOY_DIR_IMAGE}/${OVERLAYIMAGE_TARGET} \
+                ${IMAGE_ROOTFS}/overlay
 }
 
 addtask do_makeoverlay after do_rootfs before do_build
