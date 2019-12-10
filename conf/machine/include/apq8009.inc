@@ -29,4 +29,5 @@ OVERLAY_SIZE_EXT4 ?= "2100000000"
 # Formats of root filesystem images.
 IMAGE_FSTYPES += "ext4"
 
-MACHINE_FEATURES_BACKFILL_CONSIDERED += "rtc"
+# Disable some default features supported from upstream
+MACHINE_FEATURES_BACKFILL_CONSIDERED += "qemu-usermode rtc"
