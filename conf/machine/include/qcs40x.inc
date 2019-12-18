@@ -16,7 +16,8 @@ PAGE_SIZE ?= '4096'
 
 EXTRA_IMAGECMD ?= "-N 2048"
 
-MACHINE_MNT_POINTS = "/firmware \
+MACHINE_MNT_POINTS = "/dsp \
+                      /firmware \
                       /overlay \
                      "
 
