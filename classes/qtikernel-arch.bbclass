@@ -16,6 +16,11 @@ HOST_PREFIX = "${TARGET_SYS}-"
 
 DEPENDS += "${MULTILIB_VARIANTS}-binutils-cross-${TARGET_ARCH}"
 
+# We need consistent staging dir whether or not multilib is enabled
+STAGING_DIR_HOST = "${WORKDIR}/recipe-sysroot"
+STAGING_DIR_TARGET = "${WORKDIR}/recipe-sysroot"
+RECIPE_SYSROOT = "${WORKDIR}/recipe-sysroot"
+
 export CROSS_COMPILE = "${TARGET_SYS}-"
 
 export ARCH = "${@map_kernel_arch(d.getVar('TARGET_KERNEL_ARCH'), d)}"
