@@ -23,6 +23,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-bluetooth \
         packagegroup-qti-core-prop \
         packagegroup-qti-data \
+        packagegroup-qti-ml \
         packagegroup-qti-ss-mgr \
         packagegroup-qti-wifi \
         packagegroup-startup-scripts \
