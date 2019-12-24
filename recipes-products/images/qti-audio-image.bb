@@ -23,6 +23,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-core-prop \
         packagegroup-qti-data \
         packagegroup-qti-ss-mgr \
+        packagegroup-qti-wifi \
         packagegroup-startup-scripts \
         systemd-machine-units \
 "
