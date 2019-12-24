@@ -26,6 +26,7 @@ SRC_URI   =  "file://kernel \
               ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'file://selinux.cfg', '', d)} \
               ${@bb.utils.contains_any('COMBINED_FEATURES', 'fbdev qti-camera qti-video mm-camera', 'file://graphics_fb.cfg', '', d)} \
               ${@bb.utils.contains_any('COMBINED_FEATURES', 'qti-camera qti-video mm-camera', 'file://multimedia.cfg', '', d)} \
+              ${@bb.utils.contains_any('DISTRO_FEATURES', 'dm-verity', 'file://verity.x509.pem', '', d)} \
 	     "
 SRC_URI_append_sdm845 += "${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'file://virtualization_robomaker.cfg', '', d)}"
 
@@ -42,6 +43,12 @@ def find_sccs(d):
 
     return sources_list
 
+# dm-verity: Patch the cert file from which kernel add key to keyring
+do_patch_veritycert() {
+   cp -f ${WORKDIR}/verity.x509.pem ${S}/certs/verity.x509.pem
+}
+
+do_patch[postfuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'do_patch_veritycert', '', d)}"
 
 do_configure_prepend() {
 
