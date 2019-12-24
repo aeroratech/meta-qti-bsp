@@ -26,5 +26,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-video \
         packagegroup-qti-wifi \
         packagegroup-startup-scripts \
+        packagegroup-qti-fastcv \
         systemd-machine-units \
 "
