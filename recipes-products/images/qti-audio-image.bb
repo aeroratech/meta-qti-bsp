@@ -20,6 +20,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         libnl \
         libxml2 \
         packagegroup-android-utils \
+        packagegroup-qti-bluetooth \
         packagegroup-qti-core-prop \
         packagegroup-qti-data \
         packagegroup-qti-ss-mgr \

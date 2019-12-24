@@ -16,10 +16,12 @@ PAGE_SIZE ?= '4096'
 
 EXTRA_IMAGECMD ?= "-N 2048"
 
-MACHINE_MNT_POINTS = "/dsp \
-                      /firmware \
-                      /overlay \
-                     "
+MACHINE_MNT_POINTS = " \
+    /bt_firmware \
+    /dsp \
+    /firmware \
+    /overlay \
+"
 
 # Sizes for EXT4 (in bytes)
 SYSTEM_SIZE_EXT4 ?= "681574400"
