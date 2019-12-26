@@ -10,8 +10,6 @@ include conf/machine/include/arm/arch-armv8.inc
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
 PREFERRED_VERSION_linux-msm ?= "4.14"
 
-LLVM_VERSION = "6.0"
-
 PAGE_SIZE ?= '4096'
 
 EXTRA_IMAGECMD ?= "-N 2048"
