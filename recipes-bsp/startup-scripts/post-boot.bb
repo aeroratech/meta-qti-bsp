@@ -15,7 +15,7 @@ do_configure[noexec]="1"
 do_compile[noexec]="1"
 
 do_install() {
-    install -m 0750 ${S}/init.post_boot.sh -D ${D}${sysconfdir}/initscripts/init_post_boot
+    install -m 0750 ${S}/${MACHINE}/init.post_boot.sh -D ${D}${sysconfdir}/initscripts/init_post_boot
 
     install -d ${D}${systemd_unitdir}/system/
     install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
@@ -26,6 +26,10 @@ do_install() {
            ${D}${systemd_unitdir}/system/multi-user.target.wants/init_post_boot.service
     ln -sf ${systemd_unitdir}/system/init_post_boot.service \
            ${D}${systemd_unitdir}/system/ffbm.target.wants/init_post_boot.service
+}
+
+do_install_append_qcs40x () {
+    install -m 0750 ${S}/${MACHINE}/init.qti.debug.sh -D ${D}${sysconfdir}/initscripts/init_qti_debug
 }
 
 FILES_${PN} += "${systemd_unitdir}/system/"
