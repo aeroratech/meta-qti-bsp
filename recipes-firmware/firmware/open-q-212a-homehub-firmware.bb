@@ -95,7 +95,7 @@ do_install () {
 
 #### Install bt related firware split bins conditionally
     if [ ${@bb.utils.contains("COMBINED_FEATURES", "qti-bt", "true", "", d)} ]; then
-        for bin in ${QT_BT}; do
+        for bin in ${QTI_BT}; do
             install -m 0755 ${S}/${bin} ${D}/firmware/image/${bin}
         done
     fi
