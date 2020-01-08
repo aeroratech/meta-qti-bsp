@@ -105,6 +105,19 @@ do_install () {
             install -m 0755 ${S}/${bin} ${D}/firmware/image/${bin}
         done
     fi
+#### Install modem firmware when either audio or modem is active
+    if [ ${@bb.utils.contains_any("COMBINED_FEATURES", "qti-modem qti-audio", "true", "", d)} ];then
+        for bin in ${QTI_MODEM}; do
+            if [ -f ${S}/${bin} ]; then
+                install -m 0755 ${S}/${bin} ${D}/firmware/image/${bin}
+            fi
+            if [ -d ${S}/${bin} ]; then
+                for f in $(find ${S}/${bin} -type f -printf "%P\n"); do
+                    install -m 0755 -D ${S}/${bin}/${f} ${D}/firmware/image/${bin}/${f}
+                done
+            fi
+        done
+    fi
 }
 
 do_deploy () {
