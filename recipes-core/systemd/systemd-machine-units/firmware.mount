@@ -27,6 +27,7 @@
 
 [Unit]
 Before=local-fs.target
+ConditionDirectoryNotEmpty=!/firmware
 
 [Mount]
 What=/dev/disk/by-partlabel/modem
