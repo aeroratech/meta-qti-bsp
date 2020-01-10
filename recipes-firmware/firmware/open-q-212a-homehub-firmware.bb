@@ -53,8 +53,7 @@ QTI_KEYMASTER = "\
 "
 
 QTI_BT = "\
-    btfw32.tlv btfwnpla.tlv btfwnpls.tlv btnv32.bin btnvnpls.bin \
-    btnvnpla.bin \
+    btfwnpla.tlv btfwnpls.tlv btnvnpls.bin btnvnpla.bin \
 "
 
 QTI_VIDEO = "\
@@ -94,7 +93,7 @@ do_install () {
     fi
 
 #### Install bt related firware split bins conditionally
-    if [ ${@bb.utils.contains("COMBINED_FEATURES", "qti-bt", "true", "", d)} ]; then
+    if [ ${@bb.utils.contains("COMBINED_FEATURES", "qti-bluetooth", "true", "", d)} ]; then
         for bin in ${QTI_BT}; do
             install -m 0755 ${S}/${bin} ${D}/firmware/image/${bin}
         done
