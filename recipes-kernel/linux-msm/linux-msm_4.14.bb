@@ -3,7 +3,7 @@ require recipes-kernel/linux-msm/linux-msm.inc
 # if is TARGET_KERNEL_ARCH is set inherit qtikernel-arch to compile for that arch.
 inherit ${@bb.utils.contains('TARGET_KERNEL_ARCH', 'aarch64', 'qtikernel-arch', '', d)}
 
-COMPATIBLE_MACHINE = "(qcs40x)"
+COMPATIBLE_MACHINE = "(qcs40x|qcs610)"
 
 SRC_DIR   =  "${WORKSPACE}/kernel/msm-4.14"
 S         =  "${WORKDIR}/kernel/msm-4.14"
