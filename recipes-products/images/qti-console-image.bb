@@ -26,7 +26,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-core-prop \
               packagegroup-qti-data \
               packagegroup-qti-ss-mgr \
-              packagegroup-qti-wifi \
+              ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
               packagegroup-startup-scripts \
               systemd-machine-units \
 "
