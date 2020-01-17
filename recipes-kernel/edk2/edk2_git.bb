@@ -2,7 +2,7 @@ inherit deploy
 DESCRIPTION = "UEFI bootloader"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
-${LICENSE};md5=0835ade698e0bcf8506ecda2f7b4f302"
+${LICENSE};md5=3775480a712fc46a69647678acb234cb"
 
 BUILD_OS = "linux"
 
@@ -22,19 +22,17 @@ EARLY_ETH = "${@bb.utils.contains('DISTRO_FEATURES', 'early-eth', '1', '0', d)}"
 
 SYSTEMD_BOOTSLOT_ENABLED = "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot','1', '0', d)}"
 
-EXTRA_OEMAKE = "'CLANG_BIN=${STAGING_BINDIR_NATIVE}/llvm-arm-toolchain/bin/' \
-                'CLANG_PREFIX=${STAGING_BINDIR_NATIVE}/${TARGET_SYS}/${TARGET_PREFIX}' \
-                'TARGET_ARCHITECTURE=${TARGET_ARCH}'\
-                'BUILDDIR=${S}'\
-                'BOOTLOADER_OUT=${S}/out'\
-                'ENABLE_LE_VARIANT=true'\
-                'ENABLE_SYSTEMD_BOOTSLOT=${SYSTEMD_BOOTSLOT_ENABLED}'\
-                'VERIFIED_BOOT_LE=${VBLE}'\
-                'VERITY_LE=${VERITY_ENABLED}'\
-                'INIT_BIN_LE=\"/sbin/init\"'\
-                'EDK_TOOLS_PATH=${S}/BaseTools'\
-                'EARLY_ETH_ENABLED=${EARLY_ETH}'"
-
+EXTRA_OEMAKE = " \
+    'TARGET_ARCHITECTURE=${TARGET_ARCH}' \
+    'BUILDDIR=${B}' \
+    'BOOTLOADER_OUT=${B}/out' \
+    'ENABLE_LE_VARIANT=true' \
+    'VERIFIED_BOOT_LE=${VBLE}' \
+    'VERITY_LE=${VERITY_ENABLED}' \
+    'INIT_BIN_LE=\"/sbin/init\"' \
+    'EDK_TOOLS_PATH=${S}/BaseTools' \
+    'EARLY_ETH_ENABLED=${EARLY_ETH}' \
+"
 EXTRA_OEMAKE_append_qcs40x = " 'DISABLE_PARALLEL_DOWNLOAD_FLASH=1'"
 NAND_SQUASHFS_SUPPORT = "${@bb.utils.contains('DISTRO_FEATURES', 'nand-squashfs', '1', '0', d)}"
 EXTRA_OEMAKE_append = " 'NAND_SQUASHFS_SUPPORT=${NAND_SQUASHFS_SUPPORT}'"
@@ -49,9 +47,6 @@ do_compile () {
 
 do_install[noexec]="1"
 do_configure[noexec]="1"
-
-FILES_${PN} = "/boot"
-FILES_${PN}-dbg = "/boot/.debug"
 
 do_deploy() {
         install ${WORKDIR}/abl.elf ${DEPLOYDIR}
