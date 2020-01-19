@@ -5,6 +5,12 @@ inherit ${@bb.utils.contains('TARGET_KERNEL_ARCH', 'aarch64', 'qtikernel-arch', 
 
 COMPATIBLE_MACHINE = "(qcs40x|qcs610)"
 
+# Additional configs for qcs610 machine
+SRC_URI_append_qcs610 = " \
+    file://disableipa3.cfg \
+    file://sdmsteppe_iot_configs.cfg \
+"
+
 SRC_DIR   =  "${WORKSPACE}/kernel/msm-4.14"
 S         =  "${WORKDIR}/kernel/msm-4.14"
 
