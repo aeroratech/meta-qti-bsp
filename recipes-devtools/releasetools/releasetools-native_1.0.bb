@@ -15,15 +15,15 @@ SRC_URI   = "file://releasetools/"
 SRC_URI  += "file://full_ota.sh"
 SRC_URI  += "file://incremental_ota.sh"
 
-S = "${WORKDIR}/releasetools"
+S = "${WORKDIR}"
 
 
-do_configure_append() {
-    cp ${WORKDIR}/full_ota.sh ${S}
-    chmod 755 ${S}/full_ota.sh
-    cp ${WORKDIR}/incremental_ota.sh ${S}
-    chmod 755 ${S}/incremental_ota.sh
+do_install() {
+    install -d ${D}${sbindir}
+    install -d ${D}${sbindir}/releasetools/
+    cp -r ${WORKDIR}/releasetools/* ${D}${sbindir}/releasetools/
+    install -m 0755 ${S}/full_ota.sh  -D ${D}/${sbindir}/releasetools/
+    install -m 0755 ${S}/incremental_ota.sh  -D ${D}/${sbindir}/releasetools/
 }
-
+do_configure[noexec] = "1"
 do_compile[noexec] = "1"
-do_install[noexec] = "1"
