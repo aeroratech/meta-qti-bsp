@@ -82,6 +82,7 @@ DEPENDS += "\
              openssl-native \
              pkgconfig-native \
              ptool-native \
+             qdl-native \
 "
 
 do_gen_partition_bin[dirs]      = "${DEPLOY_DIR_IMAGE}"
