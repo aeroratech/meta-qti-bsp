@@ -1,7 +1,7 @@
-BASEMACHINE ?= "qcs8250"
+BASEMACHINE ?= "qrb5165"
 require conf/machine/include/basemachine.inc
 
-SOC_FAMILY ?= "qcs8250"
+SOC_FAMILY ?= "qrb5165"
 include conf/machine/include/soc-family.inc
 
 require conf/machine/include/arm/arch-armv8.inc
