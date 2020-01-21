@@ -32,3 +32,9 @@ IMAGE_FSTYPES += "ext4"
 
 # Disable some default features supported from upstream
 MACHINE_FEATURES_BACKFILL_CONSIDERED += "qemu-usermode rtc"
+
+# This flag is valid only when "dm-verity" feature is enabled.
+# Pick dm-android-verity kernel driver (defined by CONFIG_DM_ANDROID_VERITY=y)
+# that is supported on 4.9 and earlier kernel versions.
+# Otherwise, dm-verity kernel driver is picked, by default.
+LEGACY_DM_ANDROID_VERITY_DRIVER = "1"
