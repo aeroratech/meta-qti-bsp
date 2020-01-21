@@ -23,7 +23,8 @@ MACHINE_MNT_POINTS = "/firmware \
                      "
 
 # Sizes for EXT4 (in bytes)
-SYSTEM_SIZE_EXT4 ?= "524288000"
+# Keep it same as defined in *.partition.conf, for the dm verity to work
+SYSTEM_SIZE_EXT4 ?= "536870912"
 OVERLAY_SIZE_EXT4 ?= "2100000000"
 
 # Formats of root filesystem images.
