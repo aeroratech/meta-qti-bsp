@@ -195,8 +195,8 @@ do_install_append () {
             install -m 0644 ${WORKDIR}/overlay-data.mount ${D}${systemd_unitdir}/system/data.mount
 
             ln -sf ${systemd_unitdir}/system/overlay.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/overlay.mount
-            ln -sf ${systemd_unitdir}/system/overlay-etc.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/etc.mount
-            ln -sf ${systemd_unitdir}/system/overlay-data.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/data.mount
+            ln -sf ${systemd_unitdir}/system/etc.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/etc.mount
+            ln -sf ${systemd_unitdir}/system/data.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/data.mount
         fi
     done
 }
