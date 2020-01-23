@@ -31,6 +31,8 @@ SRC_URI_append += " file://overlay.mount"
 SRC_URI_append += " file://overlay-etc.mount"
 SRC_URI_append += " file://overlay-data.mount"
 SRC_URI_append += " file://overlay-cache.mount"
+SRC_URI_append += " file://overlay-workdir.sh"
+SRC_URI_append += " file://overlay-workdir.service"
 
 SRC_URI_append_batcam += " file://pre_hibernate.sh"
 SRC_URI_append_batcam += " file://post_hibernate.sh"
@@ -195,11 +197,14 @@ do_install_append () {
             install -m 0644 ${WORKDIR}/overlay-etc.mount ${D}${systemd_unitdir}/system/etc.mount
             install -m 0644 ${WORKDIR}/overlay-data.mount ${D}${systemd_unitdir}/system/data.mount
             install -m 0644 ${WORKDIR}/overlay-cache.mount ${D}${systemd_unitdir}/system/cache.mount
+            install -D -m 0755 ${WORKDIR}/overlay-workdir.sh ${D}${sbindir}/overlay-workdir.sh
+            install -D -m 0644 ${WORKDIR}/overlay-workdir.service ${D}${systemd_unitdir}/system/overlay-workdir.service
 
             ln -sf ${systemd_unitdir}/system/overlay.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/overlay.mount
             ln -sf ${systemd_unitdir}/system/etc.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/etc.mount
             ln -sf ${systemd_unitdir}/system/data.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/data.mount
             ln -sf ${systemd_unitdir}/system/cache.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/cache.mount
+            ln -sf ${systemd_unitdir}/system/overlay-restore.service ${D}${systemd_unitdir}/system/local-fs.target.wants/overlay-workdir.service
         fi
     done
 }
