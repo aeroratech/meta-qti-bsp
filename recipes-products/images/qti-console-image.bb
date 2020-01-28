@@ -30,4 +30,5 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
               packagegroup-startup-scripts \
               systemd-machine-units \
+              ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
 "
