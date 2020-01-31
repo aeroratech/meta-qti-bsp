@@ -57,6 +57,8 @@ EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'vble', 'VERIFIE
 
 EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'VERITY_LE=1', '', d)}"
 
+EXTRA_OEMAKE_append = " 'ENABLE_LE_VARIANT=1'"
+
 EXTRA_OEMAKE_append_robot-som = "TARGET_USE_QSEECOM_V4=1"
 
 #enable hardfloat
