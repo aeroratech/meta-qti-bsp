@@ -1,4 +1,4 @@
-do_ramdisk_create() {
+fakeroot do_ramdisk_create() {
         CURRENT_DIR=`pwd`
         rm -rf ${TMPDIR}/ramdisk
         mkdir -p ${TMPDIR}/ramdisk
@@ -87,6 +87,24 @@ do_ramdisk_create() {
         ln -s busybox.suid bin/umount
         if ${@bb.utils.contains('IMAGE_DEV_MANAGER', 'mdev', 'true', 'false', d)}; then
             ln -s busybox bin/mdev
+        fi
+
+        if ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs', 'true', 'false', d), 'false', d)}; then
+            cp ${IMAGE_ROOTFS}/usr/sbin/veritysetup bin/
+            cp ${WORKDIR}/verity.env etc/
+            cp ${WORKDIR}/verity_sig.txt etc/
+
+            # Shared library dependencies for dm-verity feature
+            cp ${IMAGE_ROOTFS}/usr/lib/libcryptsetup.so.12 lib/
+            cp ${IMAGE_ROOTFS}/lib/libblkid.so.1 lib/
+            cp ${IMAGE_ROOTFS}/usr/lib/libpopt.so.0 lib/
+            cp ${IMAGE_ROOTFS}/lib/libuuid.so.1 lib/
+            cp ${IMAGE_ROOTFS}/usr/lib/libdevmapper.so.1.02 lib/
+            cp ${IMAGE_ROOTFS}/usr/lib/libssl.so.1.1 lib/
+            cp ${IMAGE_ROOTFS}/usr/lib/libcrypto.so.1.1 lib/
+            cp ${IMAGE_ROOTFS}/usr/lib/libjson-c.so.4 lib/
+            cp ${IMAGE_ROOTFS}/lib/libudev.so.1 lib/
+            cp ${IMAGE_ROOTFS}/lib/libmount.so.1 lib/
         fi
 
         #gen_initramfs_list.sh expects to be run from kernel directory
