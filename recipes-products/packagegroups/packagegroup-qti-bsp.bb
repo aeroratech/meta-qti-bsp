@@ -23,6 +23,7 @@ RDEPENDS_packagegroup-android-utils = "\
 
 # Startup scripts needed during device bootup
 RDEPENDS_packagegroup-startup-scripts = "\
+    ${@bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', 'ab-slot-util', '', d)} \
     post-boot \
     usb-composition \
     "
