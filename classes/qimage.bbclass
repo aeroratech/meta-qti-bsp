@@ -82,7 +82,6 @@ DEPENDS += "\
              openssl-native \
              pkgconfig-native \
              ptool-native \
-             ${@bb.utils.contains('IMAGE_FEATURES', 'vm', "", "virtual/bootloader", d)} \
 "
 
 do_gen_partition_bin[dirs]      = "${DEPLOY_DIR_IMAGE}"
