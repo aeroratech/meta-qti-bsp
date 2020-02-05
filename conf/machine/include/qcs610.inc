@@ -17,6 +17,8 @@ EXTRA_IMAGECMD ?= "-N 2048"
 
 MACHINE_MNT_POINTS = "/firmware \
                       /overlay \
+                      /dsp \
+                      /bt_firmware \
                      "
 
 # Sizes for EXT4 (in bytes)
