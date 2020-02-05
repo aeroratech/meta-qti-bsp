@@ -95,6 +95,12 @@ do_deploy() {
     if [ -f ${D}/${KERNEL_IMAGEDEST}/-${KERNEL_VERSION} ]; then
         mv ${D}/${KERNEL_IMAGEDEST}/-${KERNEL_VERSION} ${D}/${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}-${KERNEL_VERSION}
     fi
+
+    # Copy vmlinux and zImage into deplydir for boot.img creation
+    install -d ${DEPLOYDIR}
+    install -m 0644 ${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE} ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
+    install -m 0644 vmlinux ${DEPLOYDIR}
+    install -m 0644 System.map ${DEPLOYDIR}
 }
 
 # Put the zImage in the kernel-dev pkg
