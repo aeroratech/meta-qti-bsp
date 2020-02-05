@@ -82,7 +82,7 @@ DEPENDS += "\
              openssl-native \
              pkgconfig-native \
              ptool-native \
-             virtual/bootloader \
+             ${@bb.utils.contains('IMAGE_FEATURES', 'vm', "", "virtual/bootloader", d)} \
 "
 
 do_gen_partition_bin[dirs]      = "${DEPLOY_DIR_IMAGE}"
@@ -261,7 +261,23 @@ do_make_veritybootimg[depends]  += "${PN}:do_makeoverlay"
 do_make_veritybootimg[dirs]      = "${DEPLOY_DIR_IMAGE}"
 do_make_veritybootimg[depends] += "virtual/kernel:do_deploy"
 
+do_makevmimage[dirs]     = "${DEPLOY_DIR_IMAGE}"
+
+do_makevmimage() {
+   mkdir -p vm-images
+   cp -r ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_TARGET} ${DEPLOY_DIR_IMAGE}/vm-images
+   cd vm-images
+   mkdir -p boot
+   cp -r ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE} ${DEPLOY_DIR_IMAGE}/vm-images/boot/
+   make_ext4fs -s -a / -b 4096 -l ${VM_SIZE_EXT4} \
+               ${DEPLOY_DIR_IMAGE}/${VM_IMAGE_TARGET} \
+               ${DEPLOY_DIR_IMAGE}/vm-images
+}
+
 python () {
     if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
         bb.build.addtask('do_make_veritybootimg', 'do_image_complete', 'do_rootfs', d)
+
+    if bb.utils.contains('IMAGE_FEATURES', 'vm', True, False, d):
+        bb.build.addtask('do_makevmimage', 'do_image_complete', 'do_makesystem', d)
 }
