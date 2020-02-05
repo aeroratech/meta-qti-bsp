@@ -26,7 +26,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [Unit]
-After=local-fs.target
+DefaultDependencies=no
+After=overlay.mount
 
 [Mount]
 What=overlay
