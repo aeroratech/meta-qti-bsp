@@ -1,11 +1,11 @@
 require recipes-kernel/linux-msm/linux-msm.inc
 
-COMPATIBLE_MACHINE = "qcs8250"
+COMPATIBLE_MACHINE = "qrb5165"
 
 SRC_DIR   =  "${WORKSPACE}/kernel/msm-4.19"
 S         =  "${WORKDIR}/kernel/msm-4.19"
 
-SRC_URI_append_qcs8250-rb5 = " file://disableipa3.cfg"
+SRC_URI_append_qrb5165-rb5 = " file://disableipa3.cfg"
 
 DEPENDS += "dtc-native"
 

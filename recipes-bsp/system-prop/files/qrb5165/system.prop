@@ -1,8 +1,8 @@
 #
-# Default properties to be set for qcs8250
+# Default properties to be set for qrb5165
 #
 
-ro.product.board=qcs8250
+ro.product.board=qrb5165
 
 #Audio features
 ro.vendor.audio.sdk.ssr=false
