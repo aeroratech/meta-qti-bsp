@@ -30,6 +30,8 @@ do_install_append () {
     editveritysigner
     install -m 755 ${S}/verity_signer ${D}/${bindir}/verity_signer
     install -m 755 ${S}/build_verity_metadata.py ${D}/${bindir}/build_verity_metadata.py
+    install -D -m 755 ${THISDIR}/verity.pk8 ${D}/${bindir}/verity.pk8
+    install -D -m 755 ${THISDIR}/verity.x509.pem ${D}/${bindir}/verity.x509.pem
 }
 
 #NATIVE_INSTALL_WORKS="1"

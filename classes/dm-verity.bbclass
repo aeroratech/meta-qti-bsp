@@ -117,7 +117,8 @@ python make_verity_enabled_system_image () {
     verity_img = d.getVar('VERITY_IMG', True)
     verity_md_img = d.getVar('VERITY_METADATA_IMG', True)
     signer_path = d.getVar('STAGING_BINDIR_NATIVE',True) + "/verity_signer"
-    signer_key  = d.getVar('TMPDIR',True) + "/work-shared/security_tools/verity.pk8"
+    signer_key  = d.getVar('STAGING_BINDIR_NATIVE',True) + "/verity.pk8"
+    is_legacy_dm_verity_driver = d.getVar('LEGACY_DM_ANDROID_VERITY_DRIVER',True)
 
     # Build verity tree
     bvt_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/build_verity_tree'
@@ -128,6 +129,7 @@ python make_verity_enabled_system_image () {
         bb.debug(1, "cmd %s" % (cmd))
         bb.fatal("Error in building verity tree : %s\n%s" % (e.returncode, e.output.decode("utf-8")))
     d.setVar('ROOT_HASH', root_hash.decode('UTF-8'))
+    d.setVar('FIXED_SALT_STR', salt.decode('UTF-8'))
     bb.debug(1, "Value of root hash is %s" % root_hash)
     bb.debug(1, "Value of salt is %s" % salt)
 
@@ -135,17 +137,24 @@ python make_verity_enabled_system_image () {
     blk_dev = d.getVar("BLOCK_DEVICE_SYSTEM",True)
     image_size = d.getVar("SYSTEM_SIZE_EXT4",True)
     bvmd_script_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/build_verity_metadata.py'
-    cmd = bvmd_script_path + " build %s %s %s %s %s %s %s " % (image_size, verity_md_img, root_hash, salt, blk_dev, signer_path, signer_key)
+    cmd = bvmd_script_path + " build %s %s %s %s %s %s %s " % (image_size, verity_md_img, str(d.getVar('ROOT_HASH', True)), str(d.getVar('FIXED_SALT_STR', True)), blk_dev, signer_path, signer_key)
     ret = subprocess.call(cmd, shell=True)
     if ret != 0:
         bb.error("Running: %s failed." % cmd)
 
     # Append verity metadata to verity image.
-    bb.debug(1, "appending verity_img to verity_md_img .... ")
-    with open(verity_md_img, "ab") as out_file:
-        with open(verity_img, "rb") as input_file:
-            for line in input_file:
-                out_file.write(line)
+    if is_legacy_dm_verity_driver is "1":
+        bb.debug(1, "appending verity_md_img to verity_img .... ")
+        with open(verity_img, "ab") as out_file:
+            with open(verity_md_img, "rb") as input_file:
+                for line in input_file:
+                    out_file.write(line)
+    else:
+        bb.debug(1, "appending verity_img to verity_md_img .... ")
+        with open(verity_md_img, "ab") as out_file:
+            with open(verity_img, "rb") as input_file:
+                for line in input_file:
+                    out_file.write(line)
 
     # Calculate padding.
     partition_size = int(d.getVar("ORG_SYSTEM_SIZE_EXT4",True))
@@ -159,35 +168,65 @@ python make_verity_enabled_system_image () {
     if fec_supported is "1":
         fec_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/fec'
         fec_img_path = d.getVar('VERITY_FEC_IMG', True)
-        cmd = fec_bin_path + " -e -p %s %s %s %s" % (padding_size, sparse_img, verity_md_img, fec_img_path)
-        ret = subprocess.call(cmd, shell=True)
-        if ret != 0:
-            bb.error("Running: %s failed." % cmd)
 
-        bb.debug(1, "appending fec_img_path to verity_md_img.... ")
-        with open(verity_md_img, "ab") as out_file:
-            with open(fec_img_path, "rb") as input_file:
-                for line in input_file:
-                    out_file.write(line)
+        if is_legacy_dm_verity_driver is "1":
+            cmd = fec_bin_path + " -e -p %s %s %s %s" % (padding_size, sparse_img, verity_img, fec_img_path)
+            ret = subprocess.call(cmd, shell=True)
+            if ret != 0:
+                bb.error("Running: %s failed." % cmd)
+
+            bb.debug(1, "appending fec_img_path to verity_img.... ")
+            with open(verity_img, "ab") as out_file:
+                with open(fec_img_path, "rb") as input_file:
+                    for line in input_file:
+                        out_file.write(line)
+        else:
+            cmd = fec_bin_path + " -e -p %s %s %s %s" % (padding_size, sparse_img, verity_md_img, fec_img_path)
+            ret = subprocess.call(cmd, shell=True)
+            if ret != 0:
+                bb.error("Running: %s failed." % cmd)
+
+            bb.debug(1, "appending fec_img_path to verity_md_img.... ")
+            with open(verity_md_img, "ab") as out_file:
+                with open(fec_img_path, "rb") as input_file:
+                    for line in input_file:
+                        out_file.write(line)
 
     # Almost done. Append verity img to sparse system img.
     append2simg_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/append2simg'
-    cmd = append2simg_path + " %s %s " % (sparse_img, verity_md_img)
+    if is_legacy_dm_verity_driver is "1":
+        cmd = append2simg_path + " %s %s " % (sparse_img, verity_img)
+    else:
+        cmd = append2simg_path + " %s %s " % (sparse_img, verity_md_img)
     ret = subprocess.call(cmd, shell=True)
     if ret != 0:
         bb.error("Running: %s failed." % cmd)
 
     #system image is ready. Update verity cmdline.
-    dm_prefix = d.getVar('DM_KEY_PREFIX', True)
-    dm_key_args_list = []
-    dm_key_args_list.append( d.getVar('SIZE_IN_SECTORS', True))
-    dm_key_args_list.append( d.getVar('DATA_BLOCKS_NUMBER', True))
-    dm_key_args_list.append( str(d.getVar('ROOT_HASH', True)))
-    dm_key_args_list.append( d.getVar('FEC_OFFSET', True))
-    dm_key =  dm_prefix + " ".join(dm_key_args_list)+ " " +'\\"'
-    cmdline = "verity=\\" + dm_key
+    if is_legacy_dm_verity_driver is "1":
+        #cmdline = d.getVar('KERNEL_CMD_PARAMS', True)
+        cmdline = " androidboot.veritymode=enforcing veritykeyid=id:"
+        verity_x509_pem  = d.getVar('STAGING_BINDIR_NATIVE',True) + "/verity.x509.pem"
+        bb.debug(1, "verity_x509_pem is %s " % (verity_x509_pem))
+        # add "buildvariant=userdebug" for non-user builds.
+        # cmdline += " ${@["buildvariant=userdebug", ""][(d.getVar('VARIANT', True) == 'user')]}"
+        # generate and add verity key id.
+        keycmd = "openssl x509 -in " + verity_x509_pem + " -text \
+            | grep keyid | sed 's/://g' | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]' | sed 's/keyid//g'"
+        keyid = subprocess.check_output(keycmd, shell=True).strip()
+        # cmdline += " veritykeyid=id:" + keyid
+        cmdline += keyid.decode()
+    else:
+        dm_prefix = d.getVar('DM_KEY_PREFIX', True)
+        dm_key_args_list = []
+        dm_key_args_list.append( d.getVar('SIZE_IN_SECTORS', True))
+        dm_key_args_list.append( d.getVar('DATA_BLOCKS_NUMBER', True))
+        dm_key_args_list.append( str(d.getVar('ROOT_HASH', True)))
+        dm_key_args_list.append( d.getVar('FEC_OFFSET', True))
+        dm_key =  dm_prefix + " ".join(dm_key_args_list)+ " " +'\\"'
+        cmdline = "verity=\\" + dm_key
 
-    bb.debug(1, "Verity Command line set to %s " % (cmdline))
+    bb.debug(1, "Verity Command line is set to %s " % (cmdline))
 
     # Write cmdline to a tmp file
     verity_cmd = d.getVar('VERITY_CMDLINE', True)
