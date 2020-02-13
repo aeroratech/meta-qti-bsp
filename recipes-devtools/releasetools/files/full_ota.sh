@@ -100,7 +100,7 @@ else
     zipinfo -1 $1 |  awk 'BEGIN { FS="SYSTEM/" } /^SYSTEM\// {print "system/" $2}' | fs_config ${FSCONFIGFOPTS} -D ${2} > $target_files/META/filesystem_config.txt
 fi
 
-cd $target_files && zip -q ../$1 META/*filesystem_config.txt SYSTEM/build.prop BOOT/RAMDISK/empty && cd ..
+cd $target_files && zip -q $1 META/*filesystem_config.txt SYSTEM/build.prop BOOT/RAMDISK/empty && cd ..
 
 
 $python_version ./ota_from_target_files $block_based -n -v -d $device_type -p . -m linux_embedded --no_signing  $1 update_$3.zip > ota_debug.txt 2>&1
