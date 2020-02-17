@@ -24,3 +24,6 @@ PACKAGECONFIG[location] = "--enable-location, --disable-location"
 PACKAGECONFIG[sensors]  = "--enable-sensors, --disable-sensors"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+# Specify the path to look for hals
+EXTRA_OECONF_append = " --with-hal-path=${libdir}"
