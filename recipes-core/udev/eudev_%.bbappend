@@ -1,3 +1,5 @@
+inherit relative_symlinks
+
 PR = "r21"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
@@ -25,3 +27,5 @@ do_install_append_msm8226 () {
      install -d ${D}${sysconfdir}/udev/scripts/
      install -m 0755 ${FILESEXTRAPATHS}/${BASEMACHINE}/set-dev-nodes.sh ${D}${sysconfdir}/udev/scripts/set-dev-nodes.sh
 }
+
+BBCLASSEXTEND = "native nativesdk"
