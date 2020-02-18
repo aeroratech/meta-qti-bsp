@@ -216,10 +216,10 @@ do_recovery_ubi() {
 
 # Task to generate OTA zip files
 do_gen_otazip_ubi() {
-    # Clean up any existing target-files*.zip as this can lead to incorrect content getting packed in the zip.
-    rm -f ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/releasetools/target-files-ubi.zip
-
-    cd ${IMAGE_ROOTFS}/../${MACHINE}-ota-target-image-ubi && /usr/bin/zip -qry -FS ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/releasetools/target-files-ubi.zip *
+     mkdir -p ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools
+     # Clean up any existing target-files*.zip as this can lead to incorrect content getting packed in the zip.
+     rm -rf  ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools/target-files-ubi.zip
+     cd ${IMAGE_ROOTFS}/../${MACHINE}-ota-target-image-ext4 && /usr/bin/zip -qry ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools/target-files-ubi.zip *
 
     block_based=""
     if [[ "${SQUASHFS_SUPPORTED}" == "1" ]]; then
@@ -228,7 +228,7 @@ do_gen_otazip_ubi() {
         block_based="--block"
     fi
 
-    cd ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/releasetools && ./full_ota.sh target-files-ubi.zip ${IMAGE_ROOTFS} ubi $block_based
+    cd ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools && ./full_ota.sh target-files-ubi.zip ${IMAGE_ROOTFS} ubi $block_based
 
-    cd ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/releasetools && cp update_ubi.zip target-files-ubi.zip ${DEPLOY_DIR_IMAGE}
+    cd ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools && cp update_ubi.zip target-files-ubi.zip ${DEPLOY_DIR_IMAGE_NAND}
 }

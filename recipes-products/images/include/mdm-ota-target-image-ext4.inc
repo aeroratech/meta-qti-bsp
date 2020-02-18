@@ -193,22 +193,23 @@ do_recovery_ext4() {
 
 # Generate OTA zip files
 do_gen_otazip_ext4() {
-
+    mkdir -p ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools
     # Clean up any existing target-files*.zip as this can lead to incorrect content getting packed in the zip.
-    rm -f ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/releasetools/target-files-ext4.zip
-
-    cd ${IMAGE_ROOTFS}/../${MACHINE}-ota-target-image-ext4 && /usr/bin/zip -qry ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/releasetools/target-files-ext4.zip *
+    rm -rf  ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools/target-files-ext4.zip
+    pwd
+    cd ${IMAGE_ROOTFS}/../${MACHINE}-ota-target-image-ext4 && /usr/bin/zip -qry ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools/target-files-ext4.zip *
 
     # Pack recoveryfs images only for non A/B OTA
     if [ "${RECOVERY_IMAGE}" == "1" ]; then
-        cd ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/releasetools && zip -qry target-files-ext4.zip BOOTABLE_IMAGES/recovery-unsparsed.ext4
+       cd ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools && zip -qry target-files-ext4.zip BOOTABLE_IMAGES/recovery-unsparsed.ext4
     fi
 
     # Since ext4 filesystems are being used only on emmc/ufs devices,
     # use block-based OTA by default.
     block_based="--block"
+    cd ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools  && ./full_ota.sh target-files-ext4.zip ${IMAGE_ROOTFS}/../emmc-rootfs  ext4 $block_based
 
     cd ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/releasetools && ./full_ota.sh target-files-ext4.zip ${IMAGE_ROOTFS} ext4 $block_based
 
-    cd ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/releasetools && cp update_ext4.zip target-files-ext4.zip ${DEPLOY_DIR_IMAGE}
+    cd ${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/sysroot-destdir/${TMPDIR}/work/x86_64-linux/releasetools-native/1.0-r0/recipe-sysroot-native/usr/sbin/releasetools  && cp update_ext4.zip target-files-ext4.zip ${DEPLOY_DIR_IMAGE_EMMC}
 }
