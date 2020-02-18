@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRC_URI = "${@bb.utils.contains('DISTRO_FEATURES','ab-boot-support','file://set-slotsuffix.service','',d)}"
+SRC_URI = "${@bb.utils.contains('COMBINED_FEATURES','qti-ab-boot','file://set-slotsuffix.service','',d)}"
 SRC_URI_append += " file://cache.mount"
 SRC_URI_append += " file://data.mount"
 SRC_URI_append += " file://firmware.mount"
@@ -133,7 +133,7 @@ do_install_append () {
         fi
 
         if [ "$entry" == "/firmware" ]; then
-            if ${@bb.utils.contains('DISTRO_FEATURES','ab-boot-support','true','false',d)}; then
+            if ${@bb.utils.contains('COMBINED_FEATURES','qti-ab-boot','true','false',d)}; then
                 install -m 0644 ${WORKDIR}/firmware-mount.service ${D}${systemd_unitdir}/system/firmware-mount.service
                 ln -sf ${systemd_unitdir}/system/firmware-mount.service \
                        ${D}${systemd_unitdir}/system/local-fs.target.requires/firmware-mount.service
@@ -155,7 +155,7 @@ do_install_append () {
         fi
 
         if [ "$entry" == "/dsp" ]; then
-            if ${@bb.utils.contains('DISTRO_FEATURES','ab-boot-support','true','false',d)}; then
+            if ${@bb.utils.contains('COMBINED_FEATURES','qti-ab-boot','true','false',d)}; then
                 install -m 0644 ${WORKDIR}/dsp-mount.service ${D}${systemd_unitdir}/system/dsp-mount.service
                 ln -sf ${systemd_unitdir}/system/dsp-mount.service ${D}${systemd_unitdir}/system/local-fs.target.requires/dsp-mount.service
             else
@@ -171,7 +171,7 @@ do_install_append () {
         fi
 
         if [ "$entry" == "/bt_firmware" ]; then
-            if ${@bb.utils.contains('DISTRO_FEATURES','ab-boot-support','true','false',d)}; then
+            if ${@bb.utils.contains('COMBINED_FEATURES','qti-ab-boot','true','false',d)}; then
                 install -m 0644 ${WORKDIR}/bt_firmware-mount.service ${D}${systemd_unitdir}/system/bt_firmware-mount.service
                 ln -sf ${systemd_unitdir}/system/bt_firmware-mount.service \
                        ${D}${systemd_unitdir}/system/local-fs.target.requires/bt_firmware-mount.service
@@ -204,7 +204,7 @@ do_install_append () {
 # Service for ab-boot support.
 do_install_append() {
     install -d ${D}${systemd_unitdir}/system
-    if ${@bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', 'true', 'false', d)}; then
+    if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'true', 'false', d)}; then
         install -m 0644 ${WORKDIR}/set-slotsuffix.service ${D}${systemd_unitdir}/system
     fi
 }
@@ -230,6 +230,6 @@ def get_mnt_services(d):
     return " ".join(services)
 
 SYSTEMD_SERVICE_${PN} += "${@get_mnt_services(d)}"
-SYSTEMD_SERVICE_${PN} += "${@bb.utils.contains('DISTRO_FEATURES','ab-boot-support',' set-slotsuffix.service','',d)}"
+SYSTEMD_SERVICE_${PN} += "${@bb.utils.contains('COMBINED_FEATURES','qti-ab-boot',' set-slotsuffix.service','',d)}"
 
 FILES_${PN} += " ${systemd_unitdir}/*"

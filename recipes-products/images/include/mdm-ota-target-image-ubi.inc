@@ -23,7 +23,7 @@ def nand_set_vars_and_get_dependencies(d):
     if bb.utils.contains('DISTRO_FEATURES', 'nand-squashfs', True, False, d):
         d.setVar('SQUASHFS_SUPPORTED', "1");
 
-    if bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', True, False, d):
+    if bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', True, False, d):
         # if A/B support is supported, recovery image need not be generated.
         # only A/B target will be generated
         d.setVar('RECOVERY_IMAGE', "0");

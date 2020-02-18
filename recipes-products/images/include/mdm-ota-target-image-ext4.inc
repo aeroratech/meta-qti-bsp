@@ -19,7 +19,7 @@ def emmc_set_vars_and_get_dependencies(d):
         # Do not create machine-recovery-image or the OTA packages
         return ""
 
-    if bb.utils.contains('DISTRO_FEATURES', 'ab-boot-support', True, False, d):
+    if bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', True, False, d):
         # if A/B support is supported, recovery image need not be generated.
         # only A/B target will be generated
         d.setVar('RECOVERY_IMAGE', "0");
@@ -181,7 +181,7 @@ do_recovery_ext4() {
     echo "blockimgdiff_versions=3" >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/misc_info.txt
 
     # Targets that support A/B boot do not need recovery(fs)-updater
-    if ${@bb.utils.contains('DISTRO_FEATURES','ab-boot-support','true','false',d)}; then
+    if ${@bb.utils.contains('COMBINED_FEATURES','qti-ab-boot','true','false',d)}; then
         echo le_target_supports_ab=1 >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/misc_info.txt
     else
         if [ "${BASEMACHINE}" == "apq8053" ] || [ "${BASEMACHINE}" == "apq8009" ]; then
