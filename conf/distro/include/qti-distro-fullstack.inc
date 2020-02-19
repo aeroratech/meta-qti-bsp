@@ -12,14 +12,15 @@ DISTRO_NAME = "QTI Linux full refrence stack distro."
 # list of distro features
 ##################################################################
 #
-# fbdev:           Use fbdev display drivers
+# drm:             Use DRM display drivers, provided machine supports it.
+# fbdev:           Use FBDEV display drivers, provided machine supports it.
 # opencl:          Include the Open Computing Language
 # opengl:          Include the Open Graphics Library,
 # pulseaudio:      Use pulseaudio audio server
 # tensorflow-lite: Include the tensorflow lite inference engine.
 # wayland:         Include the Wayland display server protocol.
 
-DISTRO_FEATURES_append = " fbdev opencl opengl pulseaudio tensorflow-lite wayland"
+DISTRO_FEATURES_append = " drm fbdev opencl opengl pulseaudio tensorflow-lite wayland"
 
 ## QTI defined distro features ##
 # qti-audio:     Support QTI audio solution
