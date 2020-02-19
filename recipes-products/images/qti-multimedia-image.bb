@@ -20,6 +20,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-core-prop \
         packagegroup-qti-camera \
         packagegroup-qti-data \
+        packagegroup-qti-dsp \
         packagegroup-qti-display \
         packagegroup-qti-ml \
         packagegroup-qti-ss-mgr \

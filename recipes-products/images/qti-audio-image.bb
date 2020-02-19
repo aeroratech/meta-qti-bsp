@@ -10,7 +10,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         abctl \
         ab-slot-util \
         ab-status-updater \
-        adsprpc \
         chrony \
         e2fsprogs \
         e2fsprogs-e2fsck \
@@ -23,6 +22,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-bluetooth \
         packagegroup-qti-core-prop \
         packagegroup-qti-data \
+        packagegroup-qti-dsp \
         packagegroup-qti-ml \
         packagegroup-qti-ss-mgr \
         packagegroup-qti-wifi \
