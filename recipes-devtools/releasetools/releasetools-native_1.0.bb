@@ -5,25 +5,24 @@ LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
 ${LICENSE};md5=89aea4e17d99a7cacdbeed46a0096b10"
 
-PR = "r0"
+RDEPENDS_${PN} += "recovery-ab"
 
-DEPENDS += "libselinux libpcre2 liblog fsconfig-native applypatch-native libdivsufsort-native bsdiff-native"
-
-FILESPATH =+ "${WORKSPACE}/OTA/build/tools/:"
+FILESPATH =+ "${WORKSPACE}/OTA/build/tools/:${WORKSPACE}/OTA/device/qcom/common/:"
 
 SRC_URI   = "file://releasetools/"
+SRC_URI  += "file://releasetools.py"
 SRC_URI  += "file://full_ota.sh"
 SRC_URI  += "file://incremental_ota.sh"
 
-S = "${WORKDIR}"
+S = "${WORKDIR}/releasetools"
 
-
-do_install() {
-    install -d ${D}${sbindir}
-    install -d ${D}${sbindir}/releasetools/
-    cp -r ${WORKDIR}/releasetools/* ${D}${sbindir}/releasetools/
-    install -m 0755 ${S}/full_ota.sh  -D ${D}/${sbindir}/releasetools/
-    install -m 0755 ${S}/incremental_ota.sh  -D ${D}/${sbindir}/releasetools/
-}
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
+
+do_install_append() {
+    install -d ${D}${bindir}/releasetools/
+    install -m 755 ${WORKDIR}/full_ota.sh ${D}${bindir}/releasetools/
+    install -m 755 ${WORKDIR}/incremental_ota.sh ${D}${bindir}/releasetools/
+    install -m 755 ${WORKDIR}/releasetools.py ${D}${bindir}/releasetools/
+    cp -rf ${S}/* ${D}${bindir}/releasetools/
+}

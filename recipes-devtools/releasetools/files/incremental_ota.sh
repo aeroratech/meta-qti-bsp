@@ -98,6 +98,15 @@ else
 fi
 
 
-cd target_files && zip -q ../$2 META/*filesystem_config.txt SYSTEM/build.prop && cd ..
+cd target_files && zip -q $2 META/*filesystem_config.txt SYSTEM/build.prop && cd ..
 
-$python_version ./ota_from_target_files $block_based -n -v -d $device_type -v -p . -m linux_embedded --no_signing -i $1 $2 update_incr_$4.zip
+$python_version ./ota_from_target_files $block_based -n -v -d $device_type -v -p . -m linux_embedded --no_signing -i $1 $2 update_incr_$4.zip > ota_debug.txt 2>&1
+
+if [[ $? = 0 ]]; then
+    echo "update.zip generation was successful"
+else
+    echo "update.zip generation failed"
+    # Add the python script errors back into the target-files zip
+    zip -q $1 ota_debug.txt
+    rm update_$3.zip # delete the half-baked update.zip if any;
+fi
