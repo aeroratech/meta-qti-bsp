@@ -1,5 +1,9 @@
 inherit core-image
 
+require recipes-products/images/include/mdm-ota-target-image-ext4.inc
+
+CORE_IMAGE_EXTRA_INSTALL += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', ' recovery-ab', '', d)}"
+
 # Only when verity feature is enabled, start including related tasks.
 VERITY_PROVIDER ?= "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'dm-verity', '', d)}"
 inherit ${VERITY_PROVIDER}
