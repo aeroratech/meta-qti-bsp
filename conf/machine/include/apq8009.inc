@@ -38,3 +38,6 @@ MACHINE_FEATURES_BACKFILL_CONSIDERED += "qemu-usermode rtc"
 # that is supported on 4.9 and earlier kernel versions.
 # Otherwise, dm-verity kernel driver is picked, by default.
 LEGACY_DM_ANDROID_VERITY_DRIVER = "1"
+
+# Use legacy ion implementation if msm kernel version is 4.9 or below
+LEGACY_ION_USAGE = "True"

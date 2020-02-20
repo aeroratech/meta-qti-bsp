@@ -14,12 +14,17 @@ SRC_URI   = "file://libion"
 S = "${WORKDIR}/libion"
 DEPENDS += "virtual/kernel liblog"
 
-EXTRA_OECONF += "\
-            --disable-static \
-            ${@bb.utils.contains_any('PREFERRED_VERSION_linux-msm', '3.18 4.4 4.9', '--with-legacyion', '', d)} \
-            --with-sanitized-headers=${STAGING_KERNEL_BUILDDIR}/usr/include \
+LEGACYION = "${@d.getVar('LEGACY_ION_USAGE') or "False"}"
+
+EXTRA_OECONF_append = " \
+    --disable-static \
+    --with-sanitized-headers=${STAGING_KERNEL_BUILDDIR}/usr/include \
+    ${@oe.utils.conditional('LEGACYION', 'True', ' --enable-legacyion', '', d)} \
 "
+
 PACKAGES +="${PN}-test-bin"
 
 FILES_${PN}     = "${libdir}/pkgconfig/* ${libdir}/* ${sysconfdir}/*"
 FILES_${PN}-test-bin = "${base_bindir}/*"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
