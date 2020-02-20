@@ -44,6 +44,7 @@ PARTITION_IMAGE_MAP = "${@set_partition_image_map(d)}"
 
 
 
+IMAGE_EXT4_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '-S ${SELINUX_FILE_CONTEXTS}', '', d)}"
 #  Function to get most suitable .inc file with list of packages
 #  to be installed into root filesystem from layer it is called.
 #  Following is the order of priority.
@@ -199,7 +200,7 @@ do_makeoverlay[dirs] = "${IMGDEPLOYDIR}"
 
 do_makeoverlay() {
     make_ext4fs -B ${IMGDEPLOYDIR}/${OVERLAYIMAGE_MAP_TARGET} \
-                ${IMAGE_EXT4_SELINUX_OPTIONS} \
+                -a /data ${IMAGE_EXT4_SELINUX_OPTIONS} \
                 -s -b 4096 -l ${OVERLAY_SIZE_EXT4} \
                 ${IMGDEPLOYDIR}/${OVERLAYIMAGE_TARGET} \
                 ${IMAGE_ROOTFS}/overlay
