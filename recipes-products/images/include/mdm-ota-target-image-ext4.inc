@@ -152,7 +152,7 @@ do_gen_ota_incremental_zip_ext4() {
 
         cd ${OTA_TARGET_IMAGE_ROOTFS_EXT4} && zip -qry ../target-files-ext4.zip *
 
-        cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./incremental_ota.sh ${DEPLOY_DIR_IMAGE}/target-files-ext4.zip ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/../target-files-ext4.zip ${IMAGE_ROOTFS} ext4
+        cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./incremental_ota.sh ${DEPLOY_DIR_IMAGE}/target-files-ext4.zip ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/../target-files-ext4.zip ${IMAGE_ROOTFS} ext4 --block
 
         cp ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/../target-files-ext4.zip ${DEPLOY_DIR_IMAGE}
         cp ${STAGING_DIR_NATIVE}/usr/bin/releasetools/update_incr_ext4.zip ${DEPLOY_DIR_IMAGE}/incremental_update_ext4.zip
