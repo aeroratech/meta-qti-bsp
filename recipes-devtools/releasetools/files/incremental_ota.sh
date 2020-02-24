@@ -31,12 +31,12 @@
 
 set -o xtrace
 
-if [ "$#" -lt 4 ]; then
-    echo "Usage  : $0 v1_target_files_zipfile v2_target_files_zipfile rootfs_path ext4_or_ubi [-c fsconfig_file [-p prefix]]"
+if [ "$#" -lt 5 ]; then
+    echo "Usage  : $0 v1_target_files_zipfile v2_target_files_zipfile rootfs_path ext4_or_ubi [-c fsconfig_file [-p prefix]][--system_path path]"
     echo "----------------------------------------------------------------------------------------------------"
-    echo "example: $0 v1_target_files_ubi.zip  v2_target_files_ubi.zip  machine-image/1.0-r0/rootfs ubi"
-    echo "example: $0 v1_target_files_ext4.zip v2_target_files_ext4.zip machine-image/1.0/rootfs ext4"
-    echo "example: $0 v1_target_files_ext4.zip v2_target_files_ext4.zip machine-image/1.0/rootfs ext4 --block"
+    echo "example: $0 v1_target_files_ubi.zip  v2_target_files_ubi.zip  machine-image/1.0-r0/rootfs ubi --system_path <path>"
+    echo "example: $0 v1_target_files_ext4.zip v2_target_files_ext4.zip machine-image/1.0/rootfs ext4 --system_path <path>"
+    echo "example: $0 v1_target_files_ext4.zip v2_target_files_ext4.zip machine-image/1.0/rootfs ext4 --block --system_path <path>"
     exit 1
 fi
 
@@ -55,12 +55,16 @@ export LANGUAGE=en_US.UTF-8
 export FSCONFIGFOPTS=" "
 block_based=" "
 python_version="python3"
+system_path=" "
 
-if [ "$#" -gt 4 ]; then
+if [ "$#" -gt 5 ]; then
     IFS=' ' read -a allopts <<< "$@"
     for i in $(seq 4 $#); do
        if [ "${allopts[${i}]}" = "--block" ]; then
            block_based="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--system_path" ]; then
+           i=$((i+1))
+           system_path="${allopts[${i}]}"
        else
            FSCONFIGFOPTS=$FSCONFIGFOPTS${allopts[${i}]}" "
        fi
@@ -100,7 +104,7 @@ fi
 
 cd target_files && zip -q $2 META/*filesystem_config.txt SYSTEM/build.prop && cd ..
 
-$python_version ./ota_from_target_files $block_based -n -v -d $device_type -v -p . -m linux_embedded --no_signing -i $1 $2 update_incr_$4.zip > ota_debug.txt 2>&1
+$python_version ./ota_from_target_files $block_based -n -v -d $device_type -v -p . -m linux_embedded --no_signing --system_mount_path $system_path -i $1 $2 update_incr_$4.zip > ota_debug.txt 2>&1
 
 if [[ $? = 0 ]]; then
     echo "update.zip generation was successful"
