@@ -31,12 +31,12 @@
 
 set -o xtrace
 
-if [ "$#" -lt 3 ]; then
-    echo "Usage  : $0 target_files_zipfile rootfs_path ext4_or_ubi [-c fsconfig_file [-p prefix]]"
+if [ "$#" -lt 4 ]; then
+    echo "Usage  : $0 target_files_zipfile rootfs_path ext4_or_ubi [-c fsconfig_file [-p prefix]][--system_path path]"
     echo "------------------------------------------------------------------"
-    echo "example: $0 target_files_ubi.zip  machine_image/1.0-r0/rootfs ubi"
-    echo "example: $0 target_files_ext4.zip machine_image/1.0-r0/rootfs ext4"
-    echo "example: $0 target_files_ext4.zip machine_image/1.0-r0/rootfs ext4  -p system/ -c fsconfig.conf --block"
+    echo "example: $0 target_files_ubi.zip  machine_image/1.0-r0/rootfs ubi --system_path <path>"
+    echo "example: $0 target_files_ext4.zip machine_image/1.0-r0/rootfs ext4 --system_path <path>"
+    echo "example: $0 target_files_ext4.zip machine_image/1.0-r0/rootfs ext4  -p system/ -c fsconfig.conf --block --system_path <path>"
     exit 1
 fi
 
@@ -54,13 +54,17 @@ export LANGUAGE=en_US.UTF-8
 export FSCONFIGFOPTS=" "
 block_based=" "
 python_version="python3"
+system_path=" "
+cache_location=" "
 
-if [ "$#" -gt 3 ]; then
+if [ "$#" -gt 4 ]; then
     IFS=' ' read -a allopts <<< "$@"
-    i=4
     for i in $(seq 3 $#); do
        if [ "${allopts[${i}]}" = "--block" ]; then
            block_based="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--system_path" ]; then
+           i=$((i+1))
+           system_path="${allopts[${i}]}"
        else
            FSCONFIGFOPTS=$FSCONFIGFOPTS${allopts[${i}]}" "
        fi
@@ -103,7 +107,7 @@ fi
 cd $target_files && zip -q $1 META/*filesystem_config.txt SYSTEM/build.prop BOOT/RAMDISK/empty && cd ..
 
 
-$python_version ./ota_from_target_files $block_based -n -v -d $device_type -p . -m linux_embedded --no_signing  $1 update_$3.zip > ota_debug.txt 2>&1
+$python_version ./ota_from_target_files $block_based -n -v -d $device_type -p . -m linux_embedded --no_signing --system_mount_path $system_path $1 update_$3.zip > ota_debug.txt 2>&1
 
 if [[ $? = 0 ]]; then
     echo "update.zip generation was successful"
