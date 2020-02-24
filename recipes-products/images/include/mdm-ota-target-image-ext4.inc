@@ -6,6 +6,8 @@ IS_OTA_SUPPORTED = "${@bb.utils.contains('DISTRO_FEATURES', 'qti-ab-boot', 'True
 
 RM_WORK_EXCLUDE_ITEMS += "rootfs rootfs-dbg"
 
+IMAGE_SYSTEM_MOUNT_POINT = "/"
+
 def emmc_set_vars_and_get_dependencies(d):
     if not d.getVar('IS_OTA_SUPPORTED', True) == 'True':
         d.setVar('GENERATE_AB_OTA_PACKAGE', "0")
@@ -77,7 +79,7 @@ do_recovery_ext4() {
     echo #mount point fstype device [device2] >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/RECOVERY/recovery.fstab
     echo /boot     emmc  /dev/block/bootdevice/by-name/boot >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/RECOVERY/recovery.fstab
     echo /overlay     ext4  /dev/block/bootdevice/by-name/userdata >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/RECOVERY/recovery.fstab
-    echo /   ext4  /dev/block/bootdevice/by-name/system >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/RECOVERY/recovery.fstab
+    echo ${IMAGE_SYSTEM_MOUNT_POINT}   ext4  /dev/block/bootdevice/by-name/system >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/RECOVERY/recovery.fstab
 
     #Getting content for OTA folder
     mkdir -p ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/OTA/bin
@@ -152,7 +154,7 @@ do_gen_ota_incremental_zip_ext4() {
 
         cd ${OTA_TARGET_IMAGE_ROOTFS_EXT4} && zip -qry ../target-files-ext4.zip *
 
-        cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./incremental_ota.sh ${DEPLOY_DIR_IMAGE}/target-files-ext4.zip ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/../target-files-ext4.zip ${IMAGE_ROOTFS} ext4 --block
+        cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./incremental_ota.sh ${DEPLOY_DIR_IMAGE}/target-files-ext4.zip ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/../target-files-ext4.zip ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
 
         cp ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/../target-files-ext4.zip ${DEPLOY_DIR_IMAGE}
         cp ${STAGING_DIR_NATIVE}/usr/bin/releasetools/update_incr_ext4.zip ${DEPLOY_DIR_IMAGE}/incremental_update_ext4.zip
@@ -167,7 +169,7 @@ do_gen_ota_full_zip_ext4() {
     rm -f ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/../target-files-ext4.zip
     cd ${OTA_TARGET_IMAGE_ROOTFS_EXT4} && zip -qry ../target-files-ext4.zip *
 
-    cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./full_ota.sh ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/../target-files-ext4.zip ${IMAGE_ROOTFS} ext4 --block
+    cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./full_ota.sh ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/../target-files-ext4.zip ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
 
     cp ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/../target-files-ext4.zip ${DEPLOY_DIR_IMAGE}
     cp ${STAGING_DIR_NATIVE}/usr/bin/releasetools/update_ext4.zip ${DEPLOY_DIR_IMAGE}/full_update_ext4.zip
