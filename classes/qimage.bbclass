@@ -12,9 +12,7 @@ RM_WORK_EXCLUDE += "${PN}"
 IMAGE_GEN_DEBUGFS = "1"
 IMAGE_FSTYPES_DEBUGFS = "tar.bz2"
 
-# By default support only custom images generation using functions like do_makesystem.
-# Don't build the monolith rootfs image as it pulls in a lot of unused dependencies.
-IMAGE_FSTYPES = ""
+do_image_ext4[noexec] = "1"
 
 ### Don't append timestamp to image name
 IMAGE_VERSION_SUFFIX = ""
