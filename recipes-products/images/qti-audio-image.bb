@@ -7,9 +7,6 @@ inherit qimage
 IMAGE_FEATURES += "ssh-server-openssh"
 
 CORE_IMAGE_EXTRA_INSTALL += "\
-        abctl \
-        ab-slot-util \
-        ab-status-updater \
         chrony \
         e2fsprogs \
         e2fsprogs-e2fsck \
