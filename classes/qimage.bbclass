@@ -140,6 +140,8 @@ gen_overlayfs() {
     mkdir -p ${IMAGE_ROOTFS}/overlay/.etc-work
     mkdir -p ${IMAGE_ROOTFS}/overlay/data
     mkdir -p ${IMAGE_ROOTFS}/overlay/.data-work
+    mkdir -p ${IMAGE_ROOTFS}/overlay/cache
+    mkdir -p ${IMAGE_ROOTFS}/overlay/.cache-work
 }
 
 do_fsconfig() {
