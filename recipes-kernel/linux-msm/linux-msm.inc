@@ -30,7 +30,9 @@ SRC_URI   =  "file://kernel \
 	     "
 SRC_URI_append_sdm845 += "${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'file://virtualization_robomaker.cfg', '', d)}"
 
-LINUX_VERSION_EXTENSION_qperf = "-perf"
+# Don't set any version extention on debug build
+LINUX_VERSION_EXTENSION ?= "-perf"
+LINUX_VERSION_EXTENSION_qti-distro-debug = ""
 
 # returns all the elements from the src uri that are config fragments
 def find_sccs(d):
