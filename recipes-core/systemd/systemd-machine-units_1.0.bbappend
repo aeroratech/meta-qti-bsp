@@ -84,7 +84,7 @@ do_install_append () {
     # If the AB boot feature is enabled, then instead of <partition>.mount,
     # a <partition-mount>.service invokes mounting the A/B partition as detected at the time of boot.
     for entry in ${MNT_POINTS}; do
-        if [ "$entry" == "$userfsdatadir" ]; then
+        if [ "$entry" = "$userfsdatadir" ]; then
             if ${@bb.utils.contains('DISTRO_FEATURES','nand-boot','false','true',d)}; then
                 install -m 0644 ${WORKDIR}/data.mount ${D}${systemd_unitdir}/system/data.mount
 
@@ -98,7 +98,7 @@ do_install_append () {
             ln -sf ${systemd_unitdir}/system/data.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/data.mount
         fi
 
-        if [ "$entry" == "/systemrw" ]; then
+        if [ "$entry" = "/systemrw" ]; then
             if ${@bb.utils.contains('DISTRO_FEATURES','nand-boot','false','true',d)}; then
                 install -m 0644 ${WORKDIR}/systemrw.mount ${D}${systemd_unitdir}/system/systemrw.mount
 
@@ -112,7 +112,7 @@ do_install_append () {
             ln -sf ${systemd_unitdir}/system/systemrw.mount ${D}${systemd_unitdir}/system/local-fs.target.requires/systemrw.mount
         fi
 
-        if [ "$entry" == "/cache" ]; then
+        if [ "$entry" = "/cache" ]; then
             if ${@bb.utils.contains('DISTRO_FEATURES','nand-boot','false','true',d)}; then
                 install -m 0644 ${WORKDIR}/cache.mount ${D}${systemd_unitdir}/system/cache.mount
             else
@@ -121,7 +121,7 @@ do_install_append () {
             ln -sf ${systemd_unitdir}/system/cache.mount ${D}${systemd_unitdir}/system/multi-user.target.wants/cache.mount
         fi
 
-        if [ "$entry" == "/persist" ]; then
+        if [ "$entry" = "/persist" ]; then
             if ${@bb.utils.contains('DISTRO_FEATURES','nand-boot','false','true',d)}; then
                 install -m 0644 ${WORKDIR}/persist.mount ${D}${systemd_unitdir}/system/persist.mount
             else
@@ -132,7 +132,7 @@ do_install_append () {
             ln -sf ${systemd_unitdir}/system/persist.mount ${D}${systemd_unitdir}/system/sysinit.target.wants/persist.mount
         fi
 
-        if [ "$entry" == "/firmware" ]; then
+        if [ "$entry" = "/firmware" ]; then
             if ${@bb.utils.contains('COMBINED_FEATURES','qti-ab-boot','true','false',d)}; then
                 install -m 0644 ${WORKDIR}/firmware-mount.service ${D}${systemd_unitdir}/system/firmware-mount.service
                 ln -sf ${systemd_unitdir}/system/firmware-mount.service \
@@ -154,7 +154,7 @@ do_install_append () {
             fi
         fi
 
-        if [ "$entry" == "/dsp" ]; then
+        if [ "$entry" = "/dsp" ]; then
             if ${@bb.utils.contains('COMBINED_FEATURES','qti-ab-boot','true','false',d)}; then
                 install -m 0644 ${WORKDIR}/dsp-mount.service ${D}${systemd_unitdir}/system/dsp-mount.service
                 ln -sf ${systemd_unitdir}/system/dsp-mount.service ${D}${systemd_unitdir}/system/local-fs.target.requires/dsp-mount.service
@@ -170,7 +170,7 @@ do_install_append () {
             fi
         fi
 
-        if [ "$entry" == "/bt_firmware" ]; then
+        if [ "$entry" = "/bt_firmware" ]; then
             if ${@bb.utils.contains('COMBINED_FEATURES','qti-ab-boot','true','false',d)}; then
                 install -m 0644 ${WORKDIR}/bt_firmware-mount.service ${D}${systemd_unitdir}/system/bt_firmware-mount.service
                 ln -sf ${systemd_unitdir}/system/bt_firmware-mount.service \
@@ -189,7 +189,7 @@ do_install_append () {
             fi
         fi
 
-        if [ "$entry" == "/overlay" ]; then
+        if [ "$entry" = "/overlay" ]; then
             install -m 0644 ${WORKDIR}/overlay.mount ${D}${systemd_unitdir}/system/overlay.mount
             install -m 0644 ${WORKDIR}/overlay-etc.mount ${D}${systemd_unitdir}/system/etc.mount
             install -m 0644 ${WORKDIR}/overlay-data.mount ${D}${systemd_unitdir}/system/data.mount
