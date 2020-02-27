@@ -26,12 +26,12 @@ PARALLEL_MAKE = ""
 
 EXTRA_OECONF_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'qti-ab-boot', 'TARGET_SUPPORTS_AB=true', '', d)}"
 
-FILES_${PN}  = "${bindir} ${libdir} ${includedir} /res /data"
+FILES_${PN}  = "${bindir} ${libdir} ${includedir} /res /cache"
 
 RM_WORK_EXCLUDE += "${PN}"
 
 do_install_append() {
         install -d ${D}/res/
-        install -d ${D}/data/recovery
+        install -d ${D}/cache/recovery
         install -m 0755 ${WORKDIR}/fstab_AB -D ${D}/res/recovery_volume_config
 }
