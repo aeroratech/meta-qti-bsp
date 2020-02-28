@@ -94,3 +94,6 @@ IMAGE_INIT_MANAGER = "systemd"
 IMAGE_INITSCRIPTS = ""
 
 RM_WORK_EXCLUDE += "make-mod-scripts"
+
+# Enable dm-verity feature
+DISTRO_FEATURES += "dm-verity"
