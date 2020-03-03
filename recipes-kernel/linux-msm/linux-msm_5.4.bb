@@ -1,7 +1,7 @@
 require recipes-kernel/linux-msm/linux-msm.inc
 COMPATIBLE_MACHINE = "genericarmv8"
 
-SRC_URI   =  "file://kernel/msm-5.4"
+SRC_DIR   =  "${WORKSPACE}/kernel/msm-5.4"
 S         =  "${WORKDIR}/kernel/msm-5.4"
 PR = "r0"
 
