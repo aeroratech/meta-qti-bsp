@@ -34,8 +34,10 @@ DISTRO_FEATURES_append = " drm fbdev opencl opengl pulseaudio tensorflow-lite wa
 # qti-cdsp:      Support QTI cdsp solution
 # qti-adsp:      Support QTI adsp solution
 # qti-qmmf:      Support QTI QMMF solution
+# qti-security:      Support QTI security solution
+#
 
-DISTRO_FEATURES_append = " qti-audio qti-audio-cal qti-audio-encoder qti-bluetooth qti-camera qti-mm-parser qti-video qti-video-encoder qti-cdsp qti-adsp qti-fastcv qti-qmmf"
+DISTRO_FEATURES_append = " qti-audio qti-audio-cal qti-audio-encoder qti-bluetooth qti-camera qti-mm-parser qti-video qti-video-encoder qti-cdsp qti-adsp qti-fastcv qti-qmmf qti-security "
 
 # inherit distro_featres_check class across the distro
 INHERIT += "distro_features_check"
