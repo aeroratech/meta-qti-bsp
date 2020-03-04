@@ -14,6 +14,25 @@ KERNEL_CC = "${STAGING_BINDIR_NATIVE}/llvm-arm-toolchain/bin/clang -target ${TAR
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 do_shared_workdir_append () {
+        cp Makefile $kerneldir/
+        cp -fR usr $kerneldir/
+
+        cp include/config/auto.conf $kerneldir/include/config/auto.conf
+
+        if [ -d arch/${ARCH}/include ]; then
+                mkdir -p $kerneldir/arch/${ARCH}/include/
+                cp -fR arch/${ARCH}/include/* $kerneldir/arch/${ARCH}/include/
+        fi
+
+        if [ -d arch/${ARCH}/boot ]; then
+                mkdir -p $kerneldir/arch/${ARCH}/boot/
+                cp -fR arch/${ARCH}/boot/* $kerneldir/arch/${ARCH}/boot/
+        fi
+
+        mkdir -p $kerneldir/scripts
+
+        cp ${STAGING_KERNEL_DIR}/usr/gen_initramfs_list.sh $kerneldir/scripts/
+
         # Generate kernel headers
         oe_runmake_call -C ${STAGING_KERNEL_DIR} ARCH=${ARCH} CC="${KERNEL_CC}" LD="${KERNEL_LD}" headers_install O=${STAGING_KERNEL_BUILDDIR}
 }
