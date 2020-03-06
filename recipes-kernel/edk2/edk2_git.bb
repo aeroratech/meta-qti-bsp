@@ -47,10 +47,7 @@ do_compile () {
     oe_runmake -f makefile all
 }
 
-do_install() {
-        install -d ${D}/boot
-}
-
+do_install[noexec]="1"
 do_configure[noexec]="1"
 
 FILES_${PN} = "/boot"
