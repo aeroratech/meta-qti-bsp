@@ -54,7 +54,7 @@ FILES_${PN} = "/boot"
 FILES_${PN}-dbg = "/boot/.debug"
 
 do_deploy() {
-        install ${D}/boot/abl.elf ${DEPLOYDIR}
+        install ${WORKDIR}/abl.elf ${DEPLOYDIR}
 }
 
 do_deploy[dirs] = "${S} ${DEPLOYDIR}"
