@@ -42,4 +42,5 @@ do_deploy_append () {
          install -d ${DEPLOYDIR}
          install -m 0644 ${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE} ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
          install -m 0644 vmlinux ${DEPLOYDIR}
+         install -m 0644 System.map ${DEPLOYDIR}
 }
