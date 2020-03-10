@@ -21,6 +21,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-core-prop \
         packagegroup-qti-data \
         packagegroup-qti-dsp \
+        packagegroup-qti-fastcv \
         packagegroup-qti-ml \
         packagegroup-qti-ss-mgr \
         packagegroup-qti-wifi \
