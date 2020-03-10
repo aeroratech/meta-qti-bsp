@@ -1,5 +1,6 @@
 BASEMACHINE ?= "genericarmv8"
 require conf/machine/include/basemachine.inc
+require ${COREBASE}/meta-qti-bsp/recipes-products/images/include/qti-ramdisk.inc
 
 DEFAULTTUNE ?= "aarch64"
 include conf/machine/include/arm/arch-armv8.inc
@@ -15,3 +16,7 @@ EXTRA_IMAGECMD ?= "-N 2048"
 
 SYSTEM_SIZE_EXT4 ?= "120000000"
 VM_SIZE_EXT4 ?= "170000000"
+
+do_rootfs_append() {
+    bb.build.exec_func('do_ramdisk_create',d)
+}

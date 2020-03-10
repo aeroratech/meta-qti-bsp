@@ -2,8 +2,7 @@ inherit qimage
 
 DEPENDS += " virtual/kernel"
 
-CORE_IMAGE_EXTRA_INSTALL += "\
-"
+CORE_IMAGE_EXTRA_INSTALL += " "
 
 #Exclude packages
 PACKAGE_EXCLUDE += "readline"

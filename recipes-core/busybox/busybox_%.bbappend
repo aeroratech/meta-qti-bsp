@@ -13,6 +13,7 @@ SRC_URI += "\
             file://login.cfg \
             file://mdev.cfg \
             file://base.cfg \
+            ${@["file://init.cfg", ""][(d.getVar('VIRTUAL-RUNTIME_init_manager') == 'busybox')]} \
             file://syslog-startup.conf \
             file://busybox-syslog.service \
             file://busybox_klogd.patch;patchdir=.. \
