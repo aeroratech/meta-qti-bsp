@@ -12,7 +12,7 @@ SRC_URI = "file://OTA/device/qcom/common/recovery/oem-recovery/"
 
 S = "${WORKDIR}/OTA/device/qcom/common/recovery/oem-recovery/"
 
-DEPENDS += "glib-2.0 virtual/kernel"
+DEPENDS += "glib-2.0 virtual/kernel libion"
 
 EXTRA_OECONF = "--with-glib --with-sanitized-headers=${STAGING_KERNEL_BUILDDIR}/usr/include \
                 --with-core-headers=${STAGING_INCDIR}"
