@@ -27,10 +27,11 @@ SYSTEMIMAGE_TARGET ?= "${IMAGE_NAME}-sysfs.ext4"
 SYSTEMIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-sysfs.map"
 OVERLAYIMAGE_TARGET ?= "${IMAGE_NAME}-overlayfs.ext4"
 OVERLAYIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-overlayfs.map"
+PERSISTIMAGE_TARGET ?= "${IMAGE_NAME}-persist.ext4"
 
 #Set appropriate partion:Image map
-NONAB_BOOT_PARTITION_IMAGE_MAP = "boot='${BOOTIMAGE_TARGET}',system='${SYSTEMIMAGE_TARGET}',userdata='${OVERLAYIMAGE_TARGET}'"
-AB_BOOT_PARTITION_IMAGE_MAP = "boot_a='${BOOTIMAGE_TARGET}',boot_b='${BOOTIMAGE_TARGET}',system_a='${SYSTEMIMAGE_TARGET}',system_b='${SYSTEMIMAGE_TARGET}',userdata='${OVERLAYIMAGE_TARGET}'"
+NONAB_BOOT_PARTITION_IMAGE_MAP = "boot='${BOOTIMAGE_TARGET}',system='${SYSTEMIMAGE_TARGET}',userdata='${OVERLAYIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
+AB_BOOT_PARTITION_IMAGE_MAP = "boot_a='${BOOTIMAGE_TARGET}',boot_b='${BOOTIMAGE_TARGET}',system_a='${SYSTEMIMAGE_TARGET}',system_b='${SYSTEMIMAGE_TARGET}',userdata='${OVERLAYIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
 
 def set_partition_image_map(d):
     if "qti-ab-boot" in d.getVar('COMBINED_FEATURES', True):
@@ -282,4 +283,33 @@ do_make_veritybootimg[depends] += "virtual/kernel:do_deploy"
 python () {
     if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
         bb.build.addtask('do_make_veritybootimg', 'do_image_complete', 'do_rootfs', d)
+}
+
+
+################################################
+############ Generate persist image ############
+################################################
+ROOTFS_POSTPROCESS_COMMAND_prepend = " create_persist_rootfs; sync_host_fs; "
+IMAGE_PREPROCESS_COMMAND += "create_persist_img;"
+
+PERSIST_IMAGE_ROOTFS      ?= "${TMPDIR}/rootfs/${IMAGE_NAME}-persist"
+PERSIST_IMAGE_ROOTFS_SIZE ?= "6536668"
+
+# Root image is created now
+create_persist_rootfs() {
+   PERSIST_DIR="${IMAGE_ROOTFS}/persist"
+   rm -rf ${PERSIST_IMAGE_ROOTFS}
+   mkdir -p ${PERSIST_IMAGE_ROOTFS}
+   if [ "$(ls -A ${PERSIST_DIR})" ]; then
+      mv ${PERSIST_DIR}/* ${PERSIST_IMAGE_ROOTFS}
+   fi
+}
+
+sync_host_fs() {
+   /bin/sync
+}
+
+create_persist_img () {
+   make_ext4fs ${PERSISTFS_CONFIG} ${MAKEEXT4_MOUNT_OPT} -s -l ${PERSIST_IMAGE_ROOTFS_SIZE} ${DEPLOY_DIR_IMAGE}/${PERSISTIMAGE_TARGET} ${PERSIST_IMAGE_ROOTFS}
+   chmod 644 ${DEPLOY_DIR_IMAGE}/${PERSISTIMAGE_TARGET}
 }

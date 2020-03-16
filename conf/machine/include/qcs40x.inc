@@ -19,6 +19,7 @@ MACHINE_MNT_POINTS = " \
     /dsp \
     /firmware \
     /overlay \
+    /persist \
 "
 
 # Sizes for EXT4 (in bytes)
