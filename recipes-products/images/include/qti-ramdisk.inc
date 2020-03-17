@@ -1,3 +1,5 @@
+do_rootfs[depends] += "virtual/kernel:do_shared_workdir"
+
 do_ramdisk_create() {
         CURRENT_DIR=`pwd`
         rm -rf ${TMPDIR}/ramdisk
