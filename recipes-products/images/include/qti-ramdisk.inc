@@ -27,6 +27,7 @@ do_ramdisk_create() {
         cd ${TMPDIR}/ramdisk
         ln -s bin sbin
         cp ${IMAGE_ROOTFS}/bin/busybox bin/
+        cp ${IMAGE_ROOTFS}/bin/busybox.suid bin/
         if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'true', 'false', d)}; then
             cp ${IMAGE_ROOTFS}/lib/ld-linux-aarch64.so.1 lib/ld-linux-aarch64.so.1
         else
@@ -83,8 +84,8 @@ do_ramdisk_create() {
         ln -s bin/busybox init
         ln -s busybox bin/sh
         ln -s busybox bin/echo
-        ln -s busybox bin/mount
-        ln -s busybox bin/umount
+        ln -s busybox.suid bin/mount
+        ln -s busybox.suid bin/umount
         if ${@bb.utils.contains('IMAGE_DEV_MANAGER', 'mdev', 'true', 'false', d)}; then
             ln -s busybox bin/mdev
         fi
