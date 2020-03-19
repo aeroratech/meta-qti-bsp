@@ -18,6 +18,7 @@ DATA_BLOCKS_NUMBER ?= ""
 SIZE_IN_SECTORS = ""
 FEC_OFFSET = "0"
 FEC_SIZE = "0"
+METADATA_TREE_SIZE = "0"
 
 FEC_SUPPORT = "1"
 DEPENDS += " ${@bb.utils.contains('FEC_SUPPORT', '1', 'fec-native', '', d)}"
@@ -83,6 +84,8 @@ def get_verity_size(d, partition_size, fec_support):
     except subprocess.CalledProcessError as e:
         bb.debug(1, "cmd: %s" % (cmd))
         bb.fatal("Error in calculating verity tree size: %s\n%s" % (e.returncode, e.output.decode("utf-8")))
+
+    d.setVar('METADATA_TREE_SIZE', str(verity_tree_size))
 
     # Get verity metadata size
     bvmd_script_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/build_verity_metadata.py'
@@ -216,6 +219,7 @@ python make_verity_enabled_system_image () {
         keyid = subprocess.check_output(keycmd, shell=True).strip()
         # cmdline += " veritykeyid=id:" + keyid
         cmdline += keyid.decode()
+        cmdline += " veritymd=" + d.getVar('METADATA_TREE_SIZE', True) + "e"
     else:
         dm_prefix = d.getVar('DM_KEY_PREFIX', True)
         dm_key_args_list = []
