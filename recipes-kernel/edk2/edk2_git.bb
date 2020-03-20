@@ -27,6 +27,7 @@ EXTRA_OEMAKE = " \
     'BUILDDIR=${B}' \
     'BOOTLOADER_OUT=${B}/out' \
     'ENABLE_LE_VARIANT=true' \
+    'ENABLE_SYSTEMD_BOOTSLOT=${SYSTEMD_BOOTSLOT_ENABLED}'\
     'VERIFIED_BOOT_LE=${VBLE}' \
     'VERITY_LE=${VERITY_ENABLED}' \
     'INIT_BIN_LE=\"/sbin/init\"' \
