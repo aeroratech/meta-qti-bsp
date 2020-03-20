@@ -24,6 +24,20 @@ SYSTEMIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-sysfs.map"
 OVERLAYIMAGE_TARGET ?= "${IMAGE_NAME}-overlayfs.ext4"
 OVERLAYIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-overlayfs.map"
 
+#Set appropriate partion:Image map
+NONAB_BOOT_PARTITION_IMAGE_MAP = "boot='${BOOTIMAGE_TARGET}',system='${SYSTEMIMAGE_TARGET}',userdata='${OVERLAYIMAGE_TARGET}'"
+AB_BOOT_PARTITION_IMAGE_MAP = "boot_a='${BOOTIMAGE_TARGET}',boot_b='${BOOTIMAGE_TARGET}',system_a='${SYSTEMIMAGE_TARGET}',system_b='${SYSTEMIMAGE_TARGET}',userdata='${OVERLAYIMAGE_TARGET}'"
+
+def set_partition_image_map(d):
+    if "qti-ab-boot" in d.getVar('COMBINED_FEATURES', True):
+        return d.getVar('AB_BOOT_PARTITION_IMAGE_MAP', True)
+    else:
+        return d.getVar('NONAB_BOOT_PARTITION_IMAGE_MAP', True)
+
+PARTITION_IMAGE_MAP = "${@set_partition_image_map(d)}"
+
+
+
 #  Function to get most suitable .inc file with list of packages
 #  to be installed into root filesystem from layer it is called.
 #  Following is the order of priority.
@@ -90,7 +104,7 @@ do_gen_partition_bin () {
     python ${STAGING_BINDIR_NATIVE}/gen_partition.py \
         -i ${THISDIR}/partition/${MACHINE_PARTITION_CONF} \
         -o ${WORKDIR}/partition.xml \
-        -m boot="${BOOTIMAGE_TARGET}",system="${SYSTEMIMAGE_TARGET}",userdata="${OVERLAYIMAGE_TARGET}"
+        -m ${PARTITION_IMAGE_MAP}
 
     install ${WORKDIR}/partition.xml ${DEPLOY_DIR_IMAGE}
 
