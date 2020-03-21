@@ -18,7 +18,7 @@ def emmc_set_vars_and_get_dependencies(d):
         # if A/B support is supported, recovery image need not be generated.
         # only A/B target will be generated
         d.setVar('GENERATE_AB_OTA_PACKAGE', "1")
-        return " releasetools-native zip-native fsconfig-native applypatch-native bc-native"
+        return " releasetools-native zip-native fsconfig-native applypatch-native bc-native bsdiff-native"
 
 # Add tasks to generate recovery image, OTA zip files
 python __anonymous () {
