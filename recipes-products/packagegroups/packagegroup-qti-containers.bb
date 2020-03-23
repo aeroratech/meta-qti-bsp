@@ -13,7 +13,7 @@ PACKAGES = ' \
     '
 
 # Startup scripts needed during device bootup
-RDEPENDS_packagegroup-containers= "\
+RDEPENDS_packagegroup-qti-containers= "\
     aufs-util \
     ca-certificates \
     chrony \
