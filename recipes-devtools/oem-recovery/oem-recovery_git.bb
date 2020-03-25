@@ -14,6 +14,9 @@ S = "${WORKDIR}/OTA/device/qcom/common/recovery/oem-recovery/"
 
 DEPENDS += "virtual/kernel"
 
+# To get kernel headers for compilation
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
+
 EXTRA_OECONF = " \
     --with-sanitized-headers=${STAGING_KERNEL_BUILDDIR}/usr/include \
     --with-core-headers=${STAGING_INCDIR} \

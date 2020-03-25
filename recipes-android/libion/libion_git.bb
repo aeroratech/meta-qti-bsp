@@ -14,6 +14,9 @@ SRC_URI   = "file://libion"
 S = "${WORKDIR}/libion"
 DEPENDS += "virtual/kernel liblog"
 
+# To get kernel headers for compilation
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
+
 LEGACYION = "${@d.getVar('LEGACY_ION_USAGE') or "False"}"
 
 EXTRA_OECONF_append = " \
