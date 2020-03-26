@@ -2,7 +2,7 @@
 # add the MACHINE name to this list.
 # This is the "only" list that will control whether
 # OTA upgrade will be supported on a target.
-IS_OTA_SUPPORTED = "${@bb.utils.contains('DISTRO_FEATURES', 'qti-ab-boot', 'True', 'False', d)}"
+IS_OTA_SUPPORTED = "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'True', 'False', d)}"
 
 RM_WORK_EXCLUDE_ITEMS += "rootfs rootfs-dbg"
 
