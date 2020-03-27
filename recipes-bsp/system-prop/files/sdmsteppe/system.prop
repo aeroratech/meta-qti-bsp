@@ -73,3 +73,6 @@ persist.vendor.audio.ambisonic.auto.profile=false
 
 #ubwc
 persist.qmmf.ubwcstream.enable=1
+
+#Make qmmf rescalar run on GPU by default
+persist.qmmf.rescaler.type=C2D
