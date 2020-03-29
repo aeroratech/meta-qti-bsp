@@ -28,6 +28,9 @@ do_ramdisk_create() {
         cp ${IMAGE_ROOTFS}/bin/busybox.suid bin/
         if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'true', 'false', d)}; then
             cp ${IMAGE_ROOTFS}/lib/ld-linux-aarch64.so.1 lib/ld-linux-aarch64.so.1
+            cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/vmrd-init .
+            chmod 744 vmrd-init
+            ln -s vmrd-init init
         else
             cp ${IMAGE_ROOTFS}/lib/ld-linux-armhf.so.3 lib/ld-linux-armhf.so.3
             cp ${IMAGE_ROOTFS}/sbin/adbd sbin/
@@ -47,6 +50,7 @@ do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/lib/libgcc_s.so.1 lib/libgcc_s.so.1
             #cp ${IMAGE_ROOTFS}/lib/libcrypto.so.1.0.0 lib/libcrypto.so.1.0.0
             cp ${IMAGE_ROOTFS}/usr/lib/libstdc++.so.6 lib/libstdc++.so.6
+            ln -s bin/busybox init
         fi
         cp ${IMAGE_ROOTFS}/lib/libz.so.1 lib/libz.so.1
         cp ${IMAGE_ROOTFS}/lib/libc.so.6 lib/libc.so.6
@@ -78,8 +82,6 @@ do_ramdisk_create() {
                 cp ${IMAGE_ROOTFS}/lib/libpcre.so.1 lib/libpcre.so.1
             fi
         fi
-
-        ln -s bin/busybox init
         ln -s busybox bin/sh
         ln -s busybox bin/echo
         ln -s busybox.suid bin/mount
