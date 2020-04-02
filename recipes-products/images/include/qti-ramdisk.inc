@@ -1,5 +1,3 @@
-do_rootfs[depends] += "virtual/kernel:do_shared_workdir"
-
 do_ramdisk_create() {
         CURRENT_DIR=`pwd`
         rm -rf ${TMPDIR}/ramdisk
@@ -91,7 +89,7 @@ do_ramdisk_create() {
         fi
 
         #gen_initramfs_list.sh expects to be run from kernel directory
-        cd ${STAGING_KERNEL_BUILDDIR}
+        cd ${DEPLOY_DIR_IMAGE}/kernel_scripts
 
         bash ./scripts/gen_initramfs_list.sh -o ${DEPLOY_DIR_IMAGE}/${PN}-initrd.gz -u 0 -g 0 ${TMPDIR}/ramdisk
 
