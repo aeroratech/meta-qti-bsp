@@ -102,7 +102,9 @@ DEPENDS += "\
              qdl-native \
 "
 
-do_gen_partition_bin[dirs]      = "${DEPLOY_DIR_IMAGE}"
+# generate partitions artifact in an image-specific folder since they include
+# image specific data such as file name and parition size
+do_gen_partition_bin[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_gen_partition_bin () {
     # Generate partition.xml using gen_partition utility
@@ -111,13 +113,13 @@ do_gen_partition_bin () {
         -o ${WORKDIR}/partition.xml \
         -m ${PARTITION_IMAGE_MAP}
 
-    install ${WORKDIR}/partition.xml ${DEPLOY_DIR_IMAGE}
+    install -m 0644 ${WORKDIR}/partition.xml .
 
     # Call ptool to generate partition bins
-    python ${STAGING_BINDIR_NATIVE}/ptool.py -x ${WORKDIR}/partition.xml -t ${DEPLOY_DIR_IMAGE}
+    python ${STAGING_BINDIR_NATIVE}/ptool.py -x partition.xml
 }
 
-addtask do_gen_partition_bin after do_prepare_recipe_sysroot before do_image
+addtask do_gen_partition_bin after do_rootfs before do_image
 
 # Check and remove empty packages before rootfs creation
 do_rootfs[prefuncs] += "rootfs_ignore_packages"
