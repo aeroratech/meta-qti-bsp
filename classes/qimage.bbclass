@@ -223,7 +223,7 @@ python do_make_bootimg () {
     base            = d.getVar('KERNEL_BASE', True)
 
     # When verity is enabled add '.noverity' suffix to default boot img.
-    output          = d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + d.getVar('BOOTIMAGE_TARGET', True)
+    output          = d.getVar('IMGDEPLOYDIR', True) + "/" + d.getVar('BOOTIMAGE_TARGET', True)
     if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
             output += ".noverity"
 
@@ -238,11 +238,11 @@ python do_make_bootimg () {
         bb.error("Running: %s failed." % cmd)
 
 }
-do_make_bootimg[dirs]      = "${DEPLOY_DIR_IMAGE}"
+do_make_bootimg[dirs]      = "${IMGDEPLOYDIR}"
 # Make sure native tools and vmlinux ready to create boot.img
 do_make_bootimg[depends] += "virtual/kernel:do_deploy"
 
-addtask do_make_bootimg before do_image_complete after do_prepare_recipe_sysroot
+addtask do_make_bootimg before do_image_complete after do_rootfs
 
 # With dm-verity, kernel cmdline has to be updated with correct hash value of
 # system image. This means final boot image can be created only after system image.
@@ -265,7 +265,7 @@ python do_make_veritybootimg () {
     cmdline         = "\"" + d.getVar('KERNEL_CMD_PARAMS', True) + " " + verity_cmdline + "\""
     pagesize        = d.getVar('PAGE_SIZE', True)
     base            = d.getVar('KERNEL_BASE', True)
-    output          = d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + d.getVar('BOOTIMAGE_TARGET', True)
+    output          = d.getVar('IMGDEPLOYDIR', True) + "/" + d.getVar('BOOTIMAGE_TARGET', True)
 
     # cmd to make boot.img
     cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s %s --ramdisk /dev/null --ramdisk_offset 0x0 --output %s" \
@@ -279,7 +279,7 @@ python do_make_veritybootimg () {
 }
 do_make_veritybootimg[depends]  += "${PN}:do_makesystem"
 do_make_veritybootimg[depends]  += "${PN}:do_makeoverlay"
-do_make_veritybootimg[dirs]      = "${DEPLOY_DIR_IMAGE}"
+do_make_veritybootimg[dirs]      = "${IMGDEPLOYDIR}"
 do_make_veritybootimg[depends] += "virtual/kernel:do_deploy"
 
 python () {
