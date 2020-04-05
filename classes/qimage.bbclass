@@ -180,16 +180,16 @@ do_fsconfig_append_qti-distro-user() {
 # Alter system image size if varity is enabled.
 do_makesystem[prefuncs]  += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'adjust_system_size_for_verity', '', d)}"
 do_makesystem[postfuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'make_verity_enabled_system_image', '', d)}"
-do_makesystem[dirs]       = "${DEPLOY_DIR_IMAGE}"
+do_makesystem[dirs]       = "${IMGDEPLOYDIR}"
 
 do_makesystem() {
     cp ${THISDIR}/fsconfig/${MACHINE_FSCONFIG_CONF} ${WORKDIR}/rootfs-fsconfig.conf
     make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
-                -B ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_MAP_TARGET} \
+                -B ${IMGDEPLOYDIR}/${SYSTEMIMAGE_MAP_TARGET} \
                 -a / -b 4096 -s \
                 -l ${SYSTEM_SIZE_EXT4} \
                 ${IMAGE_EXT4_SELINUX_OPTIONS} \
-                ${DEPLOY_DIR_IMAGE}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
+                ${IMGDEPLOYDIR}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
 }
 addtask do_makesystem after do_rootfs before do_image_complete
 
