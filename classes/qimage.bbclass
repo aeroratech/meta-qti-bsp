@@ -194,13 +194,13 @@ do_makesystem() {
 addtask do_makesystem after do_rootfs before do_image_complete
 
 ### Generate overlay.img ###
-do_makeoverlay[dirs] = "${DEPLOY_DIR_IMAGE}"
+do_makeoverlay[dirs] = "${IMGDEPLOYDIR}"
 
 do_makeoverlay() {
-    make_ext4fs -B ${DEPLOY_DIR_IMAGE}/${OVERLAYIMAGE_MAP_TARGET} \
+    make_ext4fs -B ${IMGDEPLOYDIR}/${OVERLAYIMAGE_MAP_TARGET} \
                 ${IMAGE_EXT4_SELINUX_OPTIONS} \
                 -s -b 4096 -l ${OVERLAY_SIZE_EXT4} \
-                ${DEPLOY_DIR_IMAGE}/${OVERLAYIMAGE_TARGET} \
+                ${IMGDEPLOYDIR}/${OVERLAYIMAGE_TARGET} \
                 ${IMAGE_ROOTFS}/overlay
 }
 
