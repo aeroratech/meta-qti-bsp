@@ -28,6 +28,7 @@ SYSTEMIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-sysfs.map"
 OVERLAYIMAGE_TARGET ?= "${IMAGE_NAME}-overlayfs.ext4"
 OVERLAYIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-overlayfs.map"
 PERSISTIMAGE_TARGET ?= "${IMAGE_NAME}-persist.ext4"
+PERSISTIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-persist.map"
 
 #Set appropriate partion:Image map
 NONAB_BOOT_PARTITION_IMAGE_MAP = "boot='${BOOTIMAGE_TARGET}',system='${SYSTEMIMAGE_TARGET}',userdata='${OVERLAYIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
@@ -207,6 +208,26 @@ do_makeoverlay() {
 addtask do_makeoverlay after do_rootfs before do_build
 
 ################################################
+############ Generate persist image ############
+################################################
+PERSIST_IMAGE_ROOTFS_SIZE ?= "6536668"
+do_makepersist[dirs] = "${IMGDEPLOYDIR}"
+
+do_makepersist() {
+    make_ext4fs ${PERSISTFS_CONFIG} ${MAKEEXT4_MOUNT_OPT} \
+                -B ${IMGDEPLOYDIR}/${PERSISTIMAGE_MAP_TARGET} \
+                -s -l ${PERSIST_IMAGE_ROOTFS_SIZE} \
+                ${IMGDEPLOYDIR}/${PERSISTIMAGE_TARGET} \
+                ${IMAGE_ROOTFS}/persist
+
+    # Empty the /persist folder so that it doesn't end up
+    # in system image as well
+    rm -rf ${IMAGE_ROOTFS}/persist/*
+}
+# It must be before do_makesystem to remove /persist
+addtask do_makepersist after do_rootfs before do_makesystem
+
+################################################
 ############# Generate boot.img ################
 ################################################
 python do_make_bootimg () {
@@ -287,31 +308,3 @@ python () {
         bb.build.addtask('do_make_veritybootimg', 'do_image_complete', 'do_rootfs', d)
 }
 
-
-################################################
-############ Generate persist image ############
-################################################
-ROOTFS_POSTPROCESS_COMMAND_prepend = " create_persist_rootfs; sync_host_fs; "
-IMAGE_PREPROCESS_COMMAND += "create_persist_img;"
-
-PERSIST_IMAGE_ROOTFS      ?= "${TMPDIR}/rootfs/${IMAGE_NAME}-persist"
-PERSIST_IMAGE_ROOTFS_SIZE ?= "6536668"
-
-# Root image is created now
-create_persist_rootfs() {
-   PERSIST_DIR="${IMAGE_ROOTFS}/persist"
-   rm -rf ${PERSIST_IMAGE_ROOTFS}
-   mkdir -p ${PERSIST_IMAGE_ROOTFS}
-   if [ "$(ls -A ${PERSIST_DIR})" ]; then
-      mv ${PERSIST_DIR}/* ${PERSIST_IMAGE_ROOTFS}
-   fi
-}
-
-sync_host_fs() {
-   /bin/sync
-}
-
-create_persist_img () {
-   make_ext4fs ${PERSISTFS_CONFIG} ${MAKEEXT4_MOUNT_OPT} -s -l ${PERSIST_IMAGE_ROOTFS_SIZE} ${DEPLOY_DIR_IMAGE}/${PERSISTIMAGE_TARGET} ${PERSIST_IMAGE_ROOTFS}
-   chmod 644 ${DEPLOY_DIR_IMAGE}/${PERSISTIMAGE_TARGET}
-}
