@@ -50,7 +50,7 @@ do_install[noexec]="1"
 do_configure[noexec]="1"
 
 do_deploy() {
-        install ${WORKDIR}/abl.elf ${DEPLOYDIR}
+    install -m 644 ${WORKDIR}/abl.elf ${DEPLOYDIR}
 }
 
 do_deploy[dirs] = "${S} ${DEPLOYDIR}"
