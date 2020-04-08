@@ -27,6 +27,7 @@
 
 [Unit]
 Description=Mount modem partition to /firmware mount point
+ConditionDirectoryNotEmpty=!/firmware
 
 # Env vars are not reflecting in [Unit] Section for selective wait.
 # Hence wait for both _a & _b dev nodes before attepting to mount
