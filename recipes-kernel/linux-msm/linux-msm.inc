@@ -27,7 +27,7 @@ SRC_URI   =  "file://kernel \
               ${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'file://virtualization.cfg', '', d)} \
               ${@bb.utils.contains('DISTRO_FEATURES', 'nand-squashfs', 'file://squashfs.cfg', '', d)} \
               ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'file://selinux.cfg', '', d)} \
-              ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'file://verity.x509.pem', '', d)} \
+              ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', 'file://verity.x509.pem', '', d), '', d)} \
               ${@oe.utils.conditional('DTBO_MACHINE', 'True', 'file://dt_overlay.cfg', '',d)} \
              "
 # Don't set any version extention on debug build
@@ -50,7 +50,7 @@ do_patch_veritycert() {
    cp -f ${WORKDIR}/verity.x509.pem ${S}/certs/verity.x509.pem
 }
 
-do_patch[postfuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'do_patch_veritycert', '', d)}"
+do_patch[postfuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', 'do_patch_veritycert', '', d), '', d)}"
 
 do_configure_prepend() {
 

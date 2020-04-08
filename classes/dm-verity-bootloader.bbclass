@@ -1,7 +1,7 @@
 # This class provides utilities to generate and append verity metadata
 # into images as required by device-mapper-verity feature.
 
-DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'verity-utils-native', '', d)}"
+DEPENDS += " verity-utils-native"
 
 FIXED_SALT = "aee087a5be3b982978c923f566a94613496b417f2af592639bc80d141e34dfe7"
 BLOCK_SIZE = "4096"
@@ -72,6 +72,7 @@ python adjust_system_size_for_verity () {
     bb.debug(1, "system image size with verity: %s" % d.getVar("SYSTEM_SIZE_EXT4",True))
     bb.note("System image size is adjusted with verity")
 }
+do_makesystem[prefuncs]  += " adjust_system_size_for_verity"
 
 def get_verity_size(d, partition_size, fec_support):
     import subprocess
@@ -237,6 +238,7 @@ python make_verity_enabled_system_image () {
     subprocess.check_output("echo '%s' > %s" % (cmdline, verity_cmd), stderr=subprocess.STDOUT, shell=True)
 
 }
+do_makesystem[postfuncs] += " make_verity_enabled_system_image"
 
 def get_verity_cmdline(d):
     import subprocess
@@ -259,8 +261,7 @@ python do_make_veritybootimg () {
         xtra_parms = " --tags-addr" + " " + d.getVar('KERNEL_TAGS_OFFSET')
 
     verity_cmdline = ""
-    if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
-        verity_cmdline = get_verity_cmdline(d).strip()
+    verity_cmdline = get_verity_cmdline(d).strip()
 
     mkboot_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/mkbootimg'
     zimg_path       = d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + d.getVar('KERNEL_IMAGETYPE', True)
@@ -288,3 +289,5 @@ python () {
     if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
         bb.build.addtask('do_make_veritybootimg', 'do_image_complete', 'do_rootfs', d)
 }
+
+do_makesystem[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
