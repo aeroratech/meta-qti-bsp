@@ -40,6 +40,9 @@ do_shared_workdir_append () {
 do_deploy_append () {
          # Copy vmlinux and zImage into deplydir for boot.img creation
          install -d ${DEPLOYDIR}
+         install -d ${DEPLOYDIR}/kernel_scripts/scripts
+         cp  ${STAGING_KERNEL_DIR}/usr/gen_initramfs_list.sh ${DEPLOYDIR}/kernel_scripts/scripts
+         cp -a ${STAGING_KERNEL_BUILDDIR}/usr/ ${DEPLOYDIR}/kernel_scripts/
          install -m 0644 ${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE} ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
          install -m 0644 vmlinux ${DEPLOYDIR}
          install -m 0644 System.map ${DEPLOYDIR}
