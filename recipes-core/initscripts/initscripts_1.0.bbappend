@@ -11,10 +11,6 @@ SRC_URI += "file://logging-restrictions.sh"
 SRC_URI += "file://logging-restrictions.service"
 
 do_install_append() {
-        update-rc.d -f -r ${D} mountnfs.sh remove
-        update-rc.d -f -r ${D} urandom remove
-        update-rc.d -f -r ${D} checkroot.sh remove
-        if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
          rm  ${D}${sysconfdir}/init.d/halt
          rm  ${D}${sysconfdir}/init.d/reboot
          rm  ${D}${sysconfdir}/init.d/save-rtc.sh
@@ -46,14 +42,4 @@ do_install_append() {
          # enable logging-restrict service for multi-user.target
          ln -sf /etc/systemd/logging-restrictions.service \
 	      ${D}/etc/systemd/system/multi-user.target.wants/logging-restrictions.service
-
-        else
-         install -m 0755 ${WORKDIR}/bsp_paths.sh  ${D}${sysconfdir}/init.d
-         update-rc.d -r ${D} bsp_paths.sh start 15 2 3 4 5 .
-         install -m 0755 ${WORKDIR}/set_core_pattern.sh  ${D}${sysconfdir}/init.d
-         update-rc.d -r ${D} set_core_pattern.sh start 01 S 2 3 4 5 S .
-         install -m 0755 ${WORKDIR}/logging-restrictions.sh  ${D}${sysconfdir}/init.d/logging-restrictions.sh
-         update-rc.d -r ${D} logging-restrictions.sh start 39 S .
-
-        fi
 }
