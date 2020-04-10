@@ -25,6 +25,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-display \
         packagegroup-qti-ml \
         packagegroup-qti-qmmf \
+        ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sensors', 'packagegroup-qti-sensors', '', d)} \
         packagegroup-qti-ss-mgr \
         packagegroup-qti-video \
         packagegroup-qti-wifi \
