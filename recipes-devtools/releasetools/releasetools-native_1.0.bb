@@ -1,4 +1,4 @@
-inherit native
+inherit native deploy
 
 DESCRIPTION = "releasetools used for OTA"
 LICENSE = "Apache-2.0"
@@ -26,3 +26,11 @@ do_install_append() {
     install -m 755 ${WORKDIR}/releasetools.py ${D}${bindir}/releasetools/
     cp -rf ${S}/* ${D}${bindir}/releasetools/
 }
+
+do_deploy() {
+    install -d ${DEPLOYDIR}/
+    install -m 755 ${WORKDIR}/full_ota.sh  ${DEPLOYDIR}/
+    install -m 755 ${WORKDIR}/incremental_ota.sh ${DEPLOYDIR}/
+    install -m 755 ${WORKDIR}/releasetools.py ${DEPLOYDIR}/
+}
+addtask deploy after do_install
