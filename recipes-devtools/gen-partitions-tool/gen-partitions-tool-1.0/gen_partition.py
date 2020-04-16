@@ -43,6 +43,7 @@ def usage():
 disk_params = OrderedDict({
    "type": "",
    "size": "",
+   "SECTOR_SIZE_IN_BYTES": "512",
    "WRITE_PROTECT_BOUNDARY_IN_KB": "65536",
    "GROW_LAST_PARTITION_TO_FILL_DISK": "true",
    "ALIGN_PARTITIONS_TO_PERFORMANCE_BOUNDARY": "true",
@@ -74,6 +75,8 @@ def disk_options(argv):
          disk_params["type"] = arg
       elif opt in ['--size']:
          disk_params["size"] = arg
+      elif opt in ['--sector-size-in-bytes']:
+         disk_params["SECTOR_SIZE_IN_BYTES"] = arg
       elif opt in ['--write-protect-boundary']:
          disk_params["WRITE_PROTECT_BOUNDARY_IN_KB"] = arg
       elif opt in ['--grow-last-partition']:
@@ -135,7 +138,7 @@ def parse_disk_entry(disk_entry):
    if opts_list[0] == "--disk":
       try:
          options, remainders = getopt.gnu_getopt(opts_list[1:], '',
-                                 ['type=', 'size=', 'write-protect-boundary=',
+                                 ['type=', 'size=','sector-size-in-bytes=', 'write-protect-boundary=',
                                   'grow-last-partition', 'align-partitions='])
          disk_options(options)
       except Exception as e:
