@@ -24,7 +24,7 @@ FEC_SUPPORT = "1"
 DEPENDS += " ${@bb.utils.contains('FEC_SUPPORT', '1', 'fec-native', '', d)}"
 
 VERITY_IMAGE_DIR     = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity"
-SPARSE_SYSTEM_IMG    = "${IMGDEPLOYDIR}/${SYSTEMIMAGE_TARGET}"
+SPARSE_SYSTEM_IMG    = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET}"
 VERITY_IMG           = "${VERITY_IMAGE_DIR}/verity.img"
 VERITY_METADATA_IMG  = "${VERITY_IMAGE_DIR}/verity-metadata.img"
 VERITY_FEC_IMG       = "${VERITY_IMAGE_DIR}/verity-fec.img"

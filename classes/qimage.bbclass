@@ -22,13 +22,13 @@ do_image_ext4[noexec] = "1"
 IMAGE_VERSION_SUFFIX = ""
 
 # Default Image names
-BOOTIMAGE_TARGET ?= "${IMAGE_NAME}-boot.img"
-SYSTEMIMAGE_TARGET ?= "${IMAGE_NAME}-sysfs.ext4"
-SYSTEMIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-sysfs.map"
-OVERLAYIMAGE_TARGET ?= "${IMAGE_NAME}-overlayfs.ext4"
-OVERLAYIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-overlayfs.map"
-PERSISTIMAGE_TARGET ?= "${IMAGE_NAME}-persist.ext4"
-PERSISTIMAGE_MAP_TARGET ?= "${IMAGE_NAME}-persist.map"
+BOOTIMAGE_TARGET ?= "boot.img"
+SYSTEMIMAGE_TARGET ?= "system.img"
+SYSTEMIMAGE_MAP_TARGET ?= "system.map"
+OVERLAYIMAGE_TARGET ?= "overlayfs.img"
+OVERLAYIMAGE_MAP_TARGET ?= "overlayfs.map"
+PERSISTIMAGE_TARGET ?= "persist.img"
+PERSISTIMAGE_MAP_TARGET ?= "persist.map"
 
 #Set appropriate partion:Image map
 NONAB_BOOT_PARTITION_IMAGE_MAP = "boot='${BOOTIMAGE_TARGET}',system='${SYSTEMIMAGE_TARGET}',userdata='${OVERLAYIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
@@ -188,11 +188,11 @@ SPARSE_SYSTEMIMAGE_FLAG = "${@bb.utils.contains('IMAGE_FEATURES', 'vm', '', '-s'
 do_makesystem() {
     cp ${THISDIR}/fsconfig/${MACHINE_FSCONFIG_CONF} ${WORKDIR}/rootfs-fsconfig.conf
     make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
-                -B ${IMGDEPLOYDIR}/${SYSTEMIMAGE_MAP_TARGET} \
+                -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_MAP_TARGET} \
                 -a / -b 4096 ${SPARSE_SYSTEMIMAGE_FLAG} \
                 -l ${SYSTEM_SIZE_EXT4} \
                 ${IMAGE_EXT4_SELINUX_OPTIONS} \
-                ${IMGDEPLOYDIR}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
+                ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
 }
 addtask do_makesystem after do_rootfs before do_image_complete
 
@@ -200,10 +200,10 @@ addtask do_makesystem after do_rootfs before do_image_complete
 do_makeoverlay[dirs] = "${IMGDEPLOYDIR}"
 
 do_makeoverlay() {
-    make_ext4fs -B ${IMGDEPLOYDIR}/${OVERLAYIMAGE_MAP_TARGET} \
+    make_ext4fs -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${OVERLAYIMAGE_MAP_TARGET} \
                 -a /data ${IMAGE_EXT4_SELINUX_OPTIONS} \
                 -s -b 4096 -l ${OVERLAY_SIZE_EXT4} \
-                ${IMGDEPLOYDIR}/${OVERLAYIMAGE_TARGET} \
+                ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${OVERLAYIMAGE_TARGET} \
                 ${IMAGE_ROOTFS}/overlay
 }
 
@@ -217,9 +217,9 @@ do_makepersist[dirs] = "${IMGDEPLOYDIR}"
 
 do_makepersist() {
     make_ext4fs ${PERSISTFS_CONFIG} ${MAKEEXT4_MOUNT_OPT} \
-                -B ${IMGDEPLOYDIR}/${PERSISTIMAGE_MAP_TARGET} \
+                -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${PERSISTIMAGE_MAP_TARGET} \
                 -s -l ${PERSIST_IMAGE_ROOTFS_SIZE} \
-                ${IMGDEPLOYDIR}/${PERSISTIMAGE_TARGET} \
+                ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${PERSISTIMAGE_TARGET} \
                 ${IMAGE_ROOTFS}/persist
 
     # Empty the /persist folder so that it doesn't end up
@@ -247,6 +247,7 @@ python do_make_bootimg () {
 
     # When verity is enabled add '.noverity' suffix to default boot img.
     output          = d.getVar('IMGDEPLOYDIR', True) + "/" + d.getVar('BOOTIMAGE_TARGET', True)
+    output          = d.getVar('BOOTIMAGE_TARGET', True)
     if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
             output += ".noverity"
 
@@ -261,7 +262,7 @@ python do_make_bootimg () {
         bb.error("Running: %s failed." % cmd)
 
 }
-do_make_bootimg[dirs]      = "${IMGDEPLOYDIR}"
+do_make_bootimg[dirs]      = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 # Make sure native tools and vmlinux ready to create boot.img
 do_make_bootimg[depends] += "virtual/kernel:do_deploy"
 
@@ -288,7 +289,7 @@ python do_make_veritybootimg () {
     cmdline         = "\"" + d.getVar('KERNEL_CMD_PARAMS', True) + " " + verity_cmdline + "\""
     pagesize        = d.getVar('PAGE_SIZE', True)
     base            = d.getVar('KERNEL_BASE', True)
-    output          = d.getVar('IMGDEPLOYDIR', True) + "/" + d.getVar('BOOTIMAGE_TARGET', True)
+    output          = d.getVar('BOOTIMAGE_TARGET', True)
 
     # cmd to make boot.img
     cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s %s --ramdisk /dev/null --ramdisk_offset 0x0 --output %s" \
@@ -302,7 +303,7 @@ python do_make_veritybootimg () {
 }
 do_make_veritybootimg[depends]  += "${PN}:do_makesystem"
 do_make_veritybootimg[depends]  += "${PN}:do_makeoverlay"
-do_make_veritybootimg[dirs]      = "${IMGDEPLOYDIR}"
+do_make_veritybootimg[dirs]      = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 do_make_veritybootimg[depends] += "virtual/kernel:do_deploy"
 
 python () {
