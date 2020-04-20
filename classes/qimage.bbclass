@@ -123,6 +123,24 @@ do_gen_partition_bin () {
 
 addtask do_gen_partition_bin after do_rootfs before do_image
 
+
+# all files needed to flash the device must be in DEPLOY_DIR_NAME/IMAGE_BASENAME
+# so we need to copy the bootloader ELF file as well, which we can't do in the
+# actual bootloader recipes.
+
+do_bootloader_deploy_fixup[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+do_bootloader_deploy_fixup () {
+    for f in ${EXTRA_IMAGEDEPENDS}; do
+        if [ "$f" = "edk2" ] || [ "$f" = "lib64-edk2" ]; then
+            install -m 0644 ${DEPLOY_DIR_IMAGE}/abl.elf .
+        elif [ "$f" = "lk" ]; then
+            install -m 0644 ${DEPLOY_DIR_IMAGE}/*appsboot.mbn .
+        fi
+    done
+}
+
+addtask do_bootloader_deploy_fixup after do_rootfs before do_image
+
 # Check and remove empty packages before rootfs creation
 do_rootfs[prefuncs] += "rootfs_ignore_packages"
 python rootfs_ignore_packages() {
