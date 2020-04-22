@@ -182,12 +182,13 @@ do_fsconfig_append_qti-distro-user() {
 do_makesystem[prefuncs]  += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'adjust_system_size_for_verity', '', d)}"
 do_makesystem[postfuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'make_verity_enabled_system_image', '', d)}"
 do_makesystem[dirs]       = "${IMGDEPLOYDIR}"
+SPARSE_SYSTEMIMAGE_FLAG = "${@bb.utils.contains('IMAGE_FEATURES', 'vm', '', '-s', d)}"
 
 do_makesystem() {
     cp ${THISDIR}/fsconfig/${MACHINE_FSCONFIG_CONF} ${WORKDIR}/rootfs-fsconfig.conf
     make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
                 -B ${IMGDEPLOYDIR}/${SYSTEMIMAGE_MAP_TARGET} \
-                -a / -b 4096 -s \
+                -a / -b 4096 ${SPARSE_SYSTEMIMAGE_FLAG} \
                 -l ${SYSTEM_SIZE_EXT4} \
                 ${IMAGE_EXT4_SELINUX_OPTIONS} \
                 ${IMGDEPLOYDIR}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
