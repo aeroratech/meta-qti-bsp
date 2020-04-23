@@ -1,0 +1,115 @@
+From 4f0920debedcbec450a1365e71e8349a54b4e3e2 Mon Sep 17 00:00:00 2001
+From: Lei wang <leiwan@codeaurora.org>
+Date: Tue, 19 Jun 2018 14:10:49 +0800
+Subject: [PATCH] libufdt: support autoconf compile
+
+add makefile.am support in libufdt, so ycoto
+can compile it automatically
+
+Change-Id: I9ccb298f69a8d83ff178503c10e10a74ecdb2c3c
+Signed-off-by: Lei wang <leiwan@codeaurora.org>
+---
+ Makefile.am  | 39 +++++++++++++++++++++++++++++++++++++++
+ configure.ac | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 83 insertions(+)
+ create mode 100644 Makefile.am
+ create mode 100644 configure.ac
+
+diff --git a/Makefile.am b/Makefile.am
+new file mode 100644
+index 0000000..6150ee5
+--- /dev/null
++++ b/Makefile.am
+@@ -0,0 +1,39 @@
++AM_CFLAGS = -Wundef \
++            -I${top_srcdir}/include \
++            -I${top_srcdir}/sysdeps/include
++
++ACLOCAL_AMFLAGS = -I m4
++
++# create libufdt_sysdeps.a and libufdt.a
++lib_LIBRARIES := \
++    libufdt_sysdeps.a \
++    libufdt.a
++
++libufdt_sysdeps_a_SOURCES := \
++    ${top_srcdir}/sysdeps/libufdt_sysdeps_posix.c
++
++libufdt_sysdeps_a_LDFLAGS = -Wall -Werror
++
++libufdt_a_SOURCES :=  \
++    ufdt_overlay.c \
++    ufdt_convert.c \
++    ufdt_node.c \
++    ufdt_node_pool.c \
++    ufdt_prop_dict.c
++
++libufdt_a_LDFLAGS = -Wall -Werror -lfdt
++
++bin_PROGRAMS = mkdtimg
++
++mkdtimg_SOURCES := \
++    ${top_srcdir}/utils/src/mkdtimg.c \
++    ${top_srcdir}/utils/src/mkdtimg_cfg_create.c \
++    ${top_srcdir}/utils/src/mkdtimg_core.c \
++    ${top_srcdir}/utils/src/mkdtimg_create.c \
++    ${top_srcdir}/utils/src/mkdtimg_dump.c \
++    ${top_srcdir}/utils/src/dt_table.c
++
++mkdtimg_LDFLAGS = -Wall -Werror -lfdt
++
++mkdtimg_LDADD = ${top_builddir}/libufdt_sysdeps.a
++
+diff --git a/configure.ac b/configure.ac
+new file mode 100644
+index 0000000..5d75bc9
+--- /dev/null
++++ b/configure.ac
+@@ -0,0 +1,44 @@
++#                                               -*- Autoconf -*-
++# Process this file with autoconf to produce a configure script.
++
++AC_PREREQ([2.61])
++AC_INIT([mkdtimg-utils], 1.0,0)
++AM_INIT_AUTOMAKE([-Wall gnu foreign subdir-objects])
++
++AC_CONFIG_SRCDIR([Makefile.am])
++#AC_CONFIG_HEADERS([config.h])
++AC_CONFIG_MACRO_DIR([m4])
++
++# Checks for programs.
++AM_PROG_AS
++AC_PROG_CXX
++AC_PROG_CC
++AC_PROG_CC_STDC
++AC_PROG_LIBTOOL
++AC_PROG_AWK
++AC_PROG_CPP
++AC_PROG_CXX
++AC_PROG_INSTALL
++AC_PROG_LN_S
++AC_PROG_MAKE_SET
++
++# Checks for libraries.
++
++# Checks for header files.
++AC_CHECK_HEADERS([inttypes.h memory.h stddef.h stdint.h stdlib.h string.h unistd.h])
++
++# Checks for typedefs, structures, and compiler characteristics.
++AC_CHECK_HEADER_STDBOOL
++AC_TYPE_INT32_T
++AC_TYPE_SIZE_T
++AC_TYPE_UINT32_T
++AC_TYPE_UINT64_T
++
++# Checks for library functions.
++AC_FUNC_MALLOC
++AC_CHECK_FUNCS([memchr memset strchr strtoul])
++
++AC_CONFIG_FILES([Makefile])
++
++AC_OUTPUT
++
+-- 
+1.9.1
+
