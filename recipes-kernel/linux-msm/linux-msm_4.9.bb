@@ -8,6 +8,10 @@ PR = "r5"
 
 DEPENDS += "dtc-native"
 
+SRC_URI_append = " \
+      ${@bb.utils.contains_any('COMBINED_FEATURES', 'fbdev qti-camera qti-video mm-camera', 'file://graphics_fb.cfg', '', d)} \
+      ${@bb.utils.contains_any('COMBINED_FEATURES', 'qti-camera qti-video mm-camera', 'file://multimedia.cfg', '', d)} \
+"
 KERNEL_EXTRA_ARGS += "${@bb.utils.contains('DISTRO_FEATURES', 'avble', 'DTC_EXT=${STAGING_DIR_NATIVE}/usr/bin/dtc CONFIG_BUILD_ARM64_DT_OVERLAY=y', '', d)}"
 
 do_shared_workdir_append () {
