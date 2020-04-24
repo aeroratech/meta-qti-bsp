@@ -33,4 +33,4 @@ After=overlay.mount
 What=overlay
 Where=/etc
 Type=overlay
-Options=lowerdir=/etc,upperdir=/overlay/etc,workdir=/overlay/.etc-work,x-systemd.automount,x-systemd.growfs,rootcontext=system_u:object_r:data_t:s0
+Options=lowerdir=/etc,upperdir=/overlay/etc,workdir=/overlay/.etc-work,x-systemd.automount,x-systemd.growfs,rootcontext=system_u:object_r:etc_t:s0
