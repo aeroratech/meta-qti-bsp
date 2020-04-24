@@ -53,6 +53,7 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 export FSCONFIGFOPTS=" "
 block_based=" "
+ubuntu=" "
 python_version="python3"
 system_path=" "
 cache_location=" "
@@ -62,6 +63,8 @@ if [ "$#" -gt 4 ]; then
     for i in $(seq 3 $#); do
        if [ "${allopts[${i}]}" = "--block" ]; then
            block_based="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--ubuntu" ]; then
+           ubuntu="${allopts[${i}]}"
        elif [ "${allopts[${i}]}" = "--system_path" ]; then
            i=$((i+1))
            system_path="${allopts[${i}]}"
@@ -107,7 +110,7 @@ fi
 cd $target_files && zip -q $1 META/*filesystem_config.txt SYSTEM/build.prop BOOT/RAMDISK/empty && cd ..
 
 
-$python_version ./ota_from_target_files $block_based -n -v -d $device_type -p . -m linux_embedded --no_signing --system_mount_path $system_path $1 update_$3.zip > ota_debug.txt 2>&1
+$python_version ./ota_from_target_files $block_based $ubuntu -n -v -d $device_type -p . -m linux_embedded --no_signing --system_mount_path $system_path $1 update_$3.zip > ota_debug.txt 2>&1
 
 if [[ $? = 0 ]]; then
     echo "update.zip generation was successful"
