@@ -10,8 +10,8 @@ do_install_append() {
    if [ "${SYSTEMD_ENABLE_COREDUMP}" == "1" ]; then
        sed -i "s#@COREDUMP_PATH@#${SYSTEMD_COREDUMP_PATH}#" ${WORKDIR}/sysctl-coredump.conf
 
-       install -m 0644 ${WORKDIR}/sysctl-coredump.conf -D ${D}${sysconfdir}/sysctl.d/50-coredump.conf
-       install -m 0644 ${WORKDIR}/limits-coredump.conf -D ${D}${sysconfdir}/security/limits.d/50-coredump.conf
+       install -m 0644 ${WORKDIR}/sysctl-coredump.conf -D ${D}${sysconfdir}/sysctl.d/sys-coredump.conf
+       install -m 0644 ${WORKDIR}/limits-coredump.conf -D ${D}${sysconfdir}/security/limits.d/sys-coredump.conf
 
        #create coredump folder if needed
        install -m 0666 -d ${D}${SYSTEMD_COREDUMP_PATH}
