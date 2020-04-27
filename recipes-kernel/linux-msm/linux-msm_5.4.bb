@@ -1,5 +1,5 @@
 require recipes-kernel/linux-msm/linux-msm.inc
-COMPATIBLE_MACHINE = "genericarmv8"
+COMPATIBLE_MACHINE = "genericarmv8|sdxlemur"
 
 SRC_DIR   =  "${WORKSPACE}/kernel/msm-5.4"
 S         =  "${WORKDIR}/kernel/msm-5.4"
