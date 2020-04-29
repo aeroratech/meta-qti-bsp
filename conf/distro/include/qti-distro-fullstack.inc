@@ -17,10 +17,11 @@ DISTRO_NAME = "QTI Linux full refrence stack distro."
 # opencl:          Include the Open Computing Language
 # opengl:          Include the Open Graphics Library,
 # pulseaudio:      Use pulseaudio audio server
+# selinux:         Use selinux for mandatory access control.
 # tensorflow-lite: Include the tensorflow lite inference engine.
 # wayland:         Include the Wayland display server protocol.
 
-DISTRO_FEATURES_append = " drm fbdev opencl opengl pulseaudio tensorflow-lite wayland"
+DISTRO_FEATURES_append = " drm fbdev opencl opengl pulseaudio selinux tensorflow-lite wayland"
 
 ## QTI defined distro features ##
 # qti-audio:     Support QTI audio solution
@@ -41,3 +42,6 @@ DISTRO_FEATURES_append = " qti-audio qti-audio-cal qti-audio-encoder qti-bluetoo
 
 # inherit distro_featres_check class across the distro
 INHERIT += "distro_features_check"
+
+# Set selinux in disabled state
+DEFAULT_ENFORCING ?= "disabled"
