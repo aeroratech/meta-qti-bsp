@@ -11,6 +11,11 @@ SRC_URI_append_qcs610 = " \
     file://sdmsteppe_iot_configs.cfg \
 "
 
+# Additional configs for qcs40x machines
+SRC_URI_append_qcs40x = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '', 'file://disableselinux.cfg', d)} \
+"
+
 SRC_DIR   =  "${WORKSPACE}/kernel/msm-4.14"
 S         =  "${WORKDIR}/kernel/msm-4.14"
 
