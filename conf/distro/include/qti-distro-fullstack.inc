@@ -43,5 +43,8 @@ DISTRO_FEATURES_append = " qti-audio qti-audio-cal qti-audio-encoder qti-bluetoo
 # inherit distro_featres_check class across the distro
 INHERIT += "distro_features_check"
 
+# Include in native DISTRO_FEATURES if present in the target DISTRO_FEATURES.
+DISTRO_FEATURES_FILTER_NATIVE += " selinux"
+
 # Set selinux in disabled state
 DEFAULT_ENFORCING ?= "disabled"
