@@ -126,17 +126,11 @@ python make_verity_enabled_system_image () {
     # Build verity tree
     bvt_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/build_verity_tree'
     cmd = bvt_bin_path + " -A %s %s %s " % (d.getVar("FIXED_SALT",True), sparse_img, verity_img)
-    # An ugly hack to mitigate an unknown bug in libsparse were random asserts
-    # are observed while creating verity tree. Retrying a few times is helping.
-    for i in range(1,10):
-        try:
-            [root_hash, salt] = (subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)).split()
-        except subprocess.CalledProcessError as e:
-            bb.debug(1, "cmd %s" % (cmd))
-            bb.warn("Error in building verity tree : %s\n%s\nRetrying..." % (e.returncode, e.output.decode("utf-8")))
-            continue
-        break
-
+    try:
+        [root_hash, salt] = (subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)).split()
+    except subprocess.CalledProcessError as e:
+        bb.debug(1, "cmd %s" % (cmd))
+        bb.fatal("Error in building verity tree : %s\n%s" % (e.returncode, e.output.decode("utf-8")))
     d.setVar('ROOT_HASH', root_hash.decode('UTF-8'))
     d.setVar('FIXED_SALT_STR', salt.decode('UTF-8'))
     bb.debug(1, "Value of root hash is %s" % root_hash)
