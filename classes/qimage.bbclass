@@ -205,12 +205,30 @@ SPARSE_SYSTEMIMAGE_FLAG = "${@bb.utils.contains('IMAGE_FEATURES', 'vm', '', '-s'
 
 do_makesystem() {
     cp ${THISDIR}/fsconfig/${MACHINE_FSCONFIG_CONF} ${WORKDIR}/rootfs-fsconfig.conf
-    make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
+    # An ugly hack to mitigate a bug in libsparse were random
+    # asserts are observed during unsparsing if image size is large.
+    # Unsparsing is needed for appending verity metadata to image.
+    # Only known workaround is to recreate image if unsparsing fails.
+    for count in {1..10}
+    do
+        make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
                 -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_MAP_TARGET} \
                 -a / -b 4096 ${SPARSE_SYSTEMIMAGE_FLAG} \
                 -l ${SYSTEM_SIZE_EXT4} \
                 ${IMAGE_EXT4_SELINUX_OPTIONS} \
                 ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS}
+
+        simg2img ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET} /dev/null || invalid_image=1
+
+        if [ ${invalid_image:-0} -eq 1 ]; then
+            echo "Unsparse image failed.. Recreating image"
+            continue
+        else
+            echo "Sparse image is good to use..."
+            break
+        fi
+    done
+
 }
 addtask do_makesystem after do_rootfs before do_image_complete
 
