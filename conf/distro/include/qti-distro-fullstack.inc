@@ -46,5 +46,5 @@ INHERIT += "distro_features_check"
 # Include in native DISTRO_FEATURES if present in the target DISTRO_FEATURES.
 DISTRO_FEATURES_FILTER_NATIVE += " selinux"
 
-# Set selinux in disabled state
-DEFAULT_ENFORCING ?= "disabled"
+# Set selinux in enforcing state by default
+DEFAULT_ENFORCING = "enforcing"
