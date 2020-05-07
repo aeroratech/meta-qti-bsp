@@ -6,6 +6,7 @@ SRC_DIR   =  "${WORKSPACE}/kernel/msm-4.19"
 S         =  "${WORKDIR}/kernel/msm-4.19"
 
 SRC_URI_append_qrb5165-rb5 = " file://disableipa3.cfg"
+SRC_URI_append_qrb5165-rb5 += " file://fbcon.cfg"
 
 DEPENDS += "dtc-native"
 
