@@ -17,6 +17,9 @@ KERNEL_PRIORITY           = "9001"
 # Add V=1 to KERNEL_EXTRA_ARGS for verbose
 KERNEL_EXTRA_ARGS        += "O=${B}"
 
+# Additional configs needed for supporting DTBO partition.
+DTBO_MACHINE = "${@d.getVar('MACHINE_SUPPORTS_DTBO') or "False"}"
+
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI   =  "file://kernel \
               file://overlayfs.cfg \
@@ -24,10 +27,9 @@ SRC_URI   =  "file://kernel \
               ${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'file://virtualization.cfg', '', d)} \
               ${@bb.utils.contains('DISTRO_FEATURES', 'nand-squashfs', 'file://squashfs.cfg', '', d)} \
               ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'file://selinux.cfg', '', d)} \
-              ${@bb.utils.contains_any('DISTRO_FEATURES', 'dm-verity', 'file://verity.x509.pem', '', d)} \
-	     "
-SRC_URI_append_sdm845 += "${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'file://virtualization_robomaker.cfg', '', d)}"
-
+              ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'file://verity.x509.pem', '', d)} \
+              ${@oe.utils.conditional('DTBO_MACHINE', 'True', 'file://dt_overlay.cfg', '',d)} \
+             "
 # Don't set any version extention on debug build
 LINUX_VERSION_EXTENSION ?= "-perf"
 LINUX_VERSION_EXTENSION_qti-distro-debug = ""
@@ -71,6 +73,7 @@ do_configure_prepend() {
 # make sure that we generate all DTBs using the kernel 'dtbs' target,
 # then we can append the DTBs that we need for $MACHINE.
 KERNEL_EXTRA_ARGS += "dtbs"
+KERNEL_EXTRA_ARGS += "DTC_EXT=${STAGING_DIR_NATIVE}/usr/bin/dtc"
 
 do_compile_append() {
     for dtbf in ${KERNEL_DTB_NAMES}; do
