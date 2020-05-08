@@ -25,14 +25,14 @@ IMAGE_VERSION_SUFFIX = ""
 BOOTIMAGE_TARGET ?= "boot.img"
 SYSTEMIMAGE_TARGET ?= "system.img"
 SYSTEMIMAGE_MAP_TARGET ?= "system.map"
-OVERLAYIMAGE_TARGET ?= "overlayfs.img"
-OVERLAYIMAGE_MAP_TARGET ?= "overlayfs.map"
+USERDATAIMAGE_TARGET ?= "userdata.img"
+USERDATAIMAGE_MAP_TARGET ?= "userdata.map"
 PERSISTIMAGE_TARGET ?= "persist.img"
 PERSISTIMAGE_MAP_TARGET ?= "persist.map"
 
 #Set appropriate partion:Image map
-NONAB_BOOT_PARTITION_IMAGE_MAP = "boot='${BOOTIMAGE_TARGET}',system='${SYSTEMIMAGE_TARGET}',userdata='${OVERLAYIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
-AB_BOOT_PARTITION_IMAGE_MAP = "boot_a='${BOOTIMAGE_TARGET}',boot_b='${BOOTIMAGE_TARGET}',system_a='${SYSTEMIMAGE_TARGET}',system_b='${SYSTEMIMAGE_TARGET}',userdata='${OVERLAYIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
+NONAB_BOOT_PARTITION_IMAGE_MAP = "boot='${BOOTIMAGE_TARGET}',system='${SYSTEMIMAGE_TARGET}',userdata='${USERDATAIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
+AB_BOOT_PARTITION_IMAGE_MAP = "boot_a='${BOOTIMAGE_TARGET}',boot_b='${BOOTIMAGE_TARGET}',system_a='${SYSTEMIMAGE_TARGET}',system_b='${SYSTEMIMAGE_TARGET}',userdata='${USERDATAIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
 
 def set_partition_image_map(d):
     if "qti-ab-boot" in d.getVar('COMBINED_FEATURES', True):
@@ -232,18 +232,18 @@ do_makesystem() {
 }
 addtask do_makesystem after do_rootfs before do_image_complete
 
-### Generate overlay.img ###
-do_makeoverlay[dirs] = "${IMGDEPLOYDIR}"
+### Generate userdata.img ###
+do_makeuserdata[dirs] = "${IMGDEPLOYDIR}"
 
-do_makeoverlay() {
-    make_ext4fs -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${OVERLAYIMAGE_MAP_TARGET} \
+do_makeuserdata() {
+    make_ext4fs -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_MAP_TARGET} \
                 -a /data ${IMAGE_EXT4_SELINUX_OPTIONS} \
-                -s -b 4096 -l ${OVERLAY_SIZE_EXT4} \
-                ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${OVERLAYIMAGE_TARGET} \
+                -s -b 4096 -l ${USERDATA_SIZE_EXT4} \
+                ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_TARGET} \
                 ${IMAGE_ROOTFS}/overlay
 }
 
-addtask do_makeoverlay after do_rootfs before do_build
+addtask do_makeuserdata after do_rootfs before do_build
 
 ################################################
 ############ Generate persist image ############
@@ -338,7 +338,7 @@ python do_make_veritybootimg () {
         bb.error("Running: %s failed." % cmd)
 }
 do_make_veritybootimg[depends]  += "${PN}:do_makesystem"
-do_make_veritybootimg[depends]  += "${PN}:do_makeoverlay"
+do_make_veritybootimg[depends]  += "${PN}:do_makeuserdata"
 do_make_veritybootimg[dirs]      = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 do_make_veritybootimg[depends] += "virtual/kernel:do_deploy"
 
