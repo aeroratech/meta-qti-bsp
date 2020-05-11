@@ -1,0 +1,22 @@
+From 4acb5def9262a8eb363ef4055002c894059149ff Mon Sep 17 00:00:00 2001
+From: saikiran jayanthi <jayanthi@codeaurora.org>
+Date: Mon, 11 May 2020 12:50:49 +0530
+Subject: [PATCH] rpmdb_loader script changes to sh
+
+---
+ scripts/rpmdb_loadcvt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/rpmdb_loadcvt b/scripts/rpmdb_loadcvt
+index aa70106..df2ae88 100755
+--- a/scripts/rpmdb_loadcvt
++++ b/scripts/rpmdb_loadcvt
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ ac=$#
+ cmd=`basename $0`
+-- 
+2.7.4
+
