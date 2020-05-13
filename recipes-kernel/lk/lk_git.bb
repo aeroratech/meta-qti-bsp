@@ -49,7 +49,7 @@ EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'ab-support', ''
 
 EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'USE_LE_SYSTEMD=true', '', d)}"
 
-EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'vble', 'VERIFIED_BOOT_LE=1', '', d)}"
+EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'qti-vble', 'VERIFIED_BOOT_LE=1', '', d)}"
 
 EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'VERITY_LE=1', '', d)}"
 

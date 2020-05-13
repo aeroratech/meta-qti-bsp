@@ -14,7 +14,7 @@ S         =  "${WORKDIR}/edk2"
 
 INSANE_SKIP_${PN} = "arch"
 
-VBLE = "${@bb.utils.contains('DISTRO_FEATURES', 'vble','1', '0', d)}"
+VBLE = "${@bb.utils.contains('DISTRO_FEATURES', 'qti-vble','1', '0', d)}"
 
 VERITY_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity','1', '0', d)}"
 
