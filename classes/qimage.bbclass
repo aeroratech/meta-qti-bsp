@@ -141,6 +141,10 @@ do_deploy_fixup () {
     # copy vmlinux, zImage
     install -m 0644 ${DEPLOY_DIR_IMAGE}/vmlinux .
     install -m 0644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE} .
+    # Copy nHLOS bins
+    if [ -f ${DEPLOY_DIR_IMAGE}/NHLOS_IMAGES.tar ]; then
+       tar -xvf ${DEPLOY_DIR_IMAGE}/NHLOS_IMAGES.tar -C .
+    fi
 }
 
 addtask do_deploy_fixup after do_rootfs before do_image
