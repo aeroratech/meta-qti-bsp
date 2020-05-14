@@ -125,11 +125,12 @@ addtask do_gen_partition_bin after do_rootfs before do_image
 
 
 # all files needed to flash the device must be in DEPLOY_DIR_NAME/IMAGE_BASENAME
-# so we need to copy the bootloader ELF file as well, which we can't do in the
-# actual bootloader recipes.
+# so we need to copy files, which can't be directly installed into this path
+# from actual recipes.
 
-do_bootloader_deploy_fixup[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
-do_bootloader_deploy_fixup () {
+do_deploy_fixup[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+do_deploy_fixup () {
+    # copy the bootloader ELF file
     for f in ${EXTRA_IMAGEDEPENDS}; do
         if [ "$f" = "edk2" ] || [ "$f" = "lib64-edk2" ]; then
             install -m 0644 ${DEPLOY_DIR_IMAGE}/abl.elf .
@@ -137,9 +138,12 @@ do_bootloader_deploy_fixup () {
             install -m 0644 ${DEPLOY_DIR_IMAGE}/*appsboot.mbn .
         fi
     done
+    # copy vmlinux, zImage
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/vmlinux .
+    install -m 0644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE} .
 }
 
-addtask do_bootloader_deploy_fixup after do_rootfs before do_image
+addtask do_deploy_fixup after do_rootfs before do_image
 
 # Check and remove empty packages before rootfs creation
 do_rootfs[prefuncs] += "rootfs_ignore_packages"
@@ -282,7 +286,6 @@ python do_make_bootimg () {
     base            = d.getVar('KERNEL_BASE', True)
 
     # When verity is enabled add '.noverity' suffix to default boot img.
-    output          = d.getVar('IMGDEPLOYDIR', True) + "/" + d.getVar('BOOTIMAGE_TARGET', True)
     output          = d.getVar('BOOTIMAGE_TARGET', True)
     if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
             output += ".noverity"
