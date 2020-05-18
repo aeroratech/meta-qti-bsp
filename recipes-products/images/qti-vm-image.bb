@@ -7,6 +7,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
     systemd-machine-units \
     packagegroup-startup-scripts \
     packagegroup-qti-display \
+    packagegroup-qti-securemsm \
 "
 
 #Exclude packages
