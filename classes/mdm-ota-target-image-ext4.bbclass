@@ -155,7 +155,7 @@ do_recovery_ext4() {
 }
 
 do_gen_ota_incremental_zip_ext4() {
-    if [ -f "${DEPLOY_DIR_IMAGE}/${OTA_TARGET_IMAGE_ROOTFS_EXT4}" ]; then
+    if [ -f "${DEPLOY_DIR_IMAGE}/${OTA_TARGET_FILES_EXT4}" ]; then
         # Clean up any existing target-files*.zip as this can lead to incorrect content getting packed in the zip.
         rm -f ${OTA_TARGET_FILES_EXT4_PATH}
 
