@@ -1,5 +1,7 @@
 #inherit mdm-ota-target-image-ubi # To be implemented
 
+IMAGE_FEATURES[validitems] += "persist-volume"
+
 SYSTEMIMAGE_UBI_TARGET ?= "sysfs.ubi"
 SYSTEMIMAGE_UBIFS_TARGET ?= "sysfs.ubifs"
 USERIMAGE_UBIFS_TARGET ?= "userfs.ubifs"
@@ -50,7 +52,7 @@ vol_type=dynamic
 vol_name=systemrw
 vol_size="${SYSTEMRW_VOLUME_SIZE}"
 EOF
-    if $(echo ${DISTRO_FEATURES} | grep -q "persist-volume"); then
+    if $(echo ${IMAGE_FEATURES} | grep -q "persist-volume"); then
         cat << EOF >> ${UBINIZE_CFG}
 [persist_volume]
 mode=ubi
@@ -74,4 +76,3 @@ do_makesystem_ubi() {
 }
 
 addtask do_makesystem_ubi after do_rootfs before do_image_complete
-
