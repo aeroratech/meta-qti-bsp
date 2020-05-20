@@ -23,6 +23,9 @@ BOOTIMAGE_TARGET ?= "boot.img"
 NONAB_BOOT_PARTITION_IMAGE_MAP = "boot='${BOOTIMAGE_TARGET}',system='${SYSTEMIMAGE_TARGET}',userdata='${USERDATAIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
 AB_BOOT_PARTITION_IMAGE_MAP = "boot_a='${BOOTIMAGE_TARGET}',boot_b='${BOOTIMAGE_TARGET}',system_a='${SYSTEMIMAGE_TARGET}',system_b='${SYSTEMIMAGE_TARGET}',userdata='${USERDATAIMAGE_TARGET}',persist='${PERSISTIMAGE_TARGET}'"
 
+# Conf with partition entries should be provided to generate partitions artifacts
+MACHINE_PARTITION_CONF ??= ""
+
 def set_partition_image_map(d):
     if "qti-ab-boot" in d.getVar('COMBINED_FEATURES', True):
         return d.getVar('AB_BOOT_PARTITION_IMAGE_MAP', True)
@@ -107,8 +110,10 @@ do_gen_partition_bin () {
     python ${STAGING_BINDIR_NATIVE}/ptool.py -x partition.xml
 }
 
-addtask do_gen_partition_bin after do_rootfs before do_image
-
+python () {
+    if d.getVar('MACHINE_PARTITION_CONF', True) != "":
+        bb.build.addtask('do_gen_partition_bin', 'do_image', 'do_rootfs', d)
+}
 
 # all files needed to flash the device must be in DEPLOY_DIR_NAME/IMAGE_BASENAME
 # so we need to copy files, which can't be directly installed into this path
