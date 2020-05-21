@@ -10,6 +10,7 @@ SRC_URI_append_qcs610 = " \
     file://disableipa3.cfg \
     file://sdmsteppe_iot_configs.cfg \
     ${@bb.utils.contains('COMBINED_FEATURES', 'drm', 'file://display_drm.cfg', '', d)} \
+    ${@bb.utils.contains('COMBINED_FEATURES', 'drm', 'file://gfx.cfg', '', d)} \
 "
 
 # Additional configs for qcs40x machines
