@@ -49,7 +49,8 @@ do_fsconfig_append_qti-distro-user() {
 # Alter system image size if varity is enabled.
 do_makesystem[prefuncs]  += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'adjust_system_size_for_verity', '', d)}"
 do_makesystem[postfuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'make_verity_enabled_system_image', '', d)}"
-do_makesystem[dirs]       = "${IMGDEPLOYDIR}"
+do_makesystem[dirs]       = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+
 SPARSE_SYSTEMIMAGE_FLAG = "${@bb.utils.contains('IMAGE_FEATURES', 'vm', '', '-s', d)}"
 
 do_makesystem() {
@@ -82,7 +83,7 @@ do_makesystem() {
 addtask do_makesystem after do_rootfs before do_image_complete
 
 ### Generate userdata.img ###
-do_makeuserdata[dirs] = "${IMGDEPLOYDIR}"
+do_makeuserdata[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makeuserdata() {
     make_ext4fs -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_MAP_TARGET} \
@@ -98,7 +99,7 @@ addtask do_makeuserdata after do_rootfs before do_build
 ############ Generate persist image ############
 ################################################
 PERSIST_IMAGE_ROOTFS_SIZE ?= "6536668"
-do_makepersist[dirs] = "${IMGDEPLOYDIR}"
+do_makepersist[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makepersist() {
     make_ext4fs ${PERSISTFS_CONFIG} ${MAKEEXT4_MOUNT_OPT} \

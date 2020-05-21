@@ -74,11 +74,10 @@ USERADDEXTENSION = "qpermissions"
 DISTRO_FEATURES += " systemd eabi ipv6 ipv4 largefile thumb-interwork xattr ${DISTRO_FEATURES_LIBC}"
 
 ## QTI Defined distro features ##
-# dm-verity:  Support block integrity check on system image
 # emmc-boot:  Support eMMC device
 # qti-wifi:   Support QTI WiFi solution
 # qti-ab-boot:Support QTI a/b boot solution
-DISTRO_FEATURES += " dm-verity emmc-boot qti-wifi qti-ab-boot"
+DISTRO_FEATURES += " emmc-boot qti-wifi qti-ab-boot"
 
 DISTRO_FEATURES_BACKFILL_CONSIDERED += "sysvinit pulseaudio"
 VIRTUAL-RUNTIME_dev_manager = "udev"
