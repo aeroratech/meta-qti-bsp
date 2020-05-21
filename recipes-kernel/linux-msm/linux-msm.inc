@@ -29,7 +29,7 @@ SRC_URI   =  "file://kernel \
               ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'file://selinux.cfg', '', d)} \
               ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', 'file://verity.x509.pem', '', d), '', d)} \
               ${@oe.utils.conditional('DTBO_MACHINE', 'True', 'file://dt_overlay.cfg', '',d)} \
-              ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs', 'file://verity.cfg', '', d), '', d)} \
+              ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'file://verity.cfg', '', d)} \
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'file://audio_common.cfg', '', d)} \
 	      "
 SRC_URI_append_qcs610 += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'file://audio_targets.cfg', '', d)}"
