@@ -60,7 +60,7 @@ do_makesystem[dirs]       = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 SPARSE_SYSTEMIMAGE_FLAG = "${@bb.utils.contains('IMAGE_FEATURES', 'vm', '', '-s', d)}"
 
 do_makesystem() {
-    cp ${THISDIR}/fsconfig/${MACHINE_FSCONFIG_CONF} ${WORKDIR}/rootfs-fsconfig.conf
+    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig.conf
     # An ugly hack to mitigate a bug in libsparse were random
     # asserts are observed during unsparsing if image size is large.
     # Unsparsing is needed for appending verity metadata to image.

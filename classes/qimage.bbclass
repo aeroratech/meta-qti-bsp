@@ -96,6 +96,21 @@ DEPENDS += "\
              qdl-native \
 "
 
+MACHINE_PARTITION_CONF_SEARCH_PATH ?= "${@':'.join('%s/conf/machine/partition' % p for p in '${BBPATH}'.split(':'))}}"
+MACHINE_PARTITION_CONF_FULL_PATH = "${@machine_search(d.getVar('MACHINE_PARTITION_CONF'), d.getVar('MACHINE_PARTITION_CONF_SEARCH_PATH')) or ''}"
+
+MACHINE_FSCONFIG_CONF_SEARCH_PATH ?= "${@':'.join('%s/conf/machine/fsconfig' % p for p in '${BBPATH}'.split(':'))}}"
+MACHINE_FSCONFIG_CONF_FULL_PATH = "${@machine_search(d.getVar('MACHINE_FSCONFIG_CONF'), d.getVar('MACHINE_FSCONFIG_CONF_SEARCH_PATH')) or ''}"
+
+def machine_search(f, search_path):
+    if os.path.isabs(f):
+        if os.path.exists(f):
+            return f
+    else:
+        searched = bb.utils.which(search_path, f)
+        if searched:
+            return searched
+
 # generate partitions artifact in an image-specific folder since they include
 # image specific data such as file name and parition size
 do_gen_partition_bin[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
@@ -103,7 +118,7 @@ do_gen_partition_bin[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 do_gen_partition_bin () {
     # Generate partition.xml using gen_partition utility
     python ${STAGING_BINDIR_NATIVE}/gen_partition.py \
-        -i ${THISDIR}/partition/${MACHINE_PARTITION_CONF} \
+        -i ${MACHINE_PARTITION_CONF_FULL_PATH} \
         -o ${WORKDIR}/partition.xml \
         -m ${PARTITION_IMAGE_MAP}
 
