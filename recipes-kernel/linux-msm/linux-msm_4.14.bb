@@ -9,8 +9,8 @@ COMPATIBLE_MACHINE = "(qcs40x|qcs610)"
 SRC_URI_append_qcs610 = " \
     file://disableipa3.cfg \
     file://sdmsteppe_iot_configs.cfg \
-    ${@bb.utils.contains('COMBINED_FEATURES', 'drm', 'file://display_drm.cfg', '', d)} \
-    ${@bb.utils.contains('COMBINED_FEATURES', 'drm', 'file://gfx.cfg', '', d)} \
+    ${@bb.utils.contains_any('COMBINED_FEATURES', 'qti-video qti-camera', 'file://multimedia.cfg', '', d)} \
+    ${@bb.utils.contains('COMBINED_FEATURES', 'qti-video', 'file://video.cfg', '', d)} \
 "
 
 # Additional configs for qcs40x machines
