@@ -89,3 +89,6 @@ IMAGE_INIT_MANAGER = "systemd"
 IMAGE_INITSCRIPTS = ""
 
 RM_WORK_EXCLUDE += "make-mod-scripts"
+
+# include QTI scripts
+PATH_prepend = "${QTIBASE}/scripts:"
