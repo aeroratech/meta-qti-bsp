@@ -28,6 +28,7 @@
 [Unit]
 Description=Mount bluetooth partition to /bluetooth  mount point
 SourcePath=/etc/initscripts/bluetooth-ubi-mount.sh
+Before=local-fs.target
 DefaultDependencies=no
 
 [Service]

@@ -33,6 +33,7 @@ ConditionDirectoryNotEmpty=!/firmware
 # Hence wait for both _a & _b dev nodes before attepting to mount
 BindsTo=dev-disk-by\x2dpartlabel-modem_a.device dev-disk-by\x2dpartlabel-modem_b.device
 After=dev-disk-by\x2dpartlabel-modem_a.device dev-disk-by\x2dpartlabel-modem_b.device
+Before=local-fs.target
 DefaultDependencies=no
 
 IgnoreOnIsolate=true

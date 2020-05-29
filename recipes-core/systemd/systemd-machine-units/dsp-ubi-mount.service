@@ -28,6 +28,7 @@
 [Unit]
 Description=Mount dsp partition to /dsp mount point
 SourcePath=/etc/initscripts/dsp-ubi-mount.sh
+Before=local-fs.target
 DefaultDependencies=no
 
 [Service]

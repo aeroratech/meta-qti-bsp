@@ -28,6 +28,7 @@
 [Unit]
 Description=Mount firmware partition to /firmware mount point
 SourcePath=/etc/initscripts/firmware-ubi-mount.sh
+Before=local-fs.target
 DefaultDependencies=no
 
 [Service]
