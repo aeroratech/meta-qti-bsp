@@ -1,4 +1,4 @@
-# Copyright (c) 2019 The Linux Foundation. All rights reserved.
+# Copyright (c) 2020, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -26,11 +26,14 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [Unit]
-After=overlay-workdir.service
-Requires=overlay-workdir.service
+Description=OverlayFS restore
+After=overlay.mount
+RequiresMountsFor=/overlay
+DefaultDependencies=no
 
-[Mount]
-What=overlay
-Where=/etc
-Type=overlay
-Options=lowerdir=/etc,upperdir=/overlay/etc,workdir=/overlay/.etc-work,x-systemd.automount,x-systemd.growfs,rootcontext=system_u:object_r:etc_t:s0
+[Service]
+Type=oneshot
+ExecStart=/sbin/overlay-restore.sh
+
+[Install]
+WantedBy=local-fs.target

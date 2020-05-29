@@ -26,8 +26,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [Unit]
-DefaultDependencies=no
-After=overlay.mount
+After=overlay-workdir.service
+Requires=overlay-workdir.service
 
 [Mount]
 What=overlay

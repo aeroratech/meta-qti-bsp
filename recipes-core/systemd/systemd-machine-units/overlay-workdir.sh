@@ -1,4 +1,6 @@
-# Copyright (c) 2019 The Linux Foundation. All rights reserved.
+#!/bin/sh
+
+# Copyright (c) 2020 The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -25,12 +27,11 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-[Unit]
-After=overlay-workdir.service
-Requires=overlay-workdir.service
+mkdir -p /overlay/data        || exit 1
+mkdir -p /overlay/etc         || exit 1
+mkdir -p /overlay/cache       || exit 1
+mkdir -p /overlay/.data-work  || exit 1
+mkdir -p /overlay/.etc-work   || exit 1
+mkdir -p /overlay/.cache-work || exit 1
 
-[Mount]
-What=overlay
-Where=/etc
-Type=overlay
-Options=lowerdir=/etc,upperdir=/overlay/etc,workdir=/overlay/.etc-work,x-systemd.automount,x-systemd.growfs,rootcontext=system_u:object_r:etc_t:s0
+exit 0
