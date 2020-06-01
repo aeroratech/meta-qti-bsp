@@ -11,8 +11,10 @@ SRC_URI_append_qcs610 = " \
     file://sdmsteppe_iot_configs.cfg \
     ${@bb.utils.contains_any('COMBINED_FEATURES', 'qti-video qti-camera', 'file://multimedia.cfg', '', d)} \
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-video', 'file://video.cfg', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'qti-fastcv', 'file://fastcv.cfg', '', d)} \
+    ${@bb.utils.contains('COMBINED_FEATURES', 'drm', 'file://gfx.cfg', '', d)} \
     ${@bb.utils.contains_any('COMBINED_FEATURES', 'qti-camera mm-camera', 'file://camera.cfg', '', d)} \
+    ${@bb.utils.contains('COMBINED_FEATURES', 'drm', 'file://display_drm.cfg', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'qti-fastcv', 'file://fastcv.cfg', '', d)} \
 "
 
 # Additional configs for qcs40x machines
