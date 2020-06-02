@@ -26,14 +26,14 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [Unit]
-Description=OverlayFS restore
+Description=Create workdirs for overlayfs usage
 After=overlay.mount
-RequiresMountsFor=/overlay
-DefaultDependencies=no
+Requires=overlay.mount
 
 [Service]
 Type=oneshot
-ExecStart=/sbin/overlay-restore.sh
+ExecStart=/sbin/create-overlay-workdirs
+RemainAfterExit=yes
 
 [Install]
 WantedBy=local-fs.target
