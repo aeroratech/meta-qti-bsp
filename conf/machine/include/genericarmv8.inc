@@ -14,8 +14,8 @@ PAGE_SIZE ?= '4096'
 
 EXTRA_IMAGECMD ?= "-N 2048"
 
-SYSTEM_SIZE_EXT4 ?= "130000000"
-VM_SIZE_EXT4 ?= "180000000"
+SYSTEM_SIZE_EXT4 ?= "180000000"
+VM_SIZE_EXT4 ?= "230000000"
 
 do_rootfs_append() {
     bb.build.exec_func('do_ramdisk_create',d)
