@@ -5,7 +5,6 @@ SRC_URI_append += " file://cache.mount"
 SRC_URI_append += " file://data.mount"
 SRC_URI_append += " file://firmware.mount"
 SRC_URI_append += " file://firmware-mount.service"
-SRC_URI_append += " file://systemrw.mount"
 SRC_URI_append += " file://dsp.mount"
 SRC_URI_append += " file://dsp-mount.service"
 SRC_URI_append += " file://media-card.mount"
@@ -17,7 +16,6 @@ SRC_URI_append += " file://dash.mount"
 SRC_URI_append += " file://cache-ubi.mount"
 SRC_URI_append += " file://persist-ubi.mount"
 SRC_URI_append += " file://data-ubi.mount"
-SRC_URI_append += " file://systemrw-ubi.mount"
 SRC_URI_append += " file://firmware-ubi-mount.sh"
 SRC_URI_append += " file://firmware-ubi-mount.service"
 SRC_URI_append += " file://dsp-ubi-mount.sh"
@@ -55,8 +53,6 @@ fix_sepolicies () {
 
     sed -i "s#,rootcontext=system_u:object_r:data_t:s0##g" ${WORKDIR}/data-ubi.mount
     sed -i "s#,rootcontext=system_u:object_r:persist_t:s0##g" ${WORKDIR}/persist-ubi.mount
-    sed -i "s#,rootcontext=system_u:object_r:system_data_t:s0##g"  ${WORKDIR}/systemrw.mount
-    sed -i "s#,rootcontext=system_u:object_r:system_data_t:s0##g"  ${WORKDIR}/systemrw-ubi.mount
 }
 do_install[prefuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '', 'fix_sepolicies', d)}"
 
@@ -73,8 +69,6 @@ do_install_append () {
 
 # Install mount and service units for mounting hard parititions.
 MNT_POINTS  = "${@d.getVar('MACHINE_MNT_POINTS') or ""}"
-# /data is default. /systemrw is applicable only when rootfs is read only.
-MNT_POINTS += " ${@bb.utils.contains('DISTRO_FEATURES', 'userdata', '/data', '', d)}"
 
 do_install_append () {
     install -d 0644 ${D}${sysconfdir}/initscripts
@@ -99,20 +93,6 @@ do_install_append () {
                 install -m 0644 ${WORKDIR}/data-ubi.mount ${D}${systemd_unitdir}/system/data.mount
             fi
             ln -sf ${systemd_unitdir}/system/data.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/data.mount
-        fi
-
-        if [ "$entry" = "/systemrw" ]; then
-            if ${@bb.utils.contains('DISTRO_FEATURES','nand-boot','false','true',d)}; then
-                install -m 0644 ${WORKDIR}/systemrw.mount ${D}${systemd_unitdir}/system/systemrw.mount
-
-                # Run fsck at boot
-                install -d 0644 ${D}${systemd_unitdir}/system/local-fs-pre.target.requires
-                ln -sf ${systemd_unitdir}/system/systemd-fsck@.service \
-                     ${D}${systemd_unitdir}/system/local-fs-pre.target.requires/systemd-fsck@dev-disk-by\\x2dpartlabel-systemrw.service
-            else
-                install -m 0644 ${WORKDIR}/systemrw-ubi.mount ${D}${systemd_unitdir}/system/systemrw.mount
-            fi
-            ln -sf ${systemd_unitdir}/system/systemrw.mount ${D}${systemd_unitdir}/system/local-fs.target.requires/systemrw.mount
         fi
 
         if [ "$entry" = "/cache" ]; then

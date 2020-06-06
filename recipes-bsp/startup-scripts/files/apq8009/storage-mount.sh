@@ -94,11 +94,7 @@ then
     eval FindAndMountUBI persist /persist
     #eval FindAndMountUBI modem /firmware
 else
-    if [ ! -d /systemrw ]; then
-       mkdir -p /systemrw
-    fi
     mount -t ext4 /dev/mmcblk0p31 /data  -o relatime,data=ordered,noauto_da_alloc,discard
-    mount -t ext4 /dev/mmcblk0p30 /systemrw  -o relatime,data=ordered,noauto_da_alloc,discard
     mount -t ext4 /dev/mmcblk0p22 /persist -o relatime,data=ordered,noauto_da_alloc,discard
     mount -t ext4 /dev/mmcblk0p23 /cache -o relatime,data=ordered,noauto_da_alloc,discard
 fi
