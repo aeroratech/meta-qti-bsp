@@ -32,9 +32,9 @@ python __anonymous () {
 
 OTA_TARGET_IMAGE_ROOTFS_EXT4 = "${WORKDIR}/ota-target-image-ext4"
 
-OTA_TARGET_FILES_EXT4 = "${IMAGE_BASENAME}-target-files-ext4.zip"
-OTA_FULL_UPDATE_EXT4 = "${IMAGE_BASENAME}-full_update_ext4.zip"
-OTA_INCREMENTAL_UPDATE_EXT4 = "${IMAGE_BASENAME}-incrementatl_update_ext4.zip"
+OTA_TARGET_FILES_EXT4 = "target-files-ext4.zip"
+OTA_FULL_UPDATE_EXT4 = "full_update_ext4.zip"
+OTA_INCREMENTAL_UPDATE_EXT4 = "incrementatl_update_ext4.zip"
 OTA_TARGET_FILES_EXT4_PATH = "${WORKDIR}/${OTA_TARGET_FILES_EXT4}"
 OTA_FULL_UPDATE_EXT4_PATH = "${WORKDIR}/${OTA_FULL_UPDATE_EXT4}"
 OTA_INCREMENTAL_UPDATE_EXT4_PATH = "${WORKDIR}/${OTA_INCREMENTAL_UPDATE_EXT4}"
@@ -99,17 +99,6 @@ do_recovery_ext4() {
     # ota_from_target_files.py but it would be hacky to find the absolute path there.
     cp ${WORKSPACE}/OTA/device/qcom/common/releasetools.py ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/.
 
-    #cp and modify file_contexts to BOOT/RAMDISK folder
-    #if [[ "${DISTRO_FEATURES}" =~ "selinux" ]]; then
-    #    cp ${IMAGE_ROOTFS}/etc/selinux/mls/contexts/files/file_contexts ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/BOOT/RAMDISK/.
-    #    sed -i 's#^/#/system/#g' ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/BOOT/RAMDISK/file_contexts
-    #    #set selinux_fc
-    #    echo selinux_fc=BOOT/RAMDISK/file_contexts >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/misc_info.txt
-    #    #set use_set_metadata to 1 so that updater-script
-    #    #will have rules to apply selabels
-    #    echo use_set_metadata=1 >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/misc_info.txt
-    #fi
-
     # copy contents of META folder
     #recovery_api_version is from recovery module
     echo recovery_api_version=3 >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/misc_info.txt
@@ -155,15 +144,15 @@ do_recovery_ext4() {
 }
 
 do_gen_ota_incremental_zip_ext4() {
-    if [ -f "${DEPLOY_DIR_IMAGE}/${OTA_TARGET_FILES_EXT4}" ]; then
+    if [ -f "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_EXT4}" ]; then
         # Clean up any existing target-files*.zip as this can lead to incorrect content getting packed in the zip.
         rm -f ${OTA_TARGET_FILES_EXT4_PATH}
 
         cd ${OTA_TARGET_IMAGE_ROOTFS_EXT4} && zip -qry ${OTA_TARGET_FILES_EXT4_PATH} *
 
-        cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./incremental_ota.sh ${DEPLOY_DIR_IMAGE}/${OTA_TARGET_FILES_EXT4} ${OTA_TARGET_FILES_EXT4_PATH} ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
+        cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./incremental_ota.sh ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_EXT4} ${OTA_TARGET_FILES_EXT4_PATH} ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
 
-        cp ${OTA_TARGET_FILES_EXT4_PATH} ${DEPLOY_DIR_IMAGE}
+        cp ${OTA_TARGET_FILES_EXT4_PATH} ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}
         cp ${STAGING_DIR_NATIVE}/usr/bin/releasetools/update_incr_ext4.zip ${DEPLOY_DIR_IMAGE}/${OTA_INCREMENTAL_UPDATE_EXT4}
     else
         return 0
@@ -178,6 +167,6 @@ do_gen_ota_full_zip_ext4() {
 
     cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./full_ota.sh ${OTA_TARGET_FILES_EXT4_PATH} ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
 
-    cp ${OTA_TARGET_FILES_EXT4_PATH} ${DEPLOY_DIR_IMAGE}
-    cp ${STAGING_DIR_NATIVE}/usr/bin/releasetools/update_ext4.zip ${DEPLOY_DIR_IMAGE}/${OTA_FULL_UPDATE_EXT4}
+    cp ${OTA_TARGET_FILES_EXT4_PATH} ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}
+    cp ${STAGING_DIR_NATIVE}/usr/bin/releasetools/update_ext4.zip ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_FULL_UPDATE_EXT4}
 }

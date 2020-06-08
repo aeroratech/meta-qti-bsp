@@ -2,20 +2,13 @@
 # add the MACHINE name to this list.
 # This is the "only" list that will control whether
 # OTA upgrade will be supported on a target.
-OTA_SUPPORTED_NAND_TARGET_LIST = "sdxprairie sdxpoorwills mdm9607 qcs403-som2"
+IS_OTA_SUPPORTED = "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'True', 'False', d)}"
 
-def nand_target_supports_OTA_upgrade(d):
-    list_of_supported_targets = d.getVar('OTA_SUPPORTED_NAND_TARGET_LIST');
-
-    if d.getVar('MACHINE', True) in list_of_supported_targets:
-        return True
-
-    return False
+RM_WORK_EXCLUDE_ITEMS += "rootfs rootfs-dbg"
 
 def nand_set_vars_and_get_dependencies(d):
-    if not nand_target_supports_OTA_upgrade(d):
-        d.setVar('RECOVERY_IMAGE', "0");
-        d.setVar('GENERATE_AB_OTA_PACKAGE', "0");
+    if not d.getVar('IS_OTA_SUPPORTED', True) == 'True':
+        d.setVar('GENERATE_AB_OTA_PACKAGE', "0")
         # Do not create machine-recovery-image or the OTA packages
         return ""
 
