@@ -12,8 +12,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         e2fsprogs-e2fsck \
         e2fsprogs-mke2fs \
         glib-2.0 \
-        iotedge-cli \
-        iotedge-daemon \
         kernel-modules \
         libnl \
         libxml2 \
@@ -25,6 +23,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-data \
         packagegroup-qti-dsp \
         packagegroup-qti-display \
+        packagegroup-qti-iotedge \
         packagegroup-qti-gst \
         packagegroup-qti-ml \
         packagegroup-qti-qmmf \
