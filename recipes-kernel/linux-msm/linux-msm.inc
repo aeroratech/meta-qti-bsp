@@ -4,7 +4,7 @@ DESCRIPTION = "CAF Linux Kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-DEPENDS += " mkbootimg-native openssl-native mod-signing-keys"
+DEPENDS += " mkbootimg-native openssl-native mod-signing-keys mkdtimg-native"
 RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
 
 LDFLAGS_aarch64 = "-O1 --hash-style=gnu --as-needed"
@@ -92,6 +92,14 @@ do_shared_workdir_append () {
         cp certs/signing_key.x509 $kerneldir/certs/
 }
 
+# Generate dtbo.img to support dtoverlay
+do_make_dtboimg() {
+     mkdtimg create ${KERNEL_OUTPUT_DIR}/dtbo.img \
+             --page_size=${PAGE_SIZE} \
+             ${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/qcom/*.dtbo
+}
+do_install[postfuncs] += " ${@oe.utils.conditional('DTBO_MACHINE', 'True', 'do_make_dtboimg', '',d)}"
+
 do_deploy() {
     if [ -f ${D}/${KERNEL_IMAGEDEST}/-${KERNEL_VERSION} ]; then
         mv ${D}/${KERNEL_IMAGEDEST}/-${KERNEL_VERSION} ${D}/${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}-${KERNEL_VERSION}
@@ -102,6 +110,11 @@ do_deploy() {
     install -m 0644 ${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE} ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
     install -m 0644 vmlinux ${DEPLOYDIR}
     install -m 0644 System.map ${DEPLOYDIR}
+
+    #if exists copy dtbo.img into deplydir
+    if [ -f ${KERNEL_OUTPUT_DIR}/dtbo.img ]; then
+        install -m 0644 ${KERNEL_OUTPUT_DIR}/dtbo.img ${DEPLOYDIR}
+    fi
 }
 
 # Put the zImage in the kernel-dev pkg
