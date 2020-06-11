@@ -3,7 +3,10 @@ QIMGCLASSES += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'dm-verity'
 QIMGCLASSES += "${@bb.utils.contains('IMAGE_FSTYPES', 'ext4', 'qimage-ext4', '', d)}"
 QIMGCLASSES += "${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'qimage-ubi', '', d)}"
 
-inherit ${QIMGCLASSES}
+# Use the following to extend qimage with custom functions like signing
+QIMGEXTENSION ?= ""
+
+inherit ${QIMGCLASSES} ${QIMGEXTENSION}
 
 # The work directory for image recipes is retained as the 'rootfs' directory
 # can be used as sysroot during remote gdb debgging
