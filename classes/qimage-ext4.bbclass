@@ -1,4 +1,7 @@
-inherit mdm-ota-target-image-ext4
+QIMGEXT4CLASSES  = ""
+QIMGEXT4CLASSES += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'ab-ota-ext4', '', d)}"
+
+inherit ${QIMGEXT4CLASSES}
 
 CORE_IMAGE_EXTRA_INSTALL += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', ' recovery-ab', '', d)}"
 
