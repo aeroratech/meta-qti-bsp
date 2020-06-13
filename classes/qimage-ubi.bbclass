@@ -1,4 +1,8 @@
-#inherit mdm-ota-target-image-ubi # To be implemented
+QIMGUBICLASSES  = ""
+# To be implemented
+# QIMGUBICLASSES += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'ab-ota-ubi', '', d)}"
+
+inherit ${QIMGUBICLASSES}
 
 IMAGE_FEATURES[validitems] += "persist-volume"
 
