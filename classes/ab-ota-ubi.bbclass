@@ -2,16 +2,11 @@
 # add the MACHINE name to this list.
 # This is the "only" list that will control whether
 # OTA upgrade will be supported on a target.
-IS_OTA_SUPPORTED = "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'True', 'False', d)}"
+DEPENDS += "releasetools-native"
 
 RM_WORK_EXCLUDE_ITEMS += "rootfs rootfs-dbg"
 
 def nand_set_vars_and_get_dependencies(d):
-    if not d.getVar('IS_OTA_SUPPORTED', True) == 'True':
-        d.setVar('GENERATE_AB_OTA_PACKAGE', "0")
-        # Do not create machine-recovery-image or the OTA packages
-        return ""
-
     # check if this is a nand target with squashfs support
     if bb.utils.contains('DISTRO_FEATURES', 'nand-squashfs', True, False, d):
         d.setVar('SQUASHFS_SUPPORTED', "1");
@@ -22,13 +17,13 @@ def nand_set_vars_and_get_dependencies(d):
         d.setVar('RECOVERY_IMAGE', "0");
         # For nand targets, A/B OTA support is not present currently
         d.setVar('GENERATE_AB_OTA_PACKAGE', "0");
-        return " releasetools-native"
+        return ""
     else:
         # for Non A/B target, set RECOVERY_IMAGE to "1"
         # this will generate a non A/B update package as well.
         d.setVar('RECOVERY_IMAGE', "1");
         d.setVar('GENERATE_AB_OTA_PACKAGE', "0");
-        return " machine-recovery-image releasetools-native"
+        return " machine-recovery-image"
 
 
 # Add tasks to generate recovery image, OTA zip files
@@ -41,7 +36,7 @@ python __anonymous () {
             bb.build.addtask('do_gen_otazip_ubi', 'do_build', 'do_recovery_ubi', d)
 }
 
-OTA_TARGET_IMAGE_ROOTFS_UBI = "${IMAGE_ROOTFS}/../${MACHINE}-ota-target-image-ubi"
+OTA_TARGET_IMAGE_ROOTFS_UBI = "${WORKDIR}/ota-target-image-ubi"
 NON_AB_RECOVERY_IMAGE_ROOTFS = "$(echo ${IMAGE_ROOTFS} | sed 's#${PN}#machine-recovery-image#')"
 
 # If A/B package is to be generated, recoveryfs's rootfs is same as system's rootfs

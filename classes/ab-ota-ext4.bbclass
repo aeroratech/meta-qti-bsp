@@ -2,41 +2,19 @@
 # add the MACHINE name to this list.
 # This is the "only" list that will control whether
 # OTA upgrade will be supported on a target.
-IS_OTA_SUPPORTED = "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'True', 'False', d)}"
+DEPENDS += "releasetools-native zip-native fsconfig-native applypatch-native bc-native bsdiff-native"
 
 RM_WORK_EXCLUDE_ITEMS += "rootfs rootfs-dbg"
 
 IMAGE_SYSTEM_MOUNT_POINT = "/"
 
-def emmc_set_vars_and_get_dependencies(d):
-    if not d.getVar('IS_OTA_SUPPORTED', True) == 'True':
-        d.setVar('GENERATE_AB_OTA_PACKAGE', "0")
-        # Do not create machine-recovery-image or the OTA packages
-        return ""
-
-    if bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', True, False, d):
-        # if A/B support is supported, recovery image need not be generated.
-        # only A/B target will be generated
-        d.setVar('GENERATE_AB_OTA_PACKAGE', "1")
-        return " releasetools-native zip-native fsconfig-native applypatch-native bc-native bsdiff-native"
-
-# Add tasks to generate recovery image, OTA zip files
-python __anonymous () {
-    if bb.utils.contains('IMAGE_FSTYPES', 'ext4', True, False, d):
-        d.appendVar('DEPENDS', emmc_set_vars_and_get_dependencies(d));
-        if d.getVar('GENERATE_AB_OTA_PACKAGE', True) == '1':
-                bb.build.addtask('do_recovery_ext4', 'do_build', 'do_image_complete', d)
-                bb.build.addtask('do_gen_ota_incremental_zip_ext4', 'do_build', 'do_recovery_ext4', d)
-                bb.build.addtask('do_gen_ota_full_zip_ext4', 'do_build', 'do_gen_ota_incremental_zip_ext4', d)
-}
-
 OTA_TARGET_IMAGE_ROOTFS_EXT4 = "${WORKDIR}/ota-target-image-ext4"
 
 OTA_TARGET_FILES_EXT4 = "target-files-ext4.zip"
-OTA_FULL_UPDATE_EXT4 = "full_update_ext4.zip"
-OTA_INCREMENTAL_UPDATE_EXT4 = "incrementatl_update_ext4.zip"
 OTA_TARGET_FILES_EXT4_PATH = "${WORKDIR}/${OTA_TARGET_FILES_EXT4}"
+OTA_FULL_UPDATE_EXT4 = "full_update_ext4.zip"
 OTA_FULL_UPDATE_EXT4_PATH = "${WORKDIR}/${OTA_FULL_UPDATE_EXT4}"
+OTA_INCREMENTAL_UPDATE_EXT4 = "incremental_update_ext4.zip"
 OTA_INCREMENTAL_UPDATE_EXT4_PATH = "${WORKDIR}/${OTA_INCREMENTAL_UPDATE_EXT4}"
 
 #Create directory structure for targetfiles.zip
@@ -142,6 +120,7 @@ do_recovery_ext4() {
     # Targets that support A/B boot do not need recovery(fs)-updater
     echo le_target_supports_ab=1 >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/misc_info.txt
 }
+addtask do_recovery_ext4 after do_image_complete before do_build
 
 do_gen_ota_incremental_zip_ext4() {
     if [ -f "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_EXT4}" ]; then
@@ -158,6 +137,7 @@ do_gen_ota_incremental_zip_ext4() {
         return 0
     fi
 }
+addtask do_gen_ota_incremental_zip_ext4 after do_recovery_ext4 before do_build
 
 # Generate OTA zip files
 do_gen_ota_full_zip_ext4() {
@@ -170,3 +150,4 @@ do_gen_ota_full_zip_ext4() {
     cp ${OTA_TARGET_FILES_EXT4_PATH} ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}
     cp ${STAGING_DIR_NATIVE}/usr/bin/releasetools/update_ext4.zip ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_FULL_UPDATE_EXT4}
 }
+addtask do_gen_ota_full_zip_ext4 after do_gen_ota_incremental_zip_ext4 before do_build
