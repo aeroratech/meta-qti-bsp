@@ -1,5 +1,8 @@
+# if A/B support is supported, generate OTA pkg by default.
+GENERATE_AB_OTA_PACKAGE ?= "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', '1', '', d)}"
+
 QIMGEXT4CLASSES  = ""
-QIMGEXT4CLASSES += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'ab-ota-ext4', '', d)}"
+QIMGEXT4CLASSES += "${@bb.utils.contains('GENERATE_AB_OTA_PACKAGE', '1', 'ab-ota-ext4', '', d)}"
 
 inherit ${QIMGEXT4CLASSES}
 
