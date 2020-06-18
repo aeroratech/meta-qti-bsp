@@ -11,11 +11,11 @@ IMAGE_SYSTEM_MOUNT_POINT = "/"
 OTA_TARGET_IMAGE_ROOTFS_EXT4 = "${WORKDIR}/ota-target-image-ext4"
 
 OTA_TARGET_FILES_EXT4 = "target-files-ext4.zip"
-OTA_TARGET_FILES_EXT4_PATH = "${WORKDIR}/${OTA_TARGET_FILES_EXT4}"
+OTA_TARGET_FILES_EXT4_PATH = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_EXT4}"
 OTA_FULL_UPDATE_EXT4 = "full_update_ext4.zip"
-OTA_FULL_UPDATE_EXT4_PATH = "${WORKDIR}/${OTA_FULL_UPDATE_EXT4}"
+OTA_FULL_UPDATE_EXT4_PATH = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_FULL_UPDATE_EXT4}"
 OTA_INCREMENTAL_UPDATE_EXT4 = "incremental_update_ext4.zip"
-OTA_INCREMENTAL_UPDATE_EXT4_PATH = "${WORKDIR}/${OTA_INCREMENTAL_UPDATE_EXT4}"
+OTA_INCREMENTAL_UPDATE_EXT4_PATH = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_INCREMENTAL_UPDATE_EXT4}"
 
 def get_filesmap(d):
     filesmap_path = ""
@@ -137,35 +137,28 @@ do_recovery_ext4() {
 
     # Targets that support A/B boot do not need recovery(fs)-updater
     echo le_target_supports_ab=1 >> ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/META/misc_info.txt
+
+    cd ${OTA_TARGET_IMAGE_ROOTFS_EXT4} && zip -qry ${OTA_TARGET_FILES_EXT4_PATH} *
 }
 addtask do_recovery_ext4 after do_image_complete before do_build
 
+# Generate OTA zip files
+do_gen_ota_incremental_zip_ext4[dirs] += "${DEPLOY_DIR_IMAGE}/ota-scripts"
 do_gen_ota_incremental_zip_ext4() {
     if [ -f "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_EXT4}" ]; then
-        # Clean up any existing target-files*.zip as this can lead to incorrect content getting packed in the zip.
-        rm -f ${OTA_TARGET_FILES_EXT4_PATH}
 
-        cd ${OTA_TARGET_IMAGE_ROOTFS_EXT4} && zip -qry ${OTA_TARGET_FILES_EXT4_PATH} *
+        ./incremental_ota.sh ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_EXT4} ${OTA_TARGET_FILES_EXT4_PATH} ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
 
-        cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./incremental_ota.sh ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_EXT4} ${OTA_TARGET_FILES_EXT4_PATH} ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
-
-        cp ${OTA_TARGET_FILES_EXT4_PATH} ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}
-        cp ${STAGING_DIR_NATIVE}/usr/bin/releasetools/update_incr_ext4.zip ${DEPLOY_DIR_IMAGE}/${OTA_INCREMENTAL_UPDATE_EXT4}
+        cp update_incr_ext4.zip ${DEPLOY_DIR_IMAGE}/${OTA_INCREMENTAL_UPDATE_EXT4}
     else
         return 0
     fi
 }
-addtask do_gen_ota_incremental_zip_ext4 after do_recovery_ext4 before do_build
 
-# Generate OTA zip files
+do_gen_ota_full_zip_ext4[dirs] += "${DEPLOY_DIR_IMAGE}/ota-scripts"
 do_gen_ota_full_zip_ext4() {
-    # Clean up any existing target-files*.zip as this can lead to incorrect content getting packed in the zip.
-    rm -f ${OTA_TARGET_FILES_EXT4_PATH}
-    cd ${OTA_TARGET_IMAGE_ROOTFS_EXT4} && zip -qry ${OTA_TARGET_FILES_EXT4_PATH} *
+    ./full_ota.sh ${OTA_TARGET_FILES_EXT4_PATH} ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
 
-    cd ${STAGING_DIR_NATIVE}/usr/bin/releasetools && ./full_ota.sh ${OTA_TARGET_FILES_EXT4_PATH} ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
-
-    cp ${OTA_TARGET_FILES_EXT4_PATH} ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}
-    cp ${STAGING_DIR_NATIVE}/usr/bin/releasetools/update_ext4.zip ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_FULL_UPDATE_EXT4}
+    cp update_ext4.zip ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_FULL_UPDATE_EXT4}
 }
-addtask do_gen_ota_full_zip_ext4 after do_gen_ota_incremental_zip_ext4 before do_build
+addtask do_gen_ota_full_zip_ext4 after do_recovery_ext4 before do_build
