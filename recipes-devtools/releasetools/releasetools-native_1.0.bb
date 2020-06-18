@@ -27,10 +27,17 @@ do_install_append() {
     cp -rf ${S}/* ${D}${bindir}/releasetools/
 }
 
+do_deploy[cleandirs] = "${DEPLOYDIR}/ota-scripts"
 do_deploy() {
-    install -d ${DEPLOYDIR}/
-    install -m 755 ${WORKDIR}/full_ota.sh  ${DEPLOYDIR}/
-    install -m 755 ${WORKDIR}/incremental_ota.sh ${DEPLOYDIR}/
-    install -m 755 ${WORKDIR}/releasetools.py ${DEPLOYDIR}/
+    install -m 755 ${WORKDIR}/full_ota.sh  ${DEPLOYDIR}/ota-scripts
+    install -m 755 ${WORKDIR}/incremental_ota.sh ${DEPLOYDIR}/ota-scripts
+    install -m 755 ${WORKDIR}/releasetools.py ${DEPLOYDIR}/ota-scripts
+    install -m 755 ${S}/blockimgdiff.py ${DEPLOYDIR}/ota-scripts
+    install -m 755 ${S}/common.py ${DEPLOYDIR}/ota-scripts
+    install -m 755 ${S}/edify_generator.py ${DEPLOYDIR}/ota-scripts
+    install -m 755 ${S}/img_from_target_files ${DEPLOYDIR}/ota-scripts
+    install -m 755 ${S}/ota_from_target_files ${DEPLOYDIR}/ota-scripts
+    install -m 755 ${S}/rangelib.py ${DEPLOYDIR}/ota-scripts
+    install -m 755 ${S}/sparse_img.py ${DEPLOYDIR}/ota-scripts
 }
 addtask deploy after do_install
