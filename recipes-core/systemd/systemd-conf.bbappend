@@ -5,9 +5,14 @@ SRC_URI += "file://limits-coredump.conf"
 
 # Modify default CONFFILES as per machine needs
 
-# coredump.conf
+# Don't install coredump.conf for user builds.
+COREDUMP = "1"
+COREDUMP_qti-distro-user = ""
+
+SYSTEMD_COREDUMP_PATH ?= "${userfsdatadir}/coredump"
+
 do_install_append() {
-   if [ "${SYSTEMD_ENABLE_COREDUMP}" == "1" ]; then
+   if [ "${COREDUMP}" == "1" ]; then
        sed -i "s#@COREDUMP_PATH@#${SYSTEMD_COREDUMP_PATH}#" ${WORKDIR}/sysctl-coredump.conf
 
        install -m 0644 ${WORKDIR}/sysctl-coredump.conf -D ${D}${sysconfdir}/sysctl.d/sys-coredump.conf

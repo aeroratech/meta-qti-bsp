@@ -45,6 +45,7 @@ PACKAGECONFIG = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wifi', 'rfkill', '', d)} \
     acl \
     binfmt \
+    coredump \
     hibernate \
     ima \
     kmod \
@@ -53,9 +54,8 @@ PACKAGECONFIG = " \
     timedated \
     xz \
 "
-
-# Enable coredump support when needed
-PACKAGECONFIG_append = " ${@bb.utils.contains('SYSTEMD_ENABLE_COREDUMP', '1', 'coredump', '', d)}"
+# Don't support coredump generation for user builds.
+PACKAGECONFIG_remove_qti-distro-user = "coredump"
 
 EXTRA_OEMESON += " -Defi=false"
 EXTRA_OEMESON += " -Dhwdb=false"
