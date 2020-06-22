@@ -5,6 +5,7 @@ LICENSE = "BSD-3-Clause"
 inherit packagegroup
 
 PROVIDES = "${PACKAGES}"
+USB_SUPPORT = "${@d.getVar('MACHINE_SUPPORTS_USB') or "True"}"
 
 PACKAGES = ' \
     packagegroup-android-utils \
@@ -24,6 +25,6 @@ RDEPENDS_packagegroup-android-utils = "\
 # Startup scripts needed during device bootup
 RDEPENDS_packagegroup-startup-scripts = "\
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'ab-slot-util', '', d)} \
-    post-boot \
-    usb-composition \
+    ${@oe.utils.conditional('USB_SUPPORT', 'True', 'usb-composition', '', d)} \
+    ${@oe.utils.conditional('USB_SUPPORT', 'True', 'post-boot', '', d)} \
     "
