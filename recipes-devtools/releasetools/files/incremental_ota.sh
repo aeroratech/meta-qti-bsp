@@ -40,14 +40,8 @@ if [ "$#" -lt 5 ]; then
     exit 1
 fi
 
-USR_LIB=../recipe-sysroot-native/usr/lib
-LIB=../recipe-sysroot-native/lib
-USR_BIN=../recipe-sysroot-native/usr/bin
-
-export PATH=.:${USR_LIB}:${LIB}:${USR_BIN}:$PATH:$PATH:/usr/bin
+export PATH=.:$PATH:/usr/bin
 export OUT_HOST_ROOT=.
-
-export LD_LIBRARY_PATH=${USR_LIB}:${LIB}:${USR_BIN}
 
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
@@ -74,43 +68,47 @@ fi
 # Specify MMC or MTD type device. MTD by default
 [[ $4 = "ext4" ]] && device_type="MMC" || device_type="MTD"
 
-rm -rf target_files
-unzip -qo $2 -d target_files
-mkdir -p target_files/META
-mkdir -p target_files/SYSTEM
+# Setup temp folder to unzip target files
+target_files=target_files_incremental_$4
+rm -rf $target_files
+unzip -qo $2 -d $target_files
+mkdir -p $target_files/META
+mkdir -p $target_files/SYSTEM
 
 if [ "${block_based}" = "--block" ]; then
     # python2 is needed for block based OTA.
     python_version="python2"
 else
     # File-based OTA needs this to assign the correct context to '/' after OTA upgrade
-    echo "/system -d system_u:object_r:root_t:s0" >> target_files/BOOT/RAMDISK/file_contexts
+    echo "/system -d system_u:object_r:root_t:s0" >> $target_files/BOOT/RAMDISK/file_contexts
 
     # File-based OTA also can use canned_fs_config to set uid, gid & mode to all the files
     # The "-x" is to tell fs_config that the modes in fsconfig file are in hex, not octal.
-    if [ -e target_files/META/system.canned.fsconfig ]; then
-        FSCONFIGFOPTS=${FSCONFIGFOPTS}" -p system/ -x target_files/META/system.canned.fsconfig "
+    if [ -e $target_files/META/system.canned.fsconfig ]; then
+        FSCONFIGFOPTS=${FSCONFIGFOPTS}" -p system/ -x $target_files/META/system.canned.fsconfig "
     fi
 fi
 
 # Generate selabel rules only if file_contexts is packed in target-files
-if grep "selinux_fc" target_files/META/misc_info.txt
+if grep "selinux_fc" $target_files/META/misc_info.txt
 then
-    zipinfo -1 $2 |  awk 'BEGIN { FS="SYSTEM/" } /^SYSTEM\// {print "system/" $2}' | fs_config ${FSCONFIGFOPTS} -C -S target_files/BOOT/RAMDISK/file_contexts -D ${3} > target_files/META/filesystem_config.txt
+    zipinfo -1 $2 |  awk 'BEGIN { FS="SYSTEM/" } /^SYSTEM\// {print "system/" $2}' | fs_config ${FSCONFIGFOPTS} -C -S $target_files/BOOT/RAMDISK/file_contexts -D ${3} > $target_files/META/filesystem_config.txt
 else
-    zipinfo -1 $2 |  awk 'BEGIN { FS="SYSTEM/" } /^SYSTEM\// {print "system/" $2}' | fs_config ${FSCONFIGFOPTS} -D ${3} > target_files/META/filesystem_config.txt
+    zipinfo -1 $2 |  awk 'BEGIN { FS="SYSTEM/" } /^SYSTEM\// {print "system/" $2}' | fs_config ${FSCONFIGFOPTS} -D ${3} > $target_files/META/filesystem_config.txt
 fi
 
-
-cd target_files && zip -q $2 META/*filesystem_config.txt SYSTEM/build.prop && cd ..
+cd $target_files && zip -q $2 META/*filesystem_config.txt SYSTEM/build.prop && cd ..
 
 $python_version ./ota_from_target_files $block_based -n -v -d $device_type -v -p . -m linux_embedded --no_signing --system_mount_path $system_path -i $1 $2 update_incr_$4.zip > ota_debug.txt 2>&1
 
 if [[ $? = 0 ]]; then
-    echo "update.zip generation was successful"
+    echo "update_$4.zip generation was successful"
 else
-    echo "update.zip generation failed"
+    echo "update_$4.zip generation failed"
     # Add the python script errors back into the target-files zip
     zip -q $1 ota_debug.txt
-    rm update_$3.zip # delete the half-baked update.zip if any;
+    rm update_$4.zip # delete the half-baked update.zip if any;
 fi
+
+# Clean up temporary folder.
+rm -rf $target_files

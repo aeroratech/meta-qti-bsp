@@ -40,14 +40,9 @@ if [ "$#" -lt 4 ]; then
     exit 1
 fi
 
-USR_LIB=../recipe-sysroot-native/usr/lib
-LIB=../recipe-sysroot-native/lib
-USR_BIN=../recipe-sysroot-native/usr/bin
-
-export PATH=.:${USR_LIB}:${LIB}:${USR_BIN}:$PATH:/usr/bin
+export PATH=.:$PATH:/usr/bin
 export OUT_HOST_ROOT=.
 
-export LD_LIBRARY_PATH=${USR_LIB}:${LIB}:${USR_BIN}
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
@@ -77,13 +72,14 @@ fi
 # Specify MMC or MTD type device. MTD by default
 [[ $3 = "ext4" ]] && device_type="MMC" || device_type="MTD"
 
-target_files=target_files_$3
+# Setup temp folder to unzip target files
+target_files=target_files_full_ota_$3
 rm -rf $target_files
 unzip -qo $1 -d $target_files
 mkdir -p $target_files/META
 mkdir -p $target_files/SYSTEM
-mkdir -p target_files/BOOT/RAMDISK
-touch target_files/BOOT/RAMDISK/empty
+mkdir -p $target_files/BOOT/RAMDISK
+touch $target_files/BOOT/RAMDISK/empty
 
 if [ "${block_based}" = "--block" ]; then
     # python2 is needed for block based OTA.
@@ -113,10 +109,13 @@ cd $target_files && zip -q $1 META/*filesystem_config.txt SYSTEM/build.prop BOOT
 $python_version ./ota_from_target_files $block_based $ubuntu -n -v -d $device_type -p . -m linux_embedded --no_signing --system_mount_path $system_path $1 update_$3.zip > ota_debug.txt 2>&1
 
 if [[ $? = 0 ]]; then
-    echo "update.zip generation was successful"
+    echo "update_$3.zip generation was successful"
 else
-    echo "update.zip generation failed"
+    echo "update_$3.zip generation failed"
     # Add the python script errors back into the target-files zip
     zip -q $1 ota_debug.txt
     rm update_$3.zip # delete the half-baked update.zip if any;
 fi
+
+# Clean up temporary folder.
+rm -rf $target_files
