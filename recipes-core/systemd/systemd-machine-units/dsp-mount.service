@@ -27,6 +27,7 @@
 
 [Unit]
 Description=Mount dsp partition to /dsp mount point
+ConditionDirectoryNotEmpty=!/dsp
 
 # Env vars are not reflecting in [Unit] Section for selective wait.
 # Hence wait for both _a & _b dev nodes before attepting to mount

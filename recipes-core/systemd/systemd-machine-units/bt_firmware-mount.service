@@ -27,6 +27,7 @@
 
 [Unit]
 Description=Mount bluetooth partition to /bt_firmware mount point
+ConditionDirectoryNotEmpty=!/bt_firmware
 
 # Env vars are not reflecting in [Unit] Section for selective wait.
 # Hence wait for both _a & _b dev nodes before attepting to mount
