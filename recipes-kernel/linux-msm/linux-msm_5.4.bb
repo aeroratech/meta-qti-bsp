@@ -12,6 +12,15 @@ TARGET_CXXFLAGS += "-Wno-format"
 KERNEL_CC = "${STAGING_BINDIR_NATIVE}/llvm-arm-toolchain/bin/clang -target ${TARGET_ARCH}${TARGET_VENDOR}-${TARGET_OS}"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
+DYNAMIC_DEFCONFIG_SUPPORT = "sdxlemur"
+
+do_configure_prepend() {
+        if ${@bb.utils.contains('DYNAMIC_DEFCONFIG_SUPPORT', '${MACHINE}', 'true', 'false', d)}; then
+                ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} REAL_CC=${STAGING_BINDIR_NATIVE}/llvm-arm-toolchain/bin/clang \
+                LD=arm-oe-linux-gnueabi-ld KERN_OUT=${STAGING_KERNEL_BUILDDIR} \
+                ${STAGING_KERNEL_DIR}/scripts/gki/generate_defconfig.sh ${KERNEL_CONFIG}
+        fi
+}
 
 do_shared_workdir_append () {
         cp Makefile $kerneldir/
