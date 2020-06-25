@@ -3,6 +3,7 @@
 #
 
 ro.product.board=qrb5165
+ro.hardware.camera=qcom
 
 #Audio features
 ro.vendor.audio.sdk.ssr=false
