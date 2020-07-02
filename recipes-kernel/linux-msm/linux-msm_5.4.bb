@@ -47,7 +47,14 @@ do_shared_workdir_append () {
 }
 
 do_deploy_append () {
-         install -d ${DEPLOYDIR}/kernel_scripts/scripts
-         cp  ${STAGING_KERNEL_DIR}/usr/gen_initramfs_list.sh ${DEPLOYDIR}/kernel_scripts/scripts
-         cp -a ${STAGING_KERNEL_BUILDDIR}/usr/ ${DEPLOYDIR}/kernel_scripts/
+         # Copy vmlinux and zImage into deplydir for boot.img creation
+         install -d ${DEPLOYDIR}/build-artifacts
+         install -d ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
+         install -d ${DEPLOYDIR}/build-artifacts/dtb
+         cp  ${STAGING_KERNEL_DIR}/usr/gen_initramfs_list.sh ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
+         cp -a ${STAGING_KERNEL_BUILDDIR}/usr/ ${DEPLOYDIR}/build-artifacts/kernel_scripts/
+         cp -a ${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/vendor/qcom/*.dtb ${DEPLOYDIR}/build-artifacts/dtb
+         install -m 0644 ${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE} ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
+         install -m 0644 vmlinux ${DEPLOYDIR}
+         install -m 0644 System.map ${DEPLOYDIR}
 }

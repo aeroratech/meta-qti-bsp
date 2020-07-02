@@ -90,7 +90,7 @@ do_ramdisk_create() {
         fi
 
         #gen_initramfs_list.sh expects to be run from kernel directory
-        cd ${DEPLOY_DIR_IMAGE}/kernel_scripts
+        cd ${DEPLOY_DIR_IMAGE}/build-artifacts/kernel_scripts
 
         bash ./scripts/gen_initramfs_list.sh -o ${DEPLOY_DIR_IMAGE}/${PN}-initrd.gz -u 0 -g 0 ${TMPDIR}/ramdisk
 
