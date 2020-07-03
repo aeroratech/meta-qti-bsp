@@ -17,10 +17,10 @@ EXTRA_OECONF = " \
                   --with-glib \
                   --with-core-includes=${WORKSPACE}/system/core/include \
 "
-
 do_install_append() {
-    install -m 0755 ${S}/launch_adbd -D ${D}${sysconfdir}/launch_adbd
-    install -m 0750 ${S}/start_adbd -D ${D}${sysconfdir}/initscripts/adbd
+    install -d ${D}${base_sbindir}
+    install -d ${D}${sysconfdir}
+    install -m 0755 ${S}/launch_adbd -D ${D}${base_sbindir}/launch_adbd
     install -b -m 0644 /dev/null ${D}${sysconfdir}/adb_devid
 
     install -d ${D}${systemd_unitdir}/system/
