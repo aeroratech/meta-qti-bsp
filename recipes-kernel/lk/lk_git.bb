@@ -51,7 +51,7 @@ EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'USE_
 
 EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'qti-vble', 'VERIFIED_BOOT_LE=1', '', d)}"
 
-EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'VERITY_LE=1', '', d)}"
+EXTRA_OEMAKE_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', 'VERITY_LE=1', '', d), '', d)}"
 
 EXTRA_OEMAKE_append = " 'ENABLE_LE_VARIANT=1'"
 

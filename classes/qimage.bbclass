@@ -1,5 +1,5 @@
 QIMGCLASSES = "core-image"
-QIMGCLASSES += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'dm-verity', '', d)}"
+QIMGCLASSES += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.filter('MACHINE_FEATURES', 'dm-verity-bootloader', d), '', d)}"
 QIMGCLASSES += "${@bb.utils.contains('IMAGE_FSTYPES', 'ext4', 'qimage-ext4', '', d)}"
 QIMGCLASSES += "${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'qimage-ubi', '', d)}"
 
@@ -7,6 +7,18 @@ QIMGCLASSES += "${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'qimage-ubi', '', d
 QIMGEXTENSION ?= ""
 
 inherit ${QIMGCLASSES} ${QIMGEXTENSION}
+
+# Sanity check to ensure dm-verity related configurations are valid
+python () {
+    if 'dm-verity' not in d.getVar('DISTRO_FEATURES'):
+        return
+    machine_features = set(d.getVar('MACHINE_FEATURES').split(' '))
+    verity_features = machine_features & set(['dm-verity-none', 'dm-verity-bootloader'])
+    if len(verity_features) == 0:
+        bb.fatal("dm-verity in DISTRO_FEATURES but no MACHINE_FEATURES present. Add dm-verity-bootloader or dm-verity-none to MACHINE_FEATURES")
+    if len(verity_features) > 1:
+        bb.fatal("dm-verity in DISTRO_FEATURES and multiple dm-verity related MACHINE_FEATURES present. Only one may be present")
+}
 
 # The work directory for image recipes is retained as the 'rootfs' directory
 # can be used as sysroot during remote gdb debgging
@@ -200,7 +212,7 @@ python do_make_bootimg () {
 
     # When verity is enabled add '.noverity' suffix to default boot img.
     output          = d.getVar('BOOTIMAGE_TARGET', True)
-    if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
+    if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', True, False, d), False, d):
             output += ".noverity"
 
     # cmd to make boot.img
