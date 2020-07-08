@@ -13,5 +13,6 @@ INHERIT += "distro_features_check"
 
 # Add Incompatible license details
 INCOMPATIBLE_LICENSE += "GPL-3.0 LGPL-3.0 AGPL-3.0"
-WHITELIST_GPL-3.0 += "coreutils gettext bash grep m4 findutils elfutils gdbm readline"
-PACKAGE_EXCLUDE += "gdb gdbserver gdbm gettext m4 elfutils readline"
+
+WHITELIST_GPL-3.0 += "bash gettext elfutils gdbm  readline m4"
+PACKAGE_EXCLUDE +=   "bash gettext elfutils gdbm  readline m4"
