@@ -1,5 +1,5 @@
 QIMGCLASSES = "core-image"
-QIMGCLASSES += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.filter('MACHINE_FEATURES', 'dm-verity-bootloader', d), '', d)}"
+QIMGCLASSES += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.filter('MACHINE_FEATURES', 'dm-verity-bootloader dm-verity-initramfs', d), '', d)}"
 QIMGCLASSES += "${@bb.utils.contains('IMAGE_FSTYPES', 'ext4', 'qimage-ext4', '', d)}"
 QIMGCLASSES += "${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'qimage-ubi', '', d)}"
 
@@ -13,7 +13,7 @@ python () {
     if 'dm-verity' not in d.getVar('DISTRO_FEATURES'):
         return
     machine_features = set(d.getVar('MACHINE_FEATURES').split(' '))
-    verity_features = machine_features & set(['dm-verity-none', 'dm-verity-bootloader'])
+    verity_features = machine_features & set(['dm-verity-none', 'dm-verity-bootloader', 'dm-verity-initramfs'])
     if len(verity_features) == 0:
         bb.fatal("dm-verity in DISTRO_FEATURES but no MACHINE_FEATURES present. Add dm-verity-bootloader or dm-verity-none to MACHINE_FEATURES")
     if len(verity_features) > 1:

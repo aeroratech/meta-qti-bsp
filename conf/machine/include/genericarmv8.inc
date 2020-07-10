@@ -17,6 +17,4 @@ EXTRA_IMAGECMD ?= "-N 2048"
 SYSTEM_SIZE_EXT4 ?= "180000000"
 VM_SIZE_EXT4 ?= "230000000"
 
-do_rootfs_append() {
-    bb.build.exec_func('do_ramdisk_create',d)
-}
+addtask ramdisk_create after do_makesystem before do_image_complete
