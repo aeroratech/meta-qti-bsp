@@ -3,7 +3,7 @@ require conf/machine/include/basemachine.inc
 require ${COREBASE}/meta-qti-bsp/recipes-products/images/include/qti-ramdisk.inc
 
 DEFAULTTUNE ?= "aarch64"
-include conf/machine/include/arm/arch-armv8.inc
+include conf/machine/include/arm/arch-armv8a.inc
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
 PREFERRED_VERSION_linux-msm ?= "5.4"
