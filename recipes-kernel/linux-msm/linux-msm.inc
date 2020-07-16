@@ -98,7 +98,7 @@ do_shared_workdir_append () {
 
 # Generate dtbo.img to support dtoverlay
 do_make_dtboimg() {
-     mkdtimg create ${KERNEL_OUTPUT_DIR}/dtbo.img \
+     mkdtimg create ${STAGING_KERNEL_BUILDDIR}/dtbo.img \
              --page_size=${PAGE_SIZE} \
              ${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/qcom/*.dtbo
 }
@@ -116,8 +116,8 @@ do_deploy() {
     install -m 0644 System.map ${DEPLOYDIR}
 
     #if exists copy dtbo.img into deplydir
-    if [ -f ${KERNEL_OUTPUT_DIR}/dtbo.img ]; then
-        install -m 0644 ${KERNEL_OUTPUT_DIR}/dtbo.img ${DEPLOYDIR}
+    if [ -f ${STAGING_KERNEL_BUILDDIR}/dtbo.img ]; then
+        install -m 0644 ${STAGING_KERNEL_BUILDDIR}/dtbo.img ${DEPLOYDIR}
     fi
 }
 
