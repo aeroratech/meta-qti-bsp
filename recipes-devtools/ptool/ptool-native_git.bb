@@ -26,6 +26,6 @@ do_install() {
    install -m 755 -D ${S}/ptool.py ${D}${bindir}/ptool.py
 }
 
-RDEPENDS_${PN} += "python"
+RDEPENDS_${PN} += "python3"
 
 BBCLASSEXTEND = "nativesdk"
