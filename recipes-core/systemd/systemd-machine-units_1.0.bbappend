@@ -184,7 +184,7 @@ do_install_append () {
             ln -sf ${systemd_unitdir}/system/etc.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/etc.mount
             ln -sf ${systemd_unitdir}/system/data.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/data.mount
             ln -sf ${systemd_unitdir}/system/cache.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/cache.mount
-            ln -sf ${systemd_unitdir}/system/overlay-restore.service ${D}${systemd_unitdir}/system/local-fs.target.wants/overlay-workdir.service
+            ln -sf ${systemd_unitdir}/system/overlay-restore.service ${D}${systemd_unitdir}/system/local-fs.target.wants/overlay-restore.service
         fi
     done
 }
