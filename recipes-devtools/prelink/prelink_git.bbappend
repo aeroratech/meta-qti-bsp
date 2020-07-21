@@ -1,5 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}:"
-SRC_URI = "${CAF_GIT}/platform/external/prelink-cross;protocol=git;branch=yocto/cross_prelink \
+SRC_URI = "git://git.yoctoproject.org/prelink-cross.git;branch=cross_prelink_staging \
            file://prelink.conf \
            file://prelink.cron.daily \
            file://prelink.default \
