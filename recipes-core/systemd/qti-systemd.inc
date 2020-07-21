@@ -11,7 +11,6 @@ SRC_URI += "file://set-usb-nodes.rules"
 SRC_URI += "file://sysctl.conf"
 SRC_URI += "file://platform.conf"
 SRC_URI += "file://sd-bus-Allow-extra-users-to-communicate.patch"
-SRC_URI += "file://systemd-namespace-mountflags-fix.patch"
 SRC_URI += "file://set-mhi-nodes.rules"
 
 # Custom setup for PACKAGECONFIG to get a slimmer systemd.
