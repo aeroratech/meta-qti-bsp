@@ -12,6 +12,7 @@ SRC_URI_append_qcs610 = " \
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-bluetooth', 'file://bluetooth.cfg', '', d)} \
     ${@bb.utils.contains_any('COMBINED_FEATURES', 'qti-video qti-camera', 'file://multimedia.cfg', '', d)} \
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-video', 'file://video.cfg', '', d)} \
+    file://usb_video_class.cfg \
     ${@bb.utils.contains('COMBINED_FEATURES', 'drm', 'file://gfx.cfg', '', d)} \
     ${@bb.utils.contains_any('COMBINED_FEATURES', 'qti-camera mm-camera', 'file://camera.cfg', '', d)} \
     ${@bb.utils.contains('COMBINED_FEATURES', 'drm', 'file://display_drm.cfg', '', d)} \
