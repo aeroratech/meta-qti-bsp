@@ -1,23 +1,21 @@
-From af649f7172d587200f2227d6b4bed0992659d318 Mon Sep 17 00:00:00 2001
-From: "Xu,Baochu" <bxu@codeaurora.org>
-Date: Fri, 9 Sep 2016 18:57:58 +0800
+From be41e46cca8123b8c174d9b84846f0625a63ab5e Mon Sep 17 00:00:00 2001
+From: Bulbul Dabi <bdabi@codeaurora.org>
+Date: Thu, 23 Jul 2020 14:59:21 +0530
 Subject: [PATCH] Support MTP function
 
 Detect USB state and start mtpserver
-
-Signed-off-by: Xu,Baochu <bxu@codeaurora.org>
 ---
- util-linux/mdev.c | 87 +++++++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 84 insertions(+), 3 deletions(-)
+ util-linux/mdev.c | 85 +++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 82 insertions(+), 3 deletions(-)
 
 diff --git a/util-linux/mdev.c b/util-linux/mdev.c
-index b2d5657..2ffc467 100644
+index 207a112..bb000fc 100644
 --- a/util-linux/mdev.c
 +++ b/util-linux/mdev.c
-@@ -249,8 +249,8 @@
+@@ -274,8 +274,8 @@
+ #ifndef SO_RCVBUFFORCE
+ #define SO_RCVBUFFORCE 33
  #endif
- 
- 
 -static const char keywords[] ALIGN1 = "add\0remove\0"; // "change\0"
 -enum { OP_add, OP_remove };
 +static const char keywords[] ALIGN1 = "add\0remove\0change\0"; // "change\0"
@@ -25,12 +23,10 @@ index b2d5657..2ffc467 100644
  
  struct envmatch {
  	struct envmatch *next;
-@@ -1013,6 +1013,75 @@ static void signal_mdevs(unsigned my_pid)
+@@ -1072,6 +1072,73 @@ static void signal_mdevs(unsigned my_pid)
  	}
  }
  
-+
-+
 +/* 1: in,  0: out */
 +static void handle_mtp_plug_in_out(int in_out)
 +{
@@ -98,30 +94,30 @@ index b2d5657..2ffc467 100644
 +}
 +
 +
- int mdev_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
- int mdev_main(int argc UNUSED_PARAM, char **argv)
+ static void process_action(char *temp, unsigned my_pid)
  {
-@@ -1107,7 +1176,19 @@ int mdev_main(int argc UNUSED_PARAM, char **argv)
- 		);
+ 	char *fw;
+@@ -1116,7 +1183,19 @@ static void process_action(char *temp, unsigned my_pid)
+ 	);
  
- 		snprintf(temp, PATH_MAX, "/sys%s", env_devpath);
--		if (op == OP_remove) {
-+		if (op == OP_change) {
-+			if(check_mtp_mode() != 0) { // mtp mode
-+				char usb_state[16];
-+				get_usb_state(usb_state);
-+				if (!strncmp(usb_state, "CONFIGURED", 10)) {//USB has been configured
-+					/* USB plug in */
-+					handle_mtp_plug_in_out(1);
-+				} else if (!strncmp(usb_state, "DISCONNECTED", 12)) {//USB has been disconnected
-+					/* USB plug out */
-+					handle_mtp_plug_in_out(0);
-+				}
+ 	snprintf(temp, PATH_MAX, "/sys%s", env_devpath);
+-	if (op == OP_remove) {
++	if (op == OP_change) {
++		if(check_mtp_mode() != 0) { // mtp mode
++			char usb_state[16];
++			get_usb_state(usb_state);
++			if (!strncmp(usb_state, "CONFIGURED", 10)) {//USB has been configured
++				/* USB plug in */
++				handle_mtp_plug_in_out(1);
++			} else if (!strncmp(usb_state, "DISCONNECTED", 12)) {//USB has been disconnected
++				/* USB plug out */
++				handle_mtp_plug_in_out(0);
 +			}
-+		} else if (op == OP_remove) {
- 			/* Ignoring "remove firmware". It was reported
- 			 * to happen and to cause erroneous deletion
- 			 * of device nodes. */
++		}
++	} else if (op == OP_remove) {
+ 		/* Ignoring "remove firmware". It was reported
+ 		 * to happen and to cause erroneous deletion
+ 		 * of device nodes. */
 -- 
-2.6.2.198.g614a2ac
+2.7.4
 
