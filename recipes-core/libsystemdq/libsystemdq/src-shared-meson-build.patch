@@ -1,22 +1,40 @@
+From 91d95a0361afda0e0f3707be5142f6aa8039c500 Mon Sep 17 00:00:00 2001
+From: Remil Ram <remilr@codeaurora.org>
+Date: Fri, 24 Jul 2020 11:43:56 -0700
+Subject: [PATCH] src-shared-meson-build
+
+---
+ src/shared/meson.build | 16 +---------------
+ 1 file changed, 1 insertion(+), 15 deletions(-)
+
 diff --git a/src/shared/meson.build b/src/shared/meson.build
-index 54e77e9..7f27138 100644
+index 063d157..44445d9 100644
 --- a/src/shared/meson.build
 +++ b/src/shared/meson.build
-@@ -28,8 +28,6 @@ shared_sources = files('''
-         conf-parser.h
+@@ -54,8 +54,6 @@ shared_sources = files('''
+         daemon-util.h
          dev-setup.c
          dev-setup.h
 -        dissect-image.c
 -        dissect-image.h
+         dm-util.c
+         dm-util.h
          dns-domain.c
-         dns-domain.h
-         dropin.c
-@@ -53,14 +51,8 @@ shared_sources = files('''
+@@ -99,10 +97,6 @@ shared_sources = files('''
          install.h
-         install-printf.c
-         install-printf.h
+         ip-protocol-list.c
+         ip-protocol-list.h
+-        journal-importer.c
+-        journal-importer.h
 -        journal-util.c
 -        journal-util.h
+         json-internal.h
+         json.c
+         json.h
+@@ -118,12 +112,8 @@ shared_sources = files('''
+         lockfile-util.c
+         lockfile-util.h
+         log-link.h
 -        logs-show.c
 -        logs-show.h
          loop-util.c
@@ -25,17 +43,17 @@ index 54e77e9..7f27138 100644
 -        machine-image.h
          machine-pool.c
          machine-pool.h
-         nsflags.c
-@@ -90,8 +82,6 @@ shared_sources = files('''
-         tests.h
+         main-func.h
+@@ -172,8 +162,6 @@ shared_sources = files('''
+         tmpfile-util-label.h
          tomoyo-util.c
          tomoyo-util.h
--        udev-util.h
 -        udev-util.c
+-        udev-util.h
          uid-range.c
          uid-range.h
-         utmp-wtmp.h
-@@ -150,15 +140,13 @@ libshared_static = static_library(
+         unit-file.c
+@@ -293,15 +281,13 @@ libshared_static = static_library(
  
  libshared = shared_library(
          libshared_name,
@@ -52,3 +70,6 @@ index 54e77e9..7f27138 100644
          c_args : ['-fvisibility=default'],
          dependencies : libshared_deps,
          install : true,
+-- 
+2.7.4
+

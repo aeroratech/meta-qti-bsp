@@ -1,5 +1,14 @@
+From 237235816c01b992e12658ff4d958acc4068ff9b Mon Sep 17 00:00:00 2001
+From: Remil Ram <remilr@codeaurora.org>
+Date: Fri, 24 Jul 2020 13:55:45 -0700
+Subject: [PATCH] update-libsystemd-pc-in
+
+---
+ src/libsystemd/libsystemd.pc.in | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
 diff --git a/src/libsystemd/libsystemd.pc.in b/src/libsystemd/libsystemd.pc.in
-index c861905..4e3adda 100644
+index a010dea..f8991d6 100644
 --- a/src/libsystemd/libsystemd.pc.in
 +++ b/src/libsystemd/libsystemd.pc.in
 @@ -13,8 +13,8 @@ libdir=@rootlibdir@
@@ -8,8 +17,11 @@ index c861905..4e3adda 100644
  Name: systemd
 -Description: systemd Library
 +Description: systemdq Library
- URL: @PACKAGE_URL@
- Version: @PACKAGE_VERSION@
+ URL: @PROJECT_URL@
+ Version: @PROJECT_VERSION@
 -Libs: -L${libdir} -lsystemd
 +Libs: -L${libdir} -lsystemdq
  Cflags: -I${includedir}
+-- 
+2.7.4
+

@@ -6,7 +6,7 @@ DEPENDS = "intltool-native gperf-native libcap util-linux"
 
 SECTION = "base/shell"
 PACKAGE = "libsystemdq"
-inherit useradd pkgconfig meson perlnative update-alternatives qemu systemd gettext bash-completion manpages distro_features_check
+inherit useradd pkgconfig meson perlnative update-alternatives qemu systemd gettext bash-completion manpages features_check
 
 # As this recipe builds udev, respect systemd being in DISTRO_FEATURES so
 # that we don't build both udev and systemd in world builds.
@@ -15,33 +15,16 @@ REQUIRED_DISTRO_FEATURES = "systemd"
 SRC_URI += "file://touchscreen.rules \
            file://00-create-volatile.conf \
            file://init \
+           file://99-default.preset \
            file://0001-binfmt-Don-t-install-dependency-links-at-install-tim.patch \
-           file://0002-use-lnr-wrapper-instead-of-looking-for-relative-opti.patch \
            file://0003-implment-systemd-sysv-install-for-OE.patch \
-           file://0004-rules-whitelist-hd-devices.patch \
-           file://0005-Make-root-s-home-directory-configurable.patch \
-           file://0006-remove-nobody-user-group-checking.patch \
-           file://0007-rules-watch-metadata-changes-in-ide-devices.patch \
-           file://0008-Do-not-enable-nss-tests-if-nss-systemd-is-not-enable.patch \
-           file://0009-nss-mymachines-Build-conditionally-when-ENABLE_MYHOS.patch \
-           file://0001-login-use-parse_uid-when-unmounting-user-runtime-dir.patch \
-           file://0001-sd-bus-make-BUS_DEFAULT_TIMEOUT-configurable.patch \
-           file://0022-build-sys-Detect-whether-struct-statx-is-defined-in-.patch \
-           file://0023-resolvconf-fixes-for-the-compatibility-interface.patch \
-           file://0001-core-when-deserializing-state-always-use-read_line-L.patch \
-           file://0001-chown-recursive-let-s-rework-the-recursive-logic-to-.patch \
-           file://0001-dhcp6-make-sure-we-have-enough-space-for-the-DHCP6-o.patch \
            "
 
 SRC_URI += "file://remove-udev-references-from-meson-build.patch \
           file://remove-journal-from-systemctl.patch \
-          file://src-basic-meson-build.patch \
           file://src-shared-meson-build.patch \
           file://src-libsystemd-meson-build.patch \
-          file://add-dependencies-to-libsystemdq.patch \
-          file://remove-libsystemd-network-from-meson-build.patch \
           file://remove-udev-and-libudev.patch \
-          file://meson-build-remove-git-ls-files-check.patch \
           file://update-libsystemd-pc-in.patch \
           "
 
@@ -51,30 +34,23 @@ rootprefix ?= "${root_prefix}"
 rootlibdir ?= "${base_libdir}"
 rootlibexecdir = "${rootprefix}/lib"
 
-# This links udev statically with systemd helper library.
-# Otherwise udev package would depend on systemd package (which has the needed shared library),
-# and always pull it into images.
-#EXTRA_OEMESON += "-Dlink-udev-shared=true"
 
 EXTRA_OEMESON += "-Dnobody-user=nobody \
                   -Dnobody-group=nobody \
-                  -Droothomedir=${ROOT_HOME} \
                   -Drootlibdir=${rootlibdir} \
                   -Drootprefix=${rootprefix} \
-                  -Dsysvrcnd-path=${sysconfdir} \
-                  -Dlink-systemctl-shared=true \
+                  -Ddefault-locale=C \
                   "
 
 # Hardcode target binary paths to avoid using paths from sysroot
 EXTRA_OEMESON += "-Dkexec-path=${sbindir}/kexec \
-                  -Dkill-path=${base_bindir}/kill \
                   -Dkmod-path=${base_bindir}/kmod \
                   -Dmount-path=${base_bindir}/mount \
                   -Dquotacheck-path=${sbindir}/quotacheck \
                   -Dquotaon-path=${sbindir}/quotaon \
                   -Dsulogin-path=${base_sbindir}/sulogin \
-                  -Dumount-path=${base_bindir}/umount \
-                "
+                  -Dnologin-path=${base_sbindir}/nologin \
+                  -Dumount-path=${base_bindir}/umount"
 
 EXTRA_OEMESON += "-Denvironment-d=false \
                   -Dnss-systemd=false -Dmyhostname=false \
@@ -116,7 +92,6 @@ EXTRA_OEMESON += "-Denvironment-d=false \
                   -Dwheel-group=false \
                   -Dpolkit=false \
                   -Dman=false "
-                  
 
 do_install() {
    meson_do_install
@@ -133,7 +108,6 @@ do_install() {
    mv ${D}/usr/include/systemd ${D}/usr/include/systemdq
 }
 
-
 python populate_packages_prepend (){
     systemdlibdir = d.getVar("rootlibdir")
     do_split_packages(d, systemdlibdir, '^lib(.*)\.so\.*', 'lib%s', 'Systemd %s library', extra_depends='', allow_links=True)
@@ -145,9 +119,8 @@ FILES_${PN} = " ${exec_prefix}/lib/systemd \
 
 FILES_${PN}-dev += "${base_libdir}/security/*.la ${datadir}/dbus-1/interfaces/ ${sysconfdir}/rpm/macros.systemd"
 
-RDEPENDS_${PN} += "kmod dbus util-linux-mount  util-linux-agetty util-linux-fsck"
+RDEPENDS_${PN} += "kmod dbus util-linux-mount util-linux-umount util-linux-agetty util-linux-fsck"
 RDEPENDS_${PN} += "volatile-binds update-rc.d systemd-conf"
-
 
 CFLAGS_append = " -fPIC"
 

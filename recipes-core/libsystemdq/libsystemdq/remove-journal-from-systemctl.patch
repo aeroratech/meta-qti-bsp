@@ -1,9 +1,18 @@
+From 4c3ad08552bcb98ef76da570043a7d4052f8ada3 Mon Sep 17 00:00:00 2001
+From: Remil Ram <remilr@codeaurora.org>
+Date: Fri, 24 Jul 2020 11:25:45 -0700
+Subject: [PATCH] remove-journal-from-systemctl
+
+---
+ src/systemctl/systemctl.c | 17 -----------------
+ 1 file changed, 17 deletions(-)
+
 diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
-index f072ad0..4cf8c53 100644
+index 3e4fc46..aef5600 100644
 --- a/src/systemctl/systemctl.c
 +++ b/src/systemctl/systemctl.c
-@@ -4350,21 +4350,7 @@ static void print_status_info(
-                         log_warning_errno(r, "Failed to dump process list for '%s', ignoring: %s", i->id, bus_error_message(&error, r));
+@@ -4612,20 +4612,6 @@ static void print_status_info(
+                                           i->id, bus_error_message(&error, r));
          }
  
 -        if (i->id && arg_transport == BUS_TRANSPORT_LOCAL)
@@ -20,8 +29,19 @@ index f072ad0..4cf8c53 100644
 -                                arg_scope == UNIT_FILE_SYSTEM,
 -                                ellipsized);
 -
--        if (i->need_daemon_reload)
-+               if (i->need_daemon_reload)
+         if (i->need_daemon_reload)
                  warn_unit_file_changed(i->id);
  }
+@@ -5442,9 +5428,6 @@ static int print_property(const char *name, const char *expected_value, sd_bus_m
+                                 if (!eq)
+                                         continue;
  
+-                                if (!journal_field_valid(p, eq - (const char*) p, false))
+-                                        continue;
+-
+                                 str = malloc(sz + 1);
+                                 if (!str)
+                                         return log_oom();
+-- 
+2.7.4
+
