@@ -29,8 +29,11 @@ SRC_URI   =  "file://kernel \
               ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'file://selinux.cfg', '', d)} \
               ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', 'file://verity.x509.pem', '', d), '', d)} \
               ${@oe.utils.conditional('DTBO_MACHINE', 'True', 'file://dt_overlay.cfg', '',d)} \
-              ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs', 'file://verity.cfg', '', d), '', d)} \
-              "
+              ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'file://verity.cfg', '', d)} \
+              ${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'file://audio_common.cfg', '', d)} \
+	      "
+SRC_URI_append_qcs610 += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'file://audio_targets.cfg', '', d)}"
+
 # Don't set any version extention on debug build
 LINUX_VERSION_EXTENSION ?= "-perf"
 LINUX_VERSION_EXTENSION_qti-distro-debug = ""
@@ -98,7 +101,7 @@ do_shared_workdir_append () {
 
 # Generate dtbo.img to support dtoverlay
 do_make_dtboimg() {
-     mkdtimg create ${KERNEL_OUTPUT_DIR}/dtbo.img \
+     mkdtimg create ${STAGING_KERNEL_BUILDDIR}/dtbo.img \
              --page_size=${PAGE_SIZE} \
              ${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/qcom/*.dtbo
 }
@@ -116,8 +119,8 @@ do_deploy() {
     install -m 0644 System.map ${DEPLOYDIR}
 
     #if exists copy dtbo.img into deplydir
-    if [ -f ${KERNEL_OUTPUT_DIR}/dtbo.img ]; then
-        install -m 0644 ${KERNEL_OUTPUT_DIR}/dtbo.img ${DEPLOYDIR}
+    if [ -f ${STAGING_KERNEL_BUILDDIR}/dtbo.img ]; then
+        install -m 0644 ${STAGING_KERNEL_BUILDDIR}/dtbo.img ${DEPLOYDIR}
     fi
 }
 

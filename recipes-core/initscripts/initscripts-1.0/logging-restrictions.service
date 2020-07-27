@@ -27,13 +27,13 @@
 
 [Unit]
 Description=logging-restrictions Service
-SourcePath=/etc/initscripts/logging-restrictions.sh
 
 [Service]
 Restart=no
 RemainAfterExit=yes
-ExecStart=/etc/initscripts/logging-restrictions.sh start
-ExecStop=/etc/initscripts/logging-restrictions.sh stop
+ExecStartPre=-/bin/sh -c '/bin/echo 2 > /proc/sys/kernel/kptr_restrict'
+ExecStartPre=-/bin/sh -c '/bin/echo 1 > /proc/sys/kernel/dmesg_restrict'
+ExecStart=/bin/sh -c '/bin/echo \" logging restrictions applied\" > /dev/kmsg'
 
 [Install]
 WantedBy=multi-user.target

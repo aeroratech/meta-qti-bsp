@@ -10,6 +10,7 @@ SRC_URI += "file://kgsl.rules"
 SRC_URI += "file://set-usb-nodes.rules"
 SRC_URI += "file://sysctl.conf"
 SRC_URI += "file://platform.conf"
+SRC_URI += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', 'file://trusted_touch.conf', '',d)}"
 SRC_URI += "file://sd-bus-Allow-extra-users-to-communicate.patch"
 SRC_URI += "file://set-mhi-nodes.rules"
 
@@ -86,6 +87,10 @@ do_install_append () {
    install -d /etc/sysctl.d/
    install -m 0644 ${WORKDIR}/sysctl.conf -D ${D}/etc/sysctl.d/sysctl.conf
    install -m 0644 ${WORKDIR}/platform.conf -D ${D}/etc/tmpfiles.d/platform.conf
+
+   if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', 'true', 'false', d)}; then
+       install -m 0644 ${WORKDIR}/trusted_touch.conf -D ${D}/etc/tmpfiles.d/trusted_touch.conf
+   fi
 
    #  Mask journaling services by default.
    #  'systemctl unmask' can be used on device to enable them if needed.

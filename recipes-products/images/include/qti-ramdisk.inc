@@ -1,3 +1,5 @@
+INIT_RAMDISK = "${@d.getVar('MACHINE_SUPPORTS_INIT_RAMDISK') or "False"}"
+
 fakeroot do_ramdisk_create() {
         CURRENT_DIR=`pwd`
         rm -rf ${TMPDIR}/ramdisk
@@ -68,6 +70,12 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/etc/mdev.conf etc/
             cp -r ${IMAGE_ROOTFS}/etc/mdev etc/
             cat etc/init.d/mdev >> etc/init.d/rcS
+        fi
+
+        # Run rcS script only if busybox is init manager in ramdisk.
+        # In other cases, ramdisk will be used in early boot but no init in busybox.
+        if ${@oe.utils.conditional('INIT_RAMDISK', 'True', 'true', 'false', d)}; then
+            chmod 744 etc/init.d/rcS
         fi
 
         if ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'true', 'false', d)}; then

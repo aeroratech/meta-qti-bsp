@@ -1,5 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
+INIT_RAMDISK = "${@d.getVar('MACHINE_SUPPORTS_INIT_RAMDISK') or "False"}"
+
 SRC_URI += "\
             file://find-touchscreen.sh \
             file://automountsdcard.sh \
@@ -13,6 +15,7 @@ SRC_URI += "\
             file://login.cfg \
             file://mdev.cfg \
             file://base.cfg \
+            ${@oe.utils.conditional('INIT_RAMDISK', 'True', 'file://init.cfg', '', d)} \
             file://syslog-startup.conf \
             file://busybox-syslog.service \
             file://busybox_klogd.patch;patchdir=.. \
