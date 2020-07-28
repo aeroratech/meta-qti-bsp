@@ -5,6 +5,9 @@ inherit ${@bb.utils.contains('TARGET_KERNEL_ARCH', 'aarch64', 'qtikernel-arch', 
 
 COMPATIBLE_MACHINE = "(qcs40x|qcs610)"
 
+DBGCFG = ""
+DBGCFG_qti-distro-debug = "file://debug.cfg"
+
 # Additional configs for qcs610 machine
 SRC_URI_append_qcs610 = " \
     file://disableipa3.cfg \
@@ -17,6 +20,7 @@ SRC_URI_append_qcs610 = " \
     ${@bb.utils.contains_any('COMBINED_FEATURES', 'qti-camera mm-camera', 'file://camera.cfg', '', d)} \
     ${@bb.utils.contains('COMBINED_FEATURES', 'drm', 'file://display_drm.cfg', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'qti-fastcv', 'file://fastcv.cfg', '', d)} \
+    ${DBGCFG} \
 "
 
 # Additional configs for qcs40x machines
