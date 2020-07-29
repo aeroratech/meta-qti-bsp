@@ -14,6 +14,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-android-utils \
               packagegroup-startup-scripts \
               packagegroup-qti-core-prop \
+              packagegroup-qti-ss-mgr \
 "
 
 do_rootfs_append() {
