@@ -17,6 +17,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-core-prop \
               packagegroup-qti-ss-mgr \
               packagegroup-qti-data \
+              ${@bb.utils.contains("DISTRO_FEATURES", "selinux", "packagegroup-selinux-minimal", "", d)} \
 "
 
 do_rootfs_append() {
