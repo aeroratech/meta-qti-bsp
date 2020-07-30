@@ -92,3 +92,7 @@ RM_WORK_EXCLUDE += "make-mod-scripts"
 
 # include QTI scripts
 PATH_prepend = "${QTIBASE}/scripts:"
+
+# Enable uninative for reuse -native sstate across hosts
+require conf/distro/include/yocto-uninative.inc
+INHERIT += "uninative"
