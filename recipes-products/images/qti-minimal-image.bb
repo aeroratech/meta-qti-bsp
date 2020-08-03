@@ -15,6 +15,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-startup-scripts \
               packagegroup-qti-core-prop \
               packagegroup-qti-ss-mgr \
+              packagegroup-qti-data \
 "
 
 do_rootfs_append() {
