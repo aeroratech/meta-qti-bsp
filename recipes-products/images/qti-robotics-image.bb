@@ -22,8 +22,10 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('DISTRO_FEATURES','virtualization', 'packagegroup-qti-containers', '', d)} \
         packagegroup-qti-core-prop \
         packagegroup-qti-data \
+        packagegroup-qti-display \
         packagegroup-qti-dsp \
         packagegroup-qti-fastcv \
+        packagegroup-qti-gfx \
         packagegroup-qti-ml \
         packagegroup-qti-qmmf \
         packagegroup-qti-robotics \
