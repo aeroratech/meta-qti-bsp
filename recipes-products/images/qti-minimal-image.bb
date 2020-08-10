@@ -11,6 +11,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               glib-2.0 \
               kernel-modules \
               systemd-machine-units \
+              ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location', '', d)} \
               packagegroup-android-utils \
               packagegroup-startup-scripts \
               packagegroup-qti-core \
