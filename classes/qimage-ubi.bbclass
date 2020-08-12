@@ -16,7 +16,7 @@ USERIMAGE_ROOTFS ?= "${WORKDIR}/usrfs"
 
 UBINIZE_CFG ?= "ubinize_system.cfg"
 
-IMAGE_UBIFS_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '--selinux= ${SELINUX_FILE_CONTEXTS}', '', d)}"
+IMAGE_UBIFS_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '--selinux=${SELINUX_FILE_CONTEXTS}', '', d)}"
 
 do_image_ubi[noexec] = "1"
 do_image_ubifs[noexec] = "1"
