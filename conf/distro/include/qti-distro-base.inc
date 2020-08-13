@@ -63,7 +63,6 @@ USERADDEXTENSION = "qpermissions"
 ##################################################################
 # list of distro features
 ##################################################################
-# dm-verity:  Support block integrity check on system image
 # eabi:       Embedded Application Binary Interface(EABI).
 # ipv4,ipv6:  Basic networking tools - ipv6,ipv4.
 # largefile:  LargeFile support in Linux.
@@ -73,7 +72,7 @@ USERADDEXTENSION = "qpermissions"
 #             state and alter call, return sequences etc to change
 #             processor state as necessary.
 # xattr:      Extended attributes(xattr) to filesystem.
-DISTRO_FEATURES += " dm-verity selinux systemd eabi ipv6 ipv4 largefile thumb-interwork xattr ${DISTRO_FEATURES_LIBC}"
+DISTRO_FEATURES += " selinux systemd eabi ipv6 ipv4 largefile thumb-interwork xattr ${DISTRO_FEATURES_LIBC}"
 
 ## QTI Defined distro features ##
 # emmc-boot:  Support eMMC device
