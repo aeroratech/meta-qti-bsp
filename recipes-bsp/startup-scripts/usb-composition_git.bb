@@ -33,7 +33,8 @@ do_install_append() {
    install -m 0755 ${S}/debuger/help -D ${D}${base_sbindir}/usb/debuger/
    install -m 0755 ${S}/debuger/usb_debug -D ${D}${base_sbindir}/
 
-   install -m 0755 ${S}/start_usb -D ${D}${sysconfdir}/initscripts/usb
+   install -d ${D}${base_sbindir}/
+   install -m 0755 ${S}/start_usb -D ${D}${base_sbindir}/start_usb
    install -d ${D}${systemd_unitdir}/system/
    install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
    install -d ${D}${systemd_unitdir}/system/ffbm.target.wants/

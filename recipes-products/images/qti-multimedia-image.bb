@@ -24,6 +24,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-dsp \
         packagegroup-qti-display \
         packagegroup-qti-gst \
+        ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location', '', d)} \
         packagegroup-qti-ml \
         packagegroup-qti-qmmf \
         ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sensors', 'packagegroup-qti-sensors', '', d)} \
