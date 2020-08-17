@@ -23,6 +23,10 @@ do_install_append() {
    else
        rm -f ${D}${sysconfdir}/systemd/coredump.conf
    fi
+
+   if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', 'true', 'false', d)}; then
+      sed -i -e 's/.*RuntimeMaxUse.*/RuntimeMaxUse=5M/' ${D}${sysconfdir}/systemd/journald.conf
+   fi
 }
 
 FILES_${PN} += "${sysconfdir}/sysctl.d/* ${sysconfdir}/security/limits.d/* ${SYSTEMD_COREDUMP_PATH}"
