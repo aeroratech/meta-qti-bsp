@@ -13,6 +13,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               systemd-machine-units \
               packagegroup-android-utils \
               packagegroup-startup-scripts \
+              packagegroup-qti-core \
               packagegroup-qti-core-prop \
               packagegroup-qti-ss-mgr \
               packagegroup-qti-data \
