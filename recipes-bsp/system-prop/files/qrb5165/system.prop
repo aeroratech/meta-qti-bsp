@@ -3,6 +3,10 @@
 #
 
 ro.product.board=qrb5165
+
+# If ro.debuggable is 1, then enable adb root
+ro.debuggable=1
+
 ro.hardware.camera=qcom
 
 #Audio features

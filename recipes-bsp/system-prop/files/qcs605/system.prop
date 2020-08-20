@@ -4,6 +4,9 @@
 
 ro.product.board=qcs605
 
+# If ro.debuggable is 1, then enable adb root
+ro.debuggable=1
+
 vendor.audio.hw.aac.encoder=true
 
 #Audio voice concurrency related flags
