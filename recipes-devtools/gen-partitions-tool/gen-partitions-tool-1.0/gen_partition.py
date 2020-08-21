@@ -203,7 +203,7 @@ try:
             else:
               usage()
    except Exception as argerr:
-      print str(argerr)
+      print (str(argerr))
       usage()
    f = open(input_file)
    line = f.readline()
