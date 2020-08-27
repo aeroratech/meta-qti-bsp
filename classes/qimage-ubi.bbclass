@@ -76,7 +76,7 @@ do_makesystem_ubi[cleandirs] += "${USERIMAGE_ROOTFS}"
 do_makesystem_ubi[prefuncs] += "do_create_ubinize_config"
 do_makesystem_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
-do_makesystem_ubi() {
+fakeroot do_makesystem_ubi() {
     mkfs.ubifs -r ${IMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${SYSTEMIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
     mkfs.ubifs -r ${USERIMAGE_ROOTFS} -o ${USERIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
     ubinize -o ${SYSTEMIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_CFG}
