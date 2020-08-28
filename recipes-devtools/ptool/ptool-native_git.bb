@@ -13,6 +13,7 @@ FILESEXTRAPATHS_prepend = "${THISDIR}/files:"
 SRCREV = "3484fc0a88088dea00397774fc93f9acd3a23ce0"
 SRC_URI = "git://git.linaro.org/landing-teams/working/qualcomm/partioning_tool.git;branch=master"
 SRC_URI += "file://0001-ptool.py-Generate-zero-files-in-output-folder-when-s.patch"
+SRC_URI += "file://0002-ptool.py-Python-3-support.patch"
 
 PV = "0.0+${SRCPV}"
 
