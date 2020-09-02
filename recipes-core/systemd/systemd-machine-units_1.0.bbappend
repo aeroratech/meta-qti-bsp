@@ -108,9 +108,7 @@ do_install_append () {
             if ${@bb.utils.contains('DISTRO_FEATURES','nand-boot','false','true',d)}; then
                 install -m 0644 ${WORKDIR}/persist.mount ${D}${systemd_unitdir}/system/persist.mount
             else
-                if ${@bb.utils.contains('DISTRO_FEATURES','persist-volume','true','false',d)}; then
-                    install -m 0644 ${WORKDIR}/persist-ubi.mount ${D}${systemd_unitdir}/system/persist.mount
-                fi
+                install -m 0644 ${WORKDIR}/persist-ubi.mount ${D}${systemd_unitdir}/system/persist.mount
             fi
             ln -sf ${systemd_unitdir}/system/persist.mount ${D}${systemd_unitdir}/system/sysinit.target.wants/persist.mount
         fi
