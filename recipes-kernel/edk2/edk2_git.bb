@@ -1,4 +1,4 @@
-inherit deploy
+inherit deploy ${@bb.utils.contains("BBFILE_COLLECTIONS", "meta-python2", "pythonnative", "", d)}
 DESCRIPTION = "UEFI bootloader"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
