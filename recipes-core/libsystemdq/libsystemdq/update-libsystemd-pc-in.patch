@@ -1,27 +1,42 @@
-From 237235816c01b992e12658ff4d958acc4068ff9b Mon Sep 17 00:00:00 2001
-From: Remil Ram <remilr@codeaurora.org>
-Date: Fri, 24 Jul 2020 13:55:45 -0700
-Subject: [PATCH] update-libsystemd-pc-in
+From 0d98835d21099da23d75d1d8bcd5f0c428529ec5 Mon Sep 17 00:00:00 2001
+From: Viswanath Kraleti <vkraleti@codeaurora.org>
+Date: Wed, 2 Sep 2020 15:18:22 +0530
+Subject: [PATCH] update libsystemd.pc.in
 
 ---
- src/libsystemd/libsystemd.pc.in | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ src/libsystemd/libsystemd.pc.in | 6 +++---
+ src/libsystemd/meson.build      | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/src/libsystemd/libsystemd.pc.in b/src/libsystemd/libsystemd.pc.in
-index a010dea..f8991d6 100644
+index a010dea..07b991d 100644
 --- a/src/libsystemd/libsystemd.pc.in
 +++ b/src/libsystemd/libsystemd.pc.in
-@@ -13,8 +13,8 @@ libdir=@rootlibdir@
+@@ -12,9 +12,9 @@ exec_prefix=@exec_prefix@
+ libdir=@rootlibdir@
  includedir=@includedir@
  
- Name: systemd
+-Name: systemd
 -Description: systemd Library
++Name: systemdq
 +Description: systemdq Library
  URL: @PROJECT_URL@
  Version: @PROJECT_VERSION@
 -Libs: -L${libdir} -lsystemd
 +Libs: -L${libdir} -lsystemdq
  Cflags: -I${includedir}
+diff --git a/src/libsystemd/meson.build b/src/libsystemd/meson.build
+index d9c02d4..1302097 100644
+--- a/src/libsystemd/meson.build
++++ b/src/libsystemd/meson.build
+@@ -110,6 +110,6 @@ libsystemdq_sym = 'src/libsystemd/libsystemd.sym'
+ 
+ configure_file(
+         input : 'libsystemd.pc.in',
+-        output : 'libsystemd.pc',
++        output : 'libsystemdq.pc',
+         configuration : substs,
+         install_dir : pkgconfiglibdir == 'no' ? '' : pkgconfiglibdir)
 -- 
 2.7.4
 
