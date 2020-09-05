@@ -99,14 +99,6 @@ do_shared_workdir_append () {
         cp certs/signing_key.x509 $kerneldir/certs/
 }
 
-# Generate dtbo.img to support dtoverlay
-do_make_dtboimg() {
-     mkdtimg create ${STAGING_KERNEL_BUILDDIR}/dtbo.img \
-             --page_size=${PAGE_SIZE} \
-             ${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/qcom/*.dtbo
-}
-do_install[postfuncs] += " ${@oe.utils.conditional('DTBO_MACHINE', 'True', 'do_make_dtboimg', '',d)}"
-
 do_deploy() {
     if [ -f ${D}/${KERNEL_IMAGEDEST}/-${KERNEL_VERSION} ]; then
         mv ${D}/${KERNEL_IMAGEDEST}/-${KERNEL_VERSION} ${D}/${KERNEL_IMAGEDEST}/${KERNEL_IMAGETYPE}-${KERNEL_VERSION}
@@ -118,9 +110,13 @@ do_deploy() {
     install -m 0644 vmlinux ${DEPLOYDIR}
     install -m 0644 System.map ${DEPLOYDIR}
 
-    #if exists copy dtbo.img into deplydir
-    if [ -f ${STAGING_KERNEL_BUILDDIR}/dtbo.img ]; then
-        install -m 0644 ${STAGING_KERNEL_BUILDDIR}/dtbo.img ${DEPLOYDIR}
+    # copy dtbo files into deplydir and create dtbo.img if DTBO support enable
+    if [  "${DTBO_MACHINE}" == "True" ]; then
+        install -m 0644 ${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/qcom/*.dtbo ${DEPLOYDIR}
+        mkdtimg create ${DEPLOYDIR}/dtbo.img \
+             --page_size=${PAGE_SIZE} \
+             ${DEPLOYDIR}/*.dtbo
+
     fi
 }
 

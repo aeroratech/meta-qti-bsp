@@ -166,8 +166,11 @@ do_deploy_fixup () {
     if [ -f ${DEPLOY_DIR_IMAGE}/NHLOS_IMAGES.tar ]; then
        tar -xvf ${DEPLOY_DIR_IMAGE}/NHLOS_IMAGES.tar -C .
     fi
+    # copy dtbo.img
+     if [ -f ${DEPLOY_DIR_IMAGE}/dtbo.img ]; then
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/dtbo.img .
+    fi
 }
-
 addtask do_deploy_fixup after do_rootfs before do_image
 
 # Check and remove empty packages before rootfs creation
