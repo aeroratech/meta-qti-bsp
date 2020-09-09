@@ -1,4 +1,4 @@
-inherit autotools-brokensep externalsrc
+inherit autotools-brokensep
 
 DESCRIPTION = "Powerapp tools"
 HOMEPAGE = "http://codeaurora.org/"
@@ -6,7 +6,10 @@ LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
 ${LICENSE};md5=89aea4e17d99a7cacdbeed46a0096b10"
 
-EXTERNALSRC = "${WORKSPACE}/system/core/powerapp/"
+FILESEXTRAPATHS_prepend := "${WORKSPACE}/system/core/:"
+SRC_URI = "file://powerapp"
+
+S = "${WORKDIR}/powerapp"
 
 PACKAGES =+ "${PN}-reboot ${PN}-shutdown ${PN}-powerconfig"
 FILES_${PN}-reboot = " ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', "${sysconfdir}/initscripts/reboot", "${sysconfdir}/init.d/reboot", d)} "
