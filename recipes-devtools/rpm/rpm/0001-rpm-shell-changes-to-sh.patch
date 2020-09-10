@@ -1,0 +1,121 @@
+From cf2e59fb1fbb6b15e95ee03fa08af30e2195a170 Mon Sep 17 00:00:00 2001
+From: saikiran jayanthi <jayanthi@codeaurora.org>
+Date: Mon, 11 May 2020 10:55:04 +0530
+Subject: [PATCH] rpm shell changes to sh
+
+---
+ scripts/brp-python-bytecompile | 2 +-
+ scripts/check-prereqs          | 2 +-
+ scripts/check-rpaths-worker    | 2 +-
+ scripts/find-debuginfo.sh      | 2 +-
+ scripts/find-lang.sh           | 2 +-
+ scripts/fontconfig.prov        | 2 +-
+ scripts/mono-find-provides     | 2 +-
+ scripts/mono-find-requires     | 2 +-
+ scripts/pkgconfigdeps.sh       | 2 +-
+ scripts/pythondeps.sh          | 2 +-
+ 10 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/scripts/brp-python-bytecompile b/scripts/brp-python-bytecompile
+index c06bdfa..8c9ac1a 100644
+--- a/scripts/brp-python-bytecompile
++++ b/scripts/brp-python-bytecompile
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ errors_terminate=$2
+ extra=$3
+ 
+diff --git a/scripts/check-prereqs b/scripts/check-prereqs
+index e6c9452..b1b4b6f 100755
+--- a/scripts/check-prereqs
++++ b/scripts/check-prereqs
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ bashit="/bin/bash --rpm-requires"
+ 
+diff --git a/scripts/check-rpaths-worker b/scripts/check-rpaths-worker
+index 7ea8643..2ec95bc 100755
+--- a/scripts/check-rpaths-worker
++++ b/scripts/check-rpaths-worker
+@@ -1,4 +1,4 @@
+-#! /bin/bash
++#! /bin/sh
+ 
+ # Copyright (C) 2004 Enrico Scholz <enrico.scholz@informatik.tu-chemnitz.de>
+ #  
+diff --git a/scripts/find-debuginfo.sh b/scripts/find-debuginfo.sh
+index 73275a1..52a762f 100755
+--- a/scripts/find-debuginfo.sh
++++ b/scripts/find-debuginfo.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ #find-debuginfo.sh - automagically generate debug info and file list
+ #for inclusion in an rpm spec file.
+ #
+diff --git a/scripts/find-lang.sh b/scripts/find-lang.sh
+index fdca18e..2ca971e 100755
+--- a/scripts/find-lang.sh
++++ b/scripts/find-lang.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ #findlang - automagically generate list of language specific files
+ #for inclusion in an rpm spec file.
+ #This does assume that the *.mo files are under .../locale/...
+diff --git a/scripts/fontconfig.prov b/scripts/fontconfig.prov
+index bfb6ea0..45ddbce 100755
+--- a/scripts/fontconfig.prov
++++ b/scripts/fontconfig.prov
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ #
+ # Script to install in:
+ # /usr/lib/rpm/redhat/find-provides.d
+diff --git a/scripts/mono-find-provides b/scripts/mono-find-provides
+index 9348457..0750234 100644
+--- a/scripts/mono-find-provides
++++ b/scripts/mono-find-provides
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ #
+ # mono-find-provides
+ #
+diff --git a/scripts/mono-find-requires b/scripts/mono-find-requires
+index ea58cae..5f006b4 100644
+--- a/scripts/mono-find-requires
++++ b/scripts/mono-find-requires
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ #
+ # mono-find-requires
+ #
+diff --git a/scripts/pkgconfigdeps.sh b/scripts/pkgconfigdeps.sh
+index ef45818..308eb7c 100755
+--- a/scripts/pkgconfigdeps.sh
++++ b/scripts/pkgconfigdeps.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ pkgconfig=/usr/bin/pkg-config
+ test -x $pkgconfig || {
+diff --git a/scripts/pythondeps.sh b/scripts/pythondeps.sh
+index 10a060a..6334f9a 100755
+--- a/scripts/pythondeps.sh
++++ b/scripts/pythondeps.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ [ $# -ge 1 ] || {
+     cat > /dev/null
+-- 
+2.7.4
+

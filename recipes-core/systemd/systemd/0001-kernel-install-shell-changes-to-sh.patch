@@ -1,0 +1,44 @@
+From 39289f23218ad190e99ae14a11dc8b4f990c91bc Mon Sep 17 00:00:00 2001
+From: saikiran jayanthi <jayanthi@codeaurora.org>
+Date: Fri, 8 May 2020 16:55:41 +0530
+Subject: [PATCH] kernel-install shell changes to sh
+
+---
+ src/kernel-install/50-depmod.install      | 2 +-
+ src/kernel-install/90-loaderentry.install | 2 +-
+ src/kernel-install/kernel-install         | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/kernel-install/50-depmod.install b/src/kernel-install/50-depmod.install
+index 56925c8..a04b0dc 100644
+--- a/src/kernel-install/50-depmod.install
++++ b/src/kernel-install/50-depmod.install
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ # -*- mode: shell-script; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+ # ex: ts=8 sw=4 sts=4 et filetype=sh
+ 
+diff --git a/src/kernel-install/90-loaderentry.install b/src/kernel-install/90-loaderentry.install
+index a271cdb..f62e9f3 100644
+--- a/src/kernel-install/90-loaderentry.install
++++ b/src/kernel-install/90-loaderentry.install
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ # -*- mode: shell-script; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+ # ex: ts=8 sw=4 sts=4 et filetype=sh
+ 
+diff --git a/src/kernel-install/kernel-install b/src/kernel-install/kernel-install
+index f9d628a..fad90b2 100644
+--- a/src/kernel-install/kernel-install
++++ b/src/kernel-install/kernel-install
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ # -*- mode: shell-script; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+ # ex: ts=8 sw=4 sts=4 et filetype=sh
+ # SPDX-License-Identifier: LGPL-2.1+
+-- 
+2.7.4
+
