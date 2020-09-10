@@ -61,6 +61,9 @@ do_fsconfig_append_qti-distro-user() {
 SPARSE_SYSTEMIMAGE_FLAG = "${@bb.utils.contains('IMAGE_FEATURES', 'vm', '', '-s', d)}"
 IMAGE_ROOTFS_EXT4 = "${WORKDIR}/rootfs-ext4"
 
+MACHINE_FSCONFIG_CONF_SEARCH_PATH ?= "${@':'.join('%s/conf/machine/fsconfig' % p for p in '${BBPATH}'.split(':'))}}"
+MACHINE_FSCONFIG_CONF_FULL_PATH = "${@machine_search(d.getVar('MACHINE_FSCONFIG_CONF'), d.getVar('MACHINE_FSCONFIG_CONF_SEARCH_PATH')) or ''}"
+
 create_symlink_systemd_ext4_mount_rootfs() {
 
     # Symlink ext4 mount files to systemd targets
