@@ -25,6 +25,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-ml \
         packagegroup-qti-securemsm \
         packagegroup-qti-ss-mgr \
+        packagegroup-qti-video \
         packagegroup-qti-wifi \
         packagegroup-startup-scripts \
         systemd-machine-units \
