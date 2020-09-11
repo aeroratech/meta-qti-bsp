@@ -2,7 +2,7 @@ SUMMARY = "Grouping of programs for running docker containers on Embedded Linux 
 DESCRIPTION = "Package group to bring in packages for running containers"
 LICENSE = "BSD-3-Clause"
 
-inherit packagegroup distro_features_check
+inherit packagegroup features_check
 
 REQUIRED_DISTRO_FEATURES += "virtualization"
 

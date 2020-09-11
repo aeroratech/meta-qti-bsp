@@ -19,6 +19,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-audio \
         packagegroup-qti-bluetooth \
         packagegroup-qti-camera \
+        ${@bb.utils.contains('DISTRO_FEATURES','virtualization', 'packagegroup-qti-containers', '', d)} \
         packagegroup-qti-core-prop \
         packagegroup-qti-data \
         packagegroup-qti-dsp \
