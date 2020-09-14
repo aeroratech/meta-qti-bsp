@@ -7,6 +7,8 @@ inherit qimage
 IMAGE_FEATURES += "ssh-server-openssh"
 
 CORE_IMAGE_EXTRA_INSTALL += "\
+        alsa-utils \
+        canutils \
         chrony \
         e2fsprogs \
         e2fsprogs-e2fsck \
