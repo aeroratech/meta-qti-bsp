@@ -8,6 +8,8 @@ inherit ${QIMGEXT4CLASSES}
 
 CORE_IMAGE_EXTRA_INSTALL += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', ' recovery-ab', '', d)}"
 
+CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ext4"
+
 do_image_ext4[noexec] = "1"
 
 # Default Image names
@@ -53,6 +55,31 @@ do_fsconfig_append_qti-distro-user() {
 ### Generate system.img #####
 ################################################
 SPARSE_SYSTEMIMAGE_FLAG = "${@bb.utils.contains('IMAGE_FEATURES', 'vm', '', '-s', d)}"
+
+create_symlink_systemd_ext4_mount_rootfs() {
+    # Symlink ext4 mount files to systemd targets
+    for entry in ${MACHINE_MNT_POINTS}; do
+        mountname="${entry:1}"
+        if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" ]] && \
+           [[ "${COMBINED_FEATURES}" =~ .*qti-ab-boot.* ]] ; then
+            cp ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-mount-ext4.service ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-mount.service
+            ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/${mountname}-mount.service
+        else
+            cp ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-ext4.mount  ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}.mount
+            if [[ "$mountname" == "$userfsdatadir" ]] ; then
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.wants/${mountname}.mount
+            elif [[ "$mountname" == "cache" ]] ; then
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/multi-user.target.wants/${mountname}.mount
+            elif [[ "$mountname" == "persist" ]] ; then
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/sysinit.target.wants/${mountname}.mount
+            else
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/${mountname}.mount
+            fi
+        fi
+    done
+}
+
+do_makesystem[prefuncs] += "create_symlink_systemd_ext4_mount_rootfs"
 
 do_makesystem() {
     cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig.conf
