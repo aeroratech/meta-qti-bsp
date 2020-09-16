@@ -5,7 +5,7 @@ FILES_${PN} += "/lib/pkgconfig/*"
 FILES_${PN}-dev += "/usr/share/*"
 FILES_${PN}-dev += "/lib/lib*.so"
 
-PACKAGECONFIG = "avdevice avfilter avcodec avformat swresample swscale postproc bzlib gpl theora"
+PACKAGECONFIG = "avdevice avfilter avcodec avformat swresample swscale postproc bzlib theora"
 
 # Support multilib compilation for libav
 PROVIDES += "${MLPREFIX}libav"
