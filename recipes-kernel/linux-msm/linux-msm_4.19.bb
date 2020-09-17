@@ -7,7 +7,7 @@ S         =  "${WORKDIR}/kernel/msm-4.19"
 
 SRC_URI_append_qrb5165  = " file://disableipa3.cfg"
 SRC_URI_append_qrb5165 += " file://fbcon.cfg"
-SRC_URI_append_qrb5165-rb5 += " file://qca6390.cfg"
+SRC_URI_append_qrb5165 += " file://qca6390.cfg"
 SRC_URI_append_qrb5165-rb5 += " file://android_binderfs.cfg"
 
 DEPENDS += "dtc-native"
