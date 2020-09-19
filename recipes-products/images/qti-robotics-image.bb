@@ -42,5 +42,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-wifi \
         ${@bb.utils.contains('DISTRO_FEATURES', 'ros2', 'packagegroup-ros2-foxy', '', d)} \
         packagegroup-startup-scripts \
+        ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
         systemd-machine-units \
 "
