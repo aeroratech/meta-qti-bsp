@@ -23,6 +23,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-dsp \
         packagegroup-qti-fastcv \
         packagegroup-qti-ml \
+        packagegroup-qti-robotics \
         packagegroup-qti-securemsm \
         packagegroup-qti-ss-mgr \
         packagegroup-qti-video \
