@@ -12,6 +12,7 @@ python __anonymous () {
 }
 
 EXTRA_OECONF += "\
+            --disable-werror \
             ${@bb.utils.contains('FULL_OPTIMIZATION', '-fstack-protector', '--enable-stack-protector=yes', '', d)} \
             ${@bb.utils.contains('FULL_OPTIMIZATION', '-fstack-protector-all', '--enable-stack-protector=all', '', d)} \
             ${@bb.utils.contains('FULL_OPTIMIZATION', '-fstack-protector-strong', '--enable-stack-protector=strong', '', d)} \
