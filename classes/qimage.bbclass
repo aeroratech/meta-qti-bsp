@@ -170,6 +170,22 @@ do_deploy_fixup () {
 
 addtask do_deploy_fixup after do_rootfs before do_image
 
+# Make sure we build edk2/lk before do_rootfs
+python(){
+    def extraimage_getdepends(task):
+        deps = ""
+        for dep in (d.getVar('EXTRA_IMAGEDEPENDS') or "").split():
+            if 'edk2' in dep:
+                deps += " %s:%s" % (dep, task)
+            elif 'lib64-edk2' in dep:
+                deps += " %s:%s" % (dep, task)
+            elif 'lk' in dep:
+                deps += " %s:%s" % (dep, task)
+        return deps
+
+    d.appendVarFlag('do_rootfs', 'depends', extraimage_getdepends('do_populate_sysroot'))
+}
+
 # Check and remove empty packages before rootfs creation
 do_rootfs[prefuncs] += "rootfs_ignore_packages"
 python rootfs_ignore_packages() {
