@@ -9,6 +9,8 @@ inherit ${QIMGUBICLASSES}
 
 IMAGE_FEATURES[validitems] += "persist-volume"
 
+CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
+
 SYSTEMIMAGE_UBI_TARGET ?= "sysfs.ubi"
 SYSTEMIMAGE_UBIFS_TARGET ?= "sysfs.ubifs"
 USERIMAGE_UBIFS_TARGET ?= "userfs.ubifs"
@@ -23,14 +25,45 @@ do_image_ubifs[noexec] = "1"
 do_image_multiubi[noexec] = "1"
 
 ################################################
-### Generate sysfs.ubi #####
+### Generate sysfs.ubi #########################
 ################################################
+
+create_symlink_systemd_ubi_mount_rootfs() {
+    # Symlink ubi mount files to systemd targets
+    for entry in ${MACHINE_MNT_POINTS}; do
+        mountname="${entry:1}"
+        if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" ]] ; then
+            cp ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-mount-ubi.service ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-mount.service
+            ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/${mountname}-mount.service
+        else
+            cp ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-ubi.mount  ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}.mount
+            if [[ "$mountname" == "$userfsdatadir" ]] ; then
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.wants/${mountname}.mount
+            elif [[ "$mountname" == "cache" ]] ; then
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/multi-user.target.wants/${mountname}.mount
+            elif [[ "$mountname" == "persist" ]] ; then
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/sysinit.target.wants/${mountname}.mount
+            else
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/${mountname}.mount
+            fi
+        fi
+    done
+
+    #remove additional ext4 symlinks if present
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs-pre.target.requires/systemd-fsck*
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/firmware.mount
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/dsp.mount
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/bt_firmware.mount
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/sysinit.target.wants/ab-updater.service
+    rm -rf ${IMAGE_ROOTFS}/etc/systemd/system/local-fs-pre.target.wants/set-slotsuffix.service
+    # Recheck when overlay support added for ubi
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.wants/overlay-restore.service
+}
 
 # Need to copy ubinize.cfg file in the deploy directory
 do_create_ubinize_config[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_create_ubinize_config() {
-
     cat << EOF > ${UBINIZE_CFG}
 [sysfs_volume]
 mode=ubi
@@ -73,6 +106,7 @@ EOF
 }
 
 do_makesystem_ubi[cleandirs] += "${USERIMAGE_ROOTFS}"
+do_makesystem_ubi[prefuncs] += "create_symlink_systemd_ubi_mount_rootfs"
 do_makesystem_ubi[prefuncs] += "do_create_ubinize_config"
 do_makesystem_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
@@ -82,4 +116,9 @@ fakeroot do_makesystem_ubi() {
     ubinize -o ${SYSTEMIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_CFG}
 }
 
-addtask do_makesystem_ubi after do_rootfs before do_image_complete
+python () {
+    if bb.utils.contains('IMAGE_FSTYPES', 'ext4', True, False, d):
+        bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_makesystem', d)
+    else:
+        bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_rootfs', d)
+}
