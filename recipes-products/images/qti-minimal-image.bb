@@ -11,15 +11,8 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               glib-2.0 \
               kernel-modules \
               systemd-machine-units \
-              ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location', '', d)} \
               packagegroup-android-utils \
               packagegroup-startup-scripts \
-              packagegroup-qti-core \
-              packagegroup-qti-core-prop \
-              packagegroup-qti-securemsm \
-              packagegroup-qti-ss-mgr \
-              packagegroup-qti-data \
-              ${@bb.utils.contains("DISTRO_FEATURES", "selinux", "packagegroup-selinux-minimal", "", d)} \
 "
 
 do_rootfs_append() {
