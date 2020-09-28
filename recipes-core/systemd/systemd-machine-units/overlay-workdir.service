@@ -27,8 +27,8 @@
 
 [Unit]
 Description=Create workdirs for overlayfs usage
+DefaultDependencies=no
 After=overlay.mount
-Requires=overlay.mount
 
 [Service]
 Type=oneshot

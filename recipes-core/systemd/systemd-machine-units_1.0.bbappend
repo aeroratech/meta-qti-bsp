@@ -184,7 +184,7 @@ do_install_append () {
             ln -sf ${systemd_unitdir}/system/etc.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/etc.mount
             ln -sf ${systemd_unitdir}/system/data.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/data.mount
             ln -sf ${systemd_unitdir}/system/cache.mount ${D}${systemd_unitdir}/system/local-fs.target.wants/cache.mount
-            ln -sf ${systemd_unitdir}/system/overlay-restore.service ${D}${systemd_unitdir}/system/local-fs.target.wants/overlay-restore.service
+            ln -sf ${systemd_unitdir}/system/overlay-workdir.service ${D}${systemd_unitdir}/system/local-fs.target.wants/overlay-workdir.service
         fi
     done
 }
@@ -215,6 +215,10 @@ def get_mnt_services(d):
             services.append("%s.mount" % svc)
         else:
             services.append("%s-mount.service" % svc)
+
+    if "/overlay" in slist:
+        services.append("overlay-workdir.service")
+
     return " ".join(services)
 
 SYSTEMD_SERVICE_${PN} += "${@get_mnt_services(d)}"
