@@ -42,9 +42,3 @@ ro.qc.sdk.fwk.mic_support=6
 
 #property to enable audio HAL server
 persist.vendor.audio.qas.enabled=true
-
-#Speaker Protection
-vendor.audio.feature.spkr_prot.enable=true
-persist.vendor.audio.speaker.prot.enable=true
-persist.vendor.audio.spv3.enable=true
-persist.vendor.audio.avs.afe_api_version=2
