@@ -28,3 +28,4 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 # Specify the path to look for hals
 EXTRA_OECONF_append = " --with-hal-path=${libdir}"
 EXTRA_OECONF_append_qrb5165 = " BOARD_SUPPORTS_ANDROID_Q_AUDIO=true"
+EXTRA_OECONF_append_sdxlemur = " BOARD_SUPPORTS_ANDROID_Q_AUDIO=true"

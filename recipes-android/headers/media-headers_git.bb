@@ -13,5 +13,6 @@ SRC_URI = "file://include/media"
 S = "${WORKDIR}/include/media"
 
 EXTRA_OECONF_append_qrb5165 = " BOARD_SUPPORTS_ANDROID_Q_AUDIO=true"
+EXTRA_OECONF_append_sdxlemur = " BOARD_SUPPORTS_ANDROID_Q_AUDIO=true"
 
 do_compile[noexec] = "1"
