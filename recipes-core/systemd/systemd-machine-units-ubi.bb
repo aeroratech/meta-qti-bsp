@@ -17,6 +17,11 @@ add_ubi_scripts () {
         if [ "$mountname" = "firmware" -o "$mountname" = "bt_firmware" -o "$mountname" = "dsp" ]; then
             install -m 0744 ${S}/${mountname}-ubi-mount.sh ${D}${sysconfdir}/initscripts/${mountname}-ubi-mount.sh
         fi
+
+        if [ "$mountname" = "systemrw" ]; then
+            install -d ${D}/lib/systemd/system/systemrw.mount.d
+            install -m 0744 ${S}/systemrw.conf ${D}/lib/systemd/system/systemrw.mount.d/systemrw.conf
+        fi
     done
 }
 
