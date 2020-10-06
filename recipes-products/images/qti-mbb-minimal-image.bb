@@ -15,7 +15,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-startup-scripts \
               packagegroup-qti-data \
               packagegroup-qti-core \
-              packagegroup-qti-core-prop \
               packagegroup-qti-securemsm \
               packagegroup-qti-ss-mgr \
               ${@bb.utils.contains('MACHINE_FEATURES', 'qti-audio', 'packagegroup-qti-audio', '', d)} \
