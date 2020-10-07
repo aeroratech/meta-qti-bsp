@@ -20,5 +20,8 @@ USERDATA_SIZE_EXT4 ?= "33554432"
 # Formats of root filesystem images.
 IMAGE_FSTYPES += "ext4"
 
+# Size for smallest contiguous block of physical memory
+PAGE_SIZE ?= '4096'
+
 #Disable some default features supported from upstream
 MACHINE_FEATURES_BACKFILL_CONSIDERED += "qemu-usermode rtc"
