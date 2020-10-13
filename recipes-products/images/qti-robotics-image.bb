@@ -25,8 +25,10 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-core \
         packagegroup-qti-core-prop \
         packagegroup-qti-data \
+        packagegroup-qti-display \
         packagegroup-qti-dsp \
         packagegroup-qti-fastcv \
+        packagegroup-qti-gfx \
         packagegroup-qti-ml \
         packagegroup-qti-qmmf \
         packagegroup-qti-robotics \
