@@ -36,6 +36,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-ss-mgr \
         packagegroup-qti-video \
         packagegroup-qti-wifi \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'ros2', 'packagegroup-ros2-foxy', '', d)} \
         packagegroup-startup-scripts \
         systemd-machine-units \
 "
