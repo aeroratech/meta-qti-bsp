@@ -49,7 +49,7 @@ counter=0
 # verity protection
 if [ -f /etc/verity.env ]; then
     source /etc/verity.env
-    veritysetup open /dev/nd_0 system /dev/nd_0 $VERITY_ROOT_HASH --salt $VERITY_SALT --hash-offset $VERITY_HASH_OFFSET --data-blocks $VERITY_DATA_BLOCKS --fec-device /dev/nd_0 --fec-offset $VERITY_FEC_OFFSET --fec-roots $VERITY_FEC_ROOTS
+    veritysetup open /dev/nd_0 system /dev/nd_0 $VERITY_ROOT_HASH --salt $VERITY_SALT --hash-offset $VERITY_HASH_OFFSET --data-blocks $VERITY_DATA_BLOCKS --fec-device /dev/nd_0 --fec-offset $VERITY_FEC_OFFSET --fec-roots $VERITY_FEC_ROOTS --root-hash-signature=/etc/verity_sig.txt
     # Wait till the block device is available
     busybox echo "waiting for /dev/mapper/system"
     while [ ! -e /dev/mapper/system ]; do
