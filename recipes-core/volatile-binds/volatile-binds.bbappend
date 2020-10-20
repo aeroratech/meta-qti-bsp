@@ -1,12 +1,9 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend_sdxlemur := "${THISDIR}/files:"
 REQUIRED_DISTRO_FEATURES = ""
 SRC_URI += "\
-    file://bind-files.sh \
-    file://unbind-files.sh \
-    file://start_robind \
-    file://mount-copybind \
-    file://umount-copybind \
-    file://volatile-binds.service.in \
+    ${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', 'file://mount-copybind', '', d)} \
+    ${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', 'file://umount-copybind', '', d)} \
+    ${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', 'file://volatile-binds.service.in', '', d)} \
 "
 do_install_append () {
     if ${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', 'true', 'false', d)}; then
@@ -19,11 +16,7 @@ do_install_append () {
                 install -m 0755 umount-copybind ${D}${base_sbindir}/
             done
         fi
-        else
-            install -m 0755 bind-files.sh ${D}${base_sbindir}/
-            install -m 0755 unbind-files.sh ${D}${base_sbindir}/
-            install -m 0755 start_robind -D ${D}${sysconfdir}/init.d/robind
-        fi
+    fi
 }
 
 VOLATILE_BINDS_sdxlemur = "\
