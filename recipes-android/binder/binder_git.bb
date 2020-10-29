@@ -12,6 +12,7 @@ FILESPATH =+ "${WORKSPACE}/frameworks/:"
 
 SRC_URI  = "file://binder"
 SRC_URI += "file://servicemanager.service"
+SRC_URI += "file://50-binder.rules"
 
 S = "${WORKDIR}/binder"
 
@@ -34,6 +35,7 @@ do_install_append() {
    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
        install -d ${D}${systemd_unitdir}/system/
        install -m 0644 ${WORKDIR}/servicemanager.service -D ${D}${systemd_unitdir}/system/servicemanager.service
+       install -m 0644 -D ${WORKDIR}/50-binder.rules ${D}${sysconfdir}/udev/rules.d/50-binder.rules
        install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
        # enable the service for multi-user.target
        ln -sf ${systemd_unitdir}/system/servicemanager.service \
