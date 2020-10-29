@@ -108,6 +108,7 @@ EOF
 do_makesystem_ubi[cleandirs] += "${USERIMAGE_ROOTFS}"
 do_makesystem_ubi[prefuncs] += "create_symlink_systemd_ubi_mount_rootfs"
 do_makesystem_ubi[prefuncs] += "do_create_ubinize_config"
+do_makesystem_ubi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
 do_makesystem_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_makesystem_ubi() {
@@ -121,4 +122,9 @@ python () {
         bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_makesystem', d)
     else:
         bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_rootfs', d)
+}
+
+do_patch_ubitools() {
+    ${UNINATIVE_STAGING_DIR}-uninative/x86_64-linux/usr/bin/patchelf-uninative --set-interpreter /lib64/ld-linux-x86-64.so.2 ${STAGING_DIR}-components/x86_64/mtd-utils-native/usr/sbin/mkfs.ubifs
+    ${UNINATIVE_STAGING_DIR}-uninative/x86_64-linux/usr/bin/patchelf-uninative --set-interpreter /lib64/ld-linux-x86-64.so.2 ${STAGING_DIR}-components/x86_64/mtd-utils-native/usr/sbin/ubinize
 }
