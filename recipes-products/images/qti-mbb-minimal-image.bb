@@ -10,6 +10,10 @@ IMAGE_FEATURES += "read-only-rootfs persist-volume"
 CORE_IMAGE_EXTRA_INSTALL += "\
               glib-2.0 \
               kernel-modules \
+              powerapp \
+              powerapp-powerconfig \
+              powerapp-reboot \
+              powerapp-shutdown \
               systemd-machine-units \
               packagegroup-android-utils \
               packagegroup-startup-scripts \
