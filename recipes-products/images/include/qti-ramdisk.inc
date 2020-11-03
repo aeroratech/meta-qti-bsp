@@ -118,7 +118,11 @@ fakeroot do_ramdisk_create() {
         #gen_initramfs_list.sh expects to be run from kernel directory
         cd ${DEPLOY_DIR_IMAGE}/build-artifacts/kernel_scripts
 
-        bash ./scripts/gen_initramfs_list.sh -o ${DEPLOY_DIR_IMAGE}/${PN}-initrd.gz -u 0 -g 0 ${TMPDIR}/ramdisk
+        if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-msm', '5.10', 'true', 'false', d)}; then
+            bash ./scripts/gen_initramfs.sh -o ${DEPLOY_DIR_IMAGE}/${PN}-initrd.gz -u 0 -g 0 ${TMPDIR}/ramdisk
+        else
+            bash ./scripts/gen_initramfs_list.sh -o ${DEPLOY_DIR_IMAGE}/${PN}-initrd.gz -u 0 -g 0 ${TMPDIR}/ramdisk
+        fi
 
         cd ${CURRENT_DIR}
 }

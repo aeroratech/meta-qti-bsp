@@ -5,8 +5,8 @@ require ${COREBASE}/meta-qti-bsp/recipes-products/images/include/qti-ramdisk.inc
 DEFAULTTUNE ?= "aarch64"
 include conf/machine/include/arm/arch-armv8a.inc
 
-PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
-PREFERRED_VERSION_linux-msm ?= "5.4"
+PREFERRED_PROVIDER_virtual/kernel = "linux-dummy"
+PREFERRED_VERSION_linux-msm ?= "5.10"
 
 LLVM_VERSION = "8.0"
 
