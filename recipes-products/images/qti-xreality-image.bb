@@ -16,11 +16,14 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         libxml2 \
         packagegroup-android-utils \
         packagegroup-qti-core-prop \
+        packagegroup-qti-camera \
         packagegroup-qti-data \
         packagegroup-qti-dsp \
+        packagegroup-qti-gfx \
         packagegroup-qti-ss-mgr \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-bluetooth', "packagegroup-qti-bluetooth", "", d)} \
+        packagegroup-qti-video \
         packagegroup-startup-scripts \
         systemd-machine-units \
         ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
@@ -42,14 +45,4 @@ CORE_IMAGE_EXTRA_INSTALL += " \
 CORE_IMAGE_EXTRA_INSTALL += " \
             wayland \
             gbm \
-            "
-
-#Install packages for camera
-CORE_IMAGE_EXTRA_INSTALL += " \
-            packagegroup-qti-camera \
-            "
-
-#Install packages for video
-CORE_IMAGE_EXTRA_INSTALL += " \
-            packagegroup-qti-video \
             "
