@@ -48,3 +48,8 @@ CORE_IMAGE_EXTRA_INSTALL += " \
 CORE_IMAGE_EXTRA_INSTALL += " \
             packagegroup-qti-camera \
             "
+
+#Install packages for video
+CORE_IMAGE_EXTRA_INSTALL += " \
+            packagegroup-qti-video \
+            "
