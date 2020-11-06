@@ -166,6 +166,10 @@ do_deploy_fixup () {
     if [ -f ${DEPLOY_DIR_IMAGE}/NHLOS_IMAGES.tar ]; then
        tar -xvf ${DEPLOY_DIR_IMAGE}/NHLOS_IMAGES.tar -C .
     fi
+    # Copy ipa_fws.elf
+    if [ -f ${DEPLOY_DIR_IMAGE}/ipa-fws/ipa_fws.elf ]; then
+       install -m 0644 ${DEPLOY_DIR_IMAGE}/ipa-fws/ipa_fws.elf .
+    fi
 }
 
 addtask do_deploy_fixup after do_rootfs before do_image
