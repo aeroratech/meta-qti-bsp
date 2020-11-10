@@ -98,7 +98,9 @@ def partition_size_in_kb(size):
 def partition_options(argv):
    partition_entry = partition_entry_defaults.copy()
    for (opt, arg) in argv:
-      if opt in ['--name']:
+      if opt in ['--lun']:
+         partition_entry["physical_partition"] = arg
+      elif opt in ['--name']:
          partition_entry["label"] = arg
       elif opt in ['--size']:
          kbytes = partition_size_in_kb(arg)
@@ -106,11 +108,15 @@ def partition_options(argv):
       elif opt in ['--type-guid']:
          partition_entry["type"] = arg
       elif opt in ['--attributes']:
-         attribute_bits = int(arg,10)
+         attribute_bits = int(arg,16)
          if attribute_bits & (1<<2):
             partition_entry["bootable"] = "true"
+         else:
+            partition_entry["bootable"] = "false"
          if attribute_bits & (1<<60):
             partition_entry["readonly"] = "true"
+         else:
+            partition_entry["readonly"] = "false"
       elif opt in ['--filename']:
          partition_entry["filename"] = arg
       elif opt in ['--sparse']:
@@ -124,7 +130,7 @@ def parse_partition_entry(partition_entry):
    if opts_list[0] == "--partition":
       try:
          options, remainders = getopt.gnu_getopt(opts_list[1:], '',
-                                 ['name=', 'size=','type-guid=',
+                                 ['lun=', 'name=', 'size=','type-guid=',
                                   'filename=', 'attributes=', 'sparse='])
          return partition_options(options)
       except Exception as e:
@@ -168,6 +174,34 @@ def generate_ptool_xml (disk_params, partition_entries_dict, output_xml):
    with open(output_xml, "w") as f:
       f.write(xmlstr)
 
+def generate_ufs_xml (disk_params, partition_entries_dict, output_xml):
+   print("Generating UFS XML %s" %(output_xml))
+   root = ET.Element("configuration")
+   parser_instruction_text = ""
+
+   for key, value in disk_params.items():
+      if not key == 'size' and not key == 'type':
+         parser_instruction_text += '\n\t' + str(key) + '=' + str(value) + '\n\t'
+
+   parser_inst = ET.SubElement(root,"parser_instructions").text = (
+      parser_instruction_text
+   )
+   lun_index=0
+   while lun_index < 6:
+      phy_part = ET.SubElement(root, "physical_partition")
+
+      for partition_index, entry in partition_entries_dict.items():
+         part_entry = parse_partition_entry(entry)
+         if part_entry["physical_partition"] == str(lun_index):
+            del part_entry["physical_partition"]
+            part = ET.SubElement(phy_part, "partition", attrib=part_entry)
+      lun_index +=1
+
+   xmlstr = minidom.parseString(ET.tostring(root)).toprettyxml()
+   with open(output_xml, "w") as f:
+      f.write(xmlstr)
+
+
 def generate_nand_mbn_gen_xml (disk_params, partition_entry):
    print("Generating nand_mbn_gen XML")
 
@@ -177,6 +211,8 @@ def generate_partition_xml (disk_entry, partition_entries_dict, output_xml):
       generate_ptool_xml(disk_params, partition_entries_dict, output_xml)
    elif disk_params["type"] == "nand":
       generate_nand_mbn_gen_xml(disk_params, partition_entries_dict, output_xml)
+   elif disk_params["type"] == "ufs":
+      generate_ufs_xml(disk_params, partition_entries_dict, output_xml)
 
 ###############################################################################
 # main
