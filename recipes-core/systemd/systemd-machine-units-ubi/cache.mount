@@ -27,6 +27,7 @@
 
 [Unit]
 After=basic.target
+DefaultDependencies=no
 
 [Mount]
 Type=ubifs

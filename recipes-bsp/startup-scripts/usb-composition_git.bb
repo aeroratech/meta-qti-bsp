@@ -43,6 +43,18 @@ do_install_append() {
         ${D}${systemd_unitdir}/system/multi-user.target.wants/usb.service
    ln -sf ${systemd_unitdir}/system/usb.service \
         ${D}${systemd_unitdir}/system/ffbm.target.wants/usb.service
+
+   # For SDX targets, start USB early in boot chain and hence needs early mount-copybinds.
+   if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', 'true', 'false', d)}; then
+      install -d ${D}${systemd_unitdir}/system/local-fs.target.wants/
+      rm -rf ${D}${systemd_unitdir}/system/multi-user.target.wants/usb.service
+      ln -sf ${systemd_unitdir}/system/usb.service ${D}${systemd_unitdir}/system/local-fs.target.wants/usb.service
+      sed -i '/After/s/sysinit.target start_stop_ipa_fws.service etc.mount//' ${D}${systemd_unitdir}/system/usb.service
+      sed -i '/\<After\>/s/$/systemrw.mount start_stop_ipa_fws.service etc.mount/' ${D}${systemd_unitdir}/system/usb.service
+      sed -i '/After=systemrw.mount start_stop_ipa_fws.service etc.mount/a Requires=systemrw.mount' ${D}${systemd_unitdir}/system/usb.service
+      sed -i '/RemainAfterExit=yes/a ExecStartPre=/sbin/mount-copybind /systemrw/adb_devid  /etc/adb_devid' ${D}${systemd_unitdir}/system/usb.service
+      sed -i '/RemainAfterExit=yes/a ExecStartPre=/sbin/mount-copybind /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp' ${D}${systemd_unitdir}/system/usb.service
+   fi
 }
 
 FILES_${PN} += "${systemd_unitdir}/system/"
