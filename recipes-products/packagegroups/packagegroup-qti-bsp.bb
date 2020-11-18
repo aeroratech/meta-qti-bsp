@@ -16,8 +16,8 @@ PACKAGES = ' \
 # Android Core Image and Debugging utilities
 RDEPENDS_packagegroup-android-utils = "\
     adbd \
-    binder \
-    leproperties \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', '', 'binder', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', '', 'leproperties', d)} \
     logcat \
     logd \
     ${@oe.utils.conditional('PROPERTIES_SUPPORT', 'True', 'system-prop', '', d)} \
