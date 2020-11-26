@@ -19,6 +19,7 @@ USERDATAIMAGE_TARGET ?= "userdata.img"
 USERDATAIMAGE_MAP_TARGET ?= "userdata.map"
 PERSISTIMAGE_TARGET ?= "persist.img"
 PERSISTIMAGE_MAP_TARGET ?= "persist.map"
+DTBOIMAGE_TARGET ?= "dtbo.img"
 
 IMAGE_EXT4_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '-S ${SELINUX_FILE_CONTEXTS}', '', d)}"
 

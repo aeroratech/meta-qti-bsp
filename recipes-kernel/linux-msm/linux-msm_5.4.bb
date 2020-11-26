@@ -57,4 +57,8 @@ do_deploy_append () {
          install -m 0644 ${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE} ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
          install -m 0644 vmlinux ${DEPLOYDIR}
          install -m 0644 System.map ${DEPLOYDIR}
+
+         if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', 'true', 'false', d)}; then
+                 mkdtimg create ${DEPLOYDIR}/${DTB_TARGET} --page_size=${PAGE_SIZE} ${DEPLOYDIR}/build-artifacts/dtb/*.dtb
+         fi
 }

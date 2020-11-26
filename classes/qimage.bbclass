@@ -162,16 +162,22 @@ do_deploy_fixup () {
     # copy vmlinux, zImage
     install -m 0644 ${DEPLOY_DIR_IMAGE}/vmlinux .
     install -m 0644 ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE} .
+
+    # copy dtbo.img
+    if [ -f ${DEPLOY_DIR_IMAGE}/dtbo.img ]; then
+       install -m 0644 ${DEPLOY_DIR_IMAGE}/dtbo.img .
+    fi
+
     # Copy nHLOS bins
     if [ -f ${DEPLOY_DIR_IMAGE}/NHLOS_IMAGES.tar ]; then
        tar -xvf ${DEPLOY_DIR_IMAGE}/NHLOS_IMAGES.tar -C .
     fi
+
     # Copy ipa_fws.elf
     if [ -f ${DEPLOY_DIR_IMAGE}/ipa-fws/ipa_fws.elf ]; then
        install -m 0644 ${DEPLOY_DIR_IMAGE}/ipa-fws/ipa_fws.elf .
     fi
 }
-
 addtask do_deploy_fixup after do_rootfs before do_image
 
 # Make sure we build edk2/lk before do_rootfs

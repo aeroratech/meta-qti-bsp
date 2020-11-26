@@ -14,7 +14,7 @@ PAGE_SIZE ?= '4096'
 
 EXTRA_IMAGECMD ?= "-N 2048"
 
-SYSTEM_SIZE_EXT4 ?= "180000000"
-VM_SIZE_EXT4 ?= "230000000"
+SYSTEM_SIZE_EXT4 ?= "225000000"
+VM_SIZE_EXT4 ?= "270000000"
 
 addtask ramdisk_create after do_makesystem before do_image_complete

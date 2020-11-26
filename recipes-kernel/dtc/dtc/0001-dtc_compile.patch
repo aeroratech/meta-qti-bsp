@@ -1,0 +1,39 @@
+From d797e7fc72c7060df54e9babb4a1ecd89e96d506 Mon Sep 17 00:00:00 2001
+From: Nirmesh Kumar Singh <nkumarsi@codeaurora.org>
+Date: Tue, 15 Sep 2020 16:45:19 +0530
+Subject: [PATCH] dummy
+
+---
+ dtc-lexer.l   | 2 +-
+ libfdt/acpi.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/dtc-lexer.l b/dtc-lexer.l
+index 13f4b06..fd825eb 100644
+--- a/dtc-lexer.l
++++ b/dtc-lexer.l
+@@ -36,7 +36,7 @@ LINECOMMENT	"//".*\n
+ %{
+ #include "dtc.h"
+ #include "srcpos.h"
+-#include "dtc-parser.h"
++#include "dtc-parser.tab.h"
+ 
+ YYLTYPE yylloc;
+ extern bool treesource_error;
+diff --git a/libfdt/acpi.c b/libfdt/acpi.c
+index ba51734..8b710df 100644
+--- a/libfdt/acpi.c
++++ b/libfdt/acpi.c
+@@ -35,7 +35,7 @@ uint8_t acpi_csum(const void *base, int n) {
+ 	uint8_t sum;
+ 	int bytesDone;
+ 
+-	p = (uint8_t*)base;
++	p = (uint8_t*)&base;
+ 
+ 	sum = 0;
+ 	for (bytesDone = 0; bytesDone < n; bytesDone++) {
+-- 
+2.7.4
+
