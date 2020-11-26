@@ -14,4 +14,5 @@ RDEPENDS_packagegroup-qti-debug-tools = " \
             gdbserver \
             strace \
             valgrind \
+            systemd-analyze \
         "
