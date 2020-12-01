@@ -105,7 +105,7 @@ image="${USERIMAGE_UBIFS_TARGET}"
 vol_id=1
 vol_type=dynamic
 vol_name=usrfs
-vol_size="${CACHE_VOLUME_SIZE}"
+vol_flags=autoresize
 [cache_volume]
 mode=ubi
 vol_id=2
