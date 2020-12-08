@@ -98,6 +98,8 @@ do_shared_workdir_append () {
         mkdir -p $kerneldir/certs
         cp certs/signing_key.x509 $kerneldir/certs/
 }
+# Path for dtbo generation is kernel version dependent.
+DTBO_SRC_PATH ?= "${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/qcom/"
 
 do_deploy() {
     if [ -f ${D}/${KERNEL_IMAGEDEST}/-${KERNEL_VERSION} ]; then
@@ -112,7 +114,7 @@ do_deploy() {
 
     # copy dtbo files into deplydir and create dtbo.img if DTBO support enable
     if [  "${DTBO_MACHINE}" == "True" ]; then
-        install -m 0644 ${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/qcom/*.dtbo ${DEPLOYDIR}
+        install -m 0644 ${DTBO_SRC_PATH}/*.dtbo ${DEPLOYDIR}
         mkdtimg create ${DEPLOYDIR}/dtbo.img \
              --page_size=${PAGE_SIZE} \
              ${DEPLOYDIR}/*.dtbo
