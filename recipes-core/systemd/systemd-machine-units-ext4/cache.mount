@@ -27,6 +27,7 @@
 
 [Unit]
 After=sysinit.target
+DefaultDependencies=no
 
 [Mount]
 What=/dev/disk/by-partlabel/cache
