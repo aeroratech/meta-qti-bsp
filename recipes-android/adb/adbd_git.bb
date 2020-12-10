@@ -31,6 +31,15 @@ do_install_append() {
         ${D}${systemd_unitdir}/system/multi-user.target.wants/adbd.service
     ln -sf ${systemd_unitdir}/system/adbd.service \
         ${D}${systemd_unitdir}/system/ffbm.target.wants/adbd.service
+
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', 'true', 'false', d)}; then
+        install -d ${D}${systemd_unitdir}/system/local-fs.target.wants/
+        rm -rf ${D}${systemd_unitdir}/system/multi-user.target.wants/adbd.service
+        rm -rf ${D}${systemd_unitdir}/system/multi-user.target.wants/usb.service
+        ln -sf ${systemd_unitdir}/system/adbd.service ${D}${systemd_unitdir}/system/local-fs.target.wants/adbd.service
+        ln -sf ${systemd_unitdir}/system/usb.service ${D}${systemd_unitdir}/system/local-fs.target.wants/usb.service
+        sed -i '/Requires=usb.service/s/$/ diag-router.service/' ${D}${systemd_unitdir}/system/adbd.service
+    fi
 }
 
 FILES_${PN} += "${systemd_unitdir}/system/"
