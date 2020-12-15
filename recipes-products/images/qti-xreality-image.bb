@@ -20,6 +20,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-data \
         packagegroup-qti-dsp \
         packagegroup-qti-gfx \
+        packagegroup-qti-sensors-see \
         packagegroup-qti-ss-mgr \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-bluetooth', "packagegroup-qti-bluetooth", "", d)} \
