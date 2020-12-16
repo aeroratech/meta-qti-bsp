@@ -19,6 +19,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-camera \
         packagegroup-qti-data \
         packagegroup-qti-dsp \
+        packagegroup-qti-fastcv \
         packagegroup-qti-gfx \
         packagegroup-qti-sensors-see \
         packagegroup-qti-ss-mgr \
