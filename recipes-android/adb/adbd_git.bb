@@ -22,11 +22,13 @@ do_install_append() {
     install -d ${D}${sysconfdir}
     install -m 0755 ${S}/launch_adbd -D ${D}${base_sbindir}/launch_adbd
     install -b -m 0644 /dev/null ${D}${sysconfdir}/adb_devid
+    install -m 0755 ${S}/start_pcie -D ${D}${sysconfdir}/start_pcie
 
     install -d ${D}${systemd_unitdir}/system/
     install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
     install -d ${D}${systemd_unitdir}/system/ffbm.target.wants/
     install -m 0644 ${S}/adbd.service -D ${D}${systemd_unitdir}/system/adbd.service
+    install -m 0644 ${S}/pcie.service -D ${D}${systemd_unitdir}/system/pcie.service
     ln -sf ${systemd_unitdir}/system/adbd.service \
         ${D}${systemd_unitdir}/system/multi-user.target.wants/adbd.service
     ln -sf ${systemd_unitdir}/system/adbd.service \
@@ -39,6 +41,8 @@ do_install_append() {
         ln -sf ${systemd_unitdir}/system/adbd.service ${D}${systemd_unitdir}/system/local-fs.target.wants/adbd.service
         ln -sf ${systemd_unitdir}/system/usb.service ${D}${systemd_unitdir}/system/local-fs.target.wants/usb.service
         sed -i '/Requires=usb.service/s/$/ diag-router.service/' ${D}${systemd_unitdir}/system/adbd.service
+        ln -sf ${systemd_unitdir}/system/pcie.service ${D}${systemd_unitdir}/system/ffbm.target.wants/pcie.service
+        ln -sf ${systemd_unitdir}/system/pcie.service ${D}${systemd_unitdir}/system/local-fs.target.wants/pcie.service
     fi
 }
 
