@@ -24,5 +24,5 @@ do_compile () {
 
 do_install () {
     cp -a ${WORKSPACE}/kernel-5.4/kernel_platform/common/* ${STAGING_KERNEL_DIR}
-    cp -a ${WORKSPACE}/kernel-5.4/out/*/common/* ${STAGING_KERNEL_BUILDDIR}
+    cp -a ${WORKSPACE}/kernel-5.4/out/msm-*-*_*-debug_defconfig/common/* ${STAGING_KERNEL_BUILDDIR}
 }
