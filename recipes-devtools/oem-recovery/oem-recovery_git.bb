@@ -22,6 +22,8 @@ EXTRA_OECONF = " \
     --with-core-headers=${STAGING_INCDIR} \
 "
 
+CPPFLAGS_append = "${@bb.utils.contains_any('PREFERRED_VERSION_linux-msm', '5.4', ' -D_BSG_FRAMEWORK_KERNEL_HEADERS ', '', d)}"
+
 PACKAGECONFIG ?= " \
     glib \
     ion \
