@@ -1,4 +1,4 @@
-BASEMACHINE ?= "qrb5165"
+BASEMACHINE ?= "sxr2130"
 require conf/machine/include/basemachine.inc
 
 include conf/machine/include/kona.inc
