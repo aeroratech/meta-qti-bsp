@@ -51,3 +51,6 @@ persist.vendor.audio.avs.afe_api_version=2
 
 #enable weston during boot
 persist.display.launch.weston.at.bootup=true
+
+#property to select sensor OEM registry file
+persist.vendor.sensors.enable.tdkMezzCard=false
