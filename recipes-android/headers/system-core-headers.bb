@@ -10,3 +10,5 @@ FILESEXTRAPATHS_prepend := "${WORKSPACE}/system/core:"
 SRC_URI = "file://include"
 
 S = "${WORKDIR}/include"
+
+ALLOW_EMPTY_${PN} = "1"
