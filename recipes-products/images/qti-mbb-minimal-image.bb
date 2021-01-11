@@ -10,6 +10,7 @@ IMAGE_FEATURES += "read-only-rootfs persist-volume"
 CORE_IMAGE_EXTRA_INSTALL += "\
               glib-2.0 \
               kernel-modules \
+              coreutils \
               powerapp \
               powerapp-powerconfig \
               powerapp-reboot \

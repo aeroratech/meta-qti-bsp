@@ -48,7 +48,7 @@ if [ -f "$mountpoint" ]; then
 
     if [ ! -f "$spec" ]; then
         mkdir -p $(dirname $spec)
-        cp -cpP "$mountpoint" "$spec"
+        cp -P --preserve=all "$mountpoint" "$spec"
     fi
 
     mount -o "bind" "$spec" "$mountpoint"
@@ -68,7 +68,7 @@ if [ -d "$mountpoint" ]; then
 
         if [ -f "$mountpoint/$file" ]; then
             if [ ! -f "$spec/$file" ]; then
-                cp -cp "$file" "$spec/"
+                cp --preserve=all "$file" "$spec/"
             fi
             mount -o "bind" "$spec/$file" "$mountpoint/$file"
         fi
