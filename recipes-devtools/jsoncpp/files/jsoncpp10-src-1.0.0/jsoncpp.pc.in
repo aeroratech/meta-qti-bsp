@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: jsoncpp
+Description: jsoncpp services package
+Version: @VERSION@
+Libs: -L${libdir} -ljsoncpp
+Cflags: -I${includedir}/jsoncpp/include
