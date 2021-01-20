@@ -58,3 +58,6 @@ TOOLCHAIN_HOST_TASK_append = " nativesdk-protobuf-compiler "
 
 # To include kernel headers in SDK
 TOOLCHAIN_TARGET_TASK_append = " linux-msm-headers-dev"
+
+# To include kernel sources in SDK to build kernel modules
+TOOLCHAIN_TARGET_TASK_append = " kernel-devsrc"
