@@ -10,6 +10,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         alsa-utils \
         canutils \
         chrony \
+        chronyc \
         e2fsprogs \
         e2fsprogs-e2fsck \
         e2fsprogs-mke2fs \
