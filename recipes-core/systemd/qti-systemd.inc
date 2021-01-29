@@ -1,7 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/systemd:"
 
 SRC_URI += "file://Disable-unused-mount-points.patch"
-SRC_URI += "file://mountpartitions.rules"
 SRC_URI += "file://systemd-udevd.service"
 SRC_URI += "file://ffbm.target"
 SRC_URI += "file://mtpserver.rules"
