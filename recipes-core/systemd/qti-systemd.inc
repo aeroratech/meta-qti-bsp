@@ -65,8 +65,6 @@ CFLAGS_append = " -fPIC"
 # So temporarily revert to default optimizations for systemd.
 SELECTED_OPTIMIZATION = "-O2 -fexpensive-optimizations -frename-registers -fomit-frame-pointer -ftree-vectorize"
 
-MACHINE_SUPPORT_BLOCK_DEVICES = "${@bb.utils.contains_any('BASEMACHINE', 'qcs403-som2 sdxprairie sdxlemur', 'false', 'true', d)}"
-
 do_install_append () {
    install -d ${D}/etc/systemd/system/
    install -d ${D}/lib/systemd/system/ffbm.target.wants
@@ -108,26 +106,6 @@ do_install_append () {
 
    # Mask dev-ttyS0.device
    ln -sf /dev/null ${D}/etc/systemd/system/dev-ttyS0.device
-
-   # Remove rules to automount block devices.
-   if [ "${MACHINE_SUPPORT_BLOCK_DEVICES}" == "false" ]; then
-       sed -i '/SUBSYSTEM=="block", TAG+="systemd"/d' ${D}/lib/udev/rules.d/99-systemd.rules
-       sed -i '/SUBSYSTEM=="block", ACTION=="add", ENV{DM_UDEV_DISABLE_OTHER_RULES_FLAG}=="1", ENV{SYSTEMD_READY}="0"/d' ${D}/lib/udev/rules.d/99-systemd.rules
-
-       # Remove generator binaries and ensure that we don't rely on generators for mount or service files.
-       rm -rf ${D}/lib/systemd/system-generators/systemd-debug-generator
-       rm -rf ${D}/lib/systemd/system-generators/systemd-fstab-generator
-       rm -rf ${D}/lib/systemd/system-generators/systemd-getty-generator
-       rm -rf ${D}/lib/systemd/system-generators/systemd-gpt-auto-generator
-       rm -rf ${D}/lib/systemd/system-generators/systemd-hibernate-resume-generator
-       rm -rf ${D}/lib/systemd/system-generators/systemd-rc-local-generator
-       rm -rf ${D}/lib/systemd/system-generators/systemd-system-update-generator
-       rm -rf ${D}/lib/systemd/system-generators/systemd-sysv-generator
-
-       # Start systemd-udev-trigger.service after sysinit.target
-       sed -i '/Before=sysinit.target/a After=sysinit.target init_sys_mss.service' ${D}${systemd_unitdir}/system/systemd-udev-trigger.service
-       sed -i '/Before=sysinit.target/d' ${D}${systemd_unitdir}/system/systemd-udev-trigger.service
-   fi
 
    # Update persistent-storage.rules to create bootdevice/by-name symlinks
    sed -i 's/LABEL="persistent_storage_end"/# block\/bootdevice\/by-name links'"\n"'LABEL="persistent_storage_end"/g' \
