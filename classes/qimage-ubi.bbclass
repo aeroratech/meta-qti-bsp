@@ -62,13 +62,12 @@ create_symlink_systemd_ubi_mount_rootfs() {
         mountname="${entry:1}"
         if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" ]] ; then
             cp -f ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-mount-ubi.service ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-mount.service
-            rm ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-mount-ubi.service
             ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/${mountname}-mount.service
         else
-            mv ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-ubi.mount  ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}.mount
+            cp ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-ubi.mount ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}.mount
             if [ "$mountname" = "systemrw" ]; then
                 mkdir -p ${IMAGE_ROOTFS}/lib/systemd/system/systemrw.mount.d
-                mv ${IMAGE_ROOTFS}/lib/systemd/system/systemrw-ubi.conf ${IMAGE_ROOTFS}/lib/systemd/system/systemrw.mount.d/systemrw.conf
+                cp ${IMAGE_ROOTFS}/lib/systemd/system/systemrw-ubi.conf ${IMAGE_ROOTFS}/lib/systemd/system/systemrw.mount.d/systemrw.conf
             fi
             if [[ "$mountname" == "$userfsdatadir" ]] ; then
                 ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.wants/${mountname}.mount
