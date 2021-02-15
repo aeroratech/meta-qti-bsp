@@ -32,4 +32,4 @@ After=sysinit.target
 What=/dev/disk/by-partlabel/persist
 Where=/persist
 Type=ext4
-Options=noatime,data=ordered,noauto_da_alloc,discard,noexec,nodev,nosuid,noauto,x-systemd.automount
+Options=noatime,data=ordered,noauto_da_alloc,discard,noexec,nodev,nosuid,noauto,x-systemd.automount,rootcontext=system_u:object_r:persist_t:s0
