@@ -7,16 +7,16 @@ QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota
 
 inherit ${QIMGUBICLASSES}
 
-IMAGE_FEATURES[validitems] += "persist-volume nand2x"
+IMAGE_FEATURES[validitems] += "persist-volume nand2x gluebi"
 
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
 
 SYSTEMIMAGE_UBI_TARGET ?= "sysfs.ubi"
-SYSTEMIMAGE_UBIFS_TARGET ?= "sysfs.ubifs"
-USERIMAGE_UBIFS_TARGET ?= "userfs.ubifs"
+SYSTEMIMAGE_UBIFS_TARGET ?= "${@bb.utils.contains('IMAGE_FEATURES', 'gluebi', bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity/${SYSTEMIMAGE_GLUEBI_TARGET}/${SYSTEMIMAGE_GLUEBI_TARGET}', '${SYSTEMIMAGE_GLUEBI_TARGET}', d), 'sysfs.ubifs', d)}"
+USERIMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/userfs.ubifs"
 USERIMAGE_ROOTFS ?= "${WORKDIR}/usrfs"
 
-UBINIZE_CFG ?= "ubinize_system.cfg"
+UBINIZE_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubinize_system.cfg"
 
 IMAGE_UBIFS_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '--selinux=${SELINUX_FILE_CONTEXTS}', '', d)}"
 IMAGE_UBIFS_SELINUX_OPTIONS_DATA = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '--selinux=${SELINUX_FILE_CONTEXTS_DATA}', '', d)}"
@@ -177,9 +177,60 @@ fakeroot do_makesystem_ubi() {
     ubinize -o ${SYSTEMIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_CFG}
 }
 
-addtask do_makesystem_ubi after do_image before do_image_complete
+python () {
+    if bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
+        bb.build.addtask('do_makesystem_gluebi', 'do_image_complete', 'do_image', d)
+    else:
+        bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_image', d)
+}
 
 do_patch_ubitools() {
     ${UNINATIVE_STAGING_DIR}-uninative/x86_64-linux/usr/bin/patchelf-uninative --set-interpreter /lib64/ld-linux-x86-64.so.2 ${STAGING_DIR}-components/x86_64/mtd-utils-native/usr/sbin/mkfs.ubifs
     ${UNINATIVE_STAGING_DIR}-uninative/x86_64-linux/usr/bin/patchelf-uninative --set-interpreter /lib64/ld-linux-x86-64.so.2 ${STAGING_DIR}-components/x86_64/mtd-utils-native/usr/sbin/ubinize
 }
+
+# Default Image names
+SYSTEMIMAGE_GLUEBI_TARGET ?= "system-gluebi.ext4"
+SYSTEMIMAGE_GLUEBI_MAP_TARGET ?= "system-gluebi.map"
+
+IMAGE_EXT4_SELINUX_OPTIONS ?= "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '-S ${SELINUX_FILE_CONTEXTS}', '', d)}"
+
+################################################
+### Generate system.img #####
+################################################
+do_makesystem_gluebi() {
+    # Build ext4 system image
+    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig-gluebi.conf
+    make_ext4fs -C ${WORKDIR}/rootfs-fsconfig-gluebi.conf \
+            -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_GLUEBI_MAP_TARGET} \
+            -a / -b 4096 \
+            -l ${SYSTEM_SIZE_EXT4} \
+            ${IMAGE_EXT4_SELINUX_OPTIONS} \
+            ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_GLUEBI_TARGET} ${IMAGE_ROOTFS_UBI}
+
+    # Continue building ubifs images and generate ubi
+    mkfs.ubifs -r ${USERIMAGE_ROOTFS} -o ${USERIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
+}
+
+do_verity_ubinize() {
+    # Put the new sysfs.ubi in the verity specific folder after verity images have been generated
+    ubinize -v -o "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity/${SYSTEMIMAGE_GLUEBI_TARGET}/${SYSTEMIMAGE_UBI_TARGET}" ${UBINIZE_ARGS} ${UBINIZE_CFG}
+}
+do_makesystem_gluebi[prefuncs] += "create_rootfs_ubi"
+do_makesystem_gluebi[prefuncs] += "create_symlink_userfs"
+do_makesystem_gluebi[prefuncs] += "create_symlink_systemd_ubi_mount_rootfs"
+do_makesystem_gluebi[prefuncs] += "do_create_ubinize_config"
+do_makesystem_gluebi[prefuncs] += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', 'adjust_system_size_for_verity', '', d), '', d)}"
+do_makesystem_gluebi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
+do_makesystem_gluebi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+
+do_verity_ubinize[depends] += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '${PN}:do_make_verity_enabled_system_image', bb.utils.contains('IMAGE_FEATURES', 'gluebi', '${PN}:do_makesystem_gluebi', '', d), d)}"
+do_verity_ubinize[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+
+python() {
+    if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d) and bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d):
+        bb.build.addtask('do_verity_ubinize', 'do_image_complete', 'do_make_verity_enabled_system_image', d)
+    elif bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d):
+        bb.build.addtask('do_verity_ubinize', 'do_image_complete', 'do_makesystem_gluebi', d)
+}
+

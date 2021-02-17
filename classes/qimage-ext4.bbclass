@@ -100,6 +100,11 @@ python create_rootfs_ext4 () {
 
 do_makesystem[prefuncs] += "create_rootfs_ext4"
 do_makesystem[prefuncs] += "create_symlink_systemd_ext4_mount_rootfs"
+# The system image size update that happens in do_make_verity_enabled_system_image
+#  step is not persistent outside that task scope. Update it again within this
+#  task's scope.
+do_makesystem[prefuncs] += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', 'adjust_system_size_for_verity', '', d), '', d)}"
+
 do_makesystem() {
     # Empty the /persist folder so that it doesn't end up
     # in system image as well
