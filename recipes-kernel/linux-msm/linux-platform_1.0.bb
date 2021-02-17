@@ -2,8 +2,8 @@ inherit autotools pkgconfig
 COMPATIBLE_MACHINE = "genericarmv8"
 
 FILESPATH =+ "${WORKSPACE}:"
-SRC_URI = "file://kernel-5.4/kernel_platform/"
-S = "${WORKDIR}/kernel-5.4/kernel_platform/"
+SRC_URI = "file://kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform/"
+S = "${WORKDIR}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform/"
 PR = "r0"
 
 LICENSE = "GPL-2.0 WITH Linux-syscall-note"
@@ -15,7 +15,7 @@ DEPENDS += "mkdtimg-native"
 #do_clean[cleandirs] += " ${S} ${STAGING_KERNEL_DIR} ${B} ${STAGING_KERNEL_BUILDDIR}"
 
 #do_unpack () {
-#    cp -a ${WORKSPACE}/kernel-5.4/kernel_platform/common/COPYING ${S}
+#    cp -a ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform/common/COPYING ${S}
 #}
 
 SSTATETASKS += "do_copy_kernelsource"
@@ -30,7 +30,7 @@ do_copy_kernelsource[stamp-extra-info] = "${MACHINE_ARCH}"
 
 do_copy_kernelsource () {
     install -d ${STAGING_KERNEL_DIR}
-    cp -a ${WORKSPACE}/kernel-5.4/kernel_platform/common/* ${COPY_KERNEL_SOURCE_DIR}
+    cp -a ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform/common/* ${COPY_KERNEL_SOURCE_DIR}
 }
 
 python do_copy_kernelsource_setscene() {
@@ -46,8 +46,8 @@ do_copy_kernelbuild[stamp-extra-info] = "${MACHINE_ARCH}"
 
 do_copy_kernelbuild () {
     install -d ${STAGING_KERNEL_BUILDDIR}
-    cp -a ${WORKSPACE}/kernel-5.4/out/msm-*-*_*-debug_defconfig/common/* ${COPY_KERNEL_BUILD_DIR}
-    cp -a ${WORKSPACE}/kernel-5.4/out/msm-*-*_*-debug_defconfig/common/.config ${COPY_KERNEL_BUILD_DIR}
+    cp -a ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/out/msm-*-*_*-${KERNEL_VARIANT}defconfig/common/* ${COPY_KERNEL_BUILD_DIR}
+    cp -a ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/out/msm-*-*_*-${KERNEL_VARIANT}defconfig/common/.config ${COPY_KERNEL_BUILD_DIR}
 }
 
 python do_copy_kernelbuild_setscene() {
