@@ -109,6 +109,9 @@ create_symlink_systemd_ubi_mount_rootfs() {
    # Start systemd-udev-trigger.service after sysinit.target
    sed -i '/Before=sysinit.target/a After=sysinit.target init_sys_mss.service' ${IMAGE_ROOTFS}/lib/systemd/system/systemd-udev-trigger.service
    sed -i '/Before=sysinit.target/d' ${IMAGE_ROOTFS}/lib/systemd/system/systemd-udev-trigger.service
+
+   # Copy sdcard mount rules
+   cp ${IMAGE_ROOTFS}/etc/udev/rules.d/mountpartitions ${IMAGE_ROOTFS}/etc/udev/rules.d/mountpartitions.rules
 }
 
 # Need to copy ubinize.cfg file in the deploy directory

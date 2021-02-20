@@ -9,6 +9,8 @@ do_install_append () {
     if ${@bb.utils.contains('DISTRO_FEATURES','nand-squashfs','true','false',d)}; then
         add_squashfs_scripts
     fi
+    install -d 0644 ${D}${sysconfdir}/udev/rules.d
+    install -m 0744 ${S}/mountpartitions.rules ${D}${sysconfdir}/udev/rules.d/mountpartitions
 }
 
 add_ubi_scripts () {
