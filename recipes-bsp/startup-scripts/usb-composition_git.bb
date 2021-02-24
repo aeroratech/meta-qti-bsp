@@ -1,4 +1,4 @@
-inherit pkgconfig systemd
+inherit autotools pkgconfig systemd
 
 DESCRIPTION = "Scripts to set USB compositions"
 HOMEPAGE = "http://codeaurora.org"
@@ -10,9 +10,6 @@ FILESEXTRAPATHS_prepend := "${WORKSPACE}/system/core/:"
 SRC_URI   = "file://usb"
 
 S = "${WORKDIR}/usb"
-
-do_configure[noexec]="1"
-do_compile[noexec]="1"
 
 USBCOMPOSITION ?= "901D"
 
