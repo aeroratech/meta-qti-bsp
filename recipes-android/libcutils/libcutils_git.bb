@@ -13,7 +13,8 @@ DEPENDS += "liblog"
 BBCLASSEXTEND = "native"
 
 FILESPATH =+ "${WORKSPACE}/system/core/:"
-SRC_URI   = "file://libcutils"
+SRC_URI   = "file://libcutils \
+             file://include "
 
 S = "${WORKDIR}/libcutils"
 
