@@ -11,7 +11,10 @@ ${LICENSE};md5=89aea4e17d99a7cacdbeed46a0096b10"
 DEPENDS = "libgcc libmincrypt libsparse zlib openssl bouncycastle"
 
 FILESPATH =+ "${WORKSPACE}/system/extras/:"
-SRC_URI = "file://verity"
+SRC_URI = "file://verity \
+           file://ext4_utils \
+           file://../core/include \
+           file://../core/mkbootimg"
 
 S = "${WORKDIR}/verity"
 
