@@ -12,7 +12,8 @@ DEPENDS = "binder liblog libcutils libhardware libselinux glib-2.0"
 DEPENDS += " ${@oe.utils.version_less_or_equal('PREFERRED_VERSION_linux-msm', '4.4', '', 'libsync', d)}"
 
 FILESPATH =+ "${WORKSPACE}/frameworks:"
-SRC_URI   = "file://libui"
+SRC_URI   = "file://libui \
+             file://include"
 
 S = "${WORKDIR}/libui"
 
