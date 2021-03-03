@@ -9,7 +9,8 @@ ${LICENSE};md5=89aea4e17d99a7cacdbeed46a0096b10"
 DEPENDS += "libcutils liblog"
 
 FILESPATH =+ "${WORKSPACE}/system/core/:"
-SRC_URI   = "file://libsysutils"
+SRC_URI   = "file://libsysutils \
+             file://include"
 
 S = "${WORKDIR}/libsysutils"
 
