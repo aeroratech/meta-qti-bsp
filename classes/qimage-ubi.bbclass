@@ -7,7 +7,7 @@ QIMGUBICLASSES  = ""
 
 inherit ${QIMGUBICLASSES}
 
-IMAGE_FEATURES[validitems] += "persist-volume"
+IMAGE_FEATURES[validitems] += "persist-volume nand2x"
 
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
 
@@ -29,32 +29,34 @@ do_image_multiubi[noexec] = "1"
 ### Generate sysfs.ubi #########################
 ################################################
 
-create_symlink_userfs() {
-   #Symlink modules
-   LIB_MODULES="${IMAGE_ROOTFS}/lib/modules"
-   if [ -d ${LIB_MODULES} ]; then
-      cp -rf ${LIB_MODULES} ${IMAGE_ROOTFS}/usr/lib/
-      rm -rf ${LIB_MODULES}
-   fi
-   ln -sf /usr/lib/modules ${IMAGE_ROOTFS}/lib
+ROOTFS_VOLUME_SIZE = "${@bb.utils.contains('IMAGE_FEATURES', 'nand2x', '${SYSTEM_VOLUME_SIZE_G}', '${SYSTEM_VOLUME_SIZE}', d)}"
 
-   # Move rootfs data to userfs directory
-   # Content of userfs is added to data volume
-   DATA_DIR="${IMAGE_ROOTFS}/data"
-   CONFIG_DIR="${DATA_DIR}/configs"
-   LOGS_DIR="${DATA_DIR}/logs"
-   if [ ! -d ${DATA_DIR} ]; then
-       mkdir ${DATA_DIR}
-   fi
-   if [ ! -d ${CONFIG_DIR} ]; then
-       mkdir ${CONFIG_DIR}
-   fi
-   if [ ! -d ${LOGS_DIR} ]; then
-      mkdir ${LOGS_DIR}
-   fi
-   rm -rf ${USERIMAGE_ROOTFS}
-   mkdir -p ${USERIMAGE_ROOTFS}
-   mv ${DATA_DIR}/* ${USERIMAGE_ROOTFS}
+create_symlink_userfs() {
+    #Symlink modules
+    LIB_MODULES="${IMAGE_ROOTFS}/lib/modules"
+    if [ -d ${LIB_MODULES} ]; then
+        cp -rf ${LIB_MODULES} ${IMAGE_ROOTFS}/usr/lib/
+        rm -rf ${LIB_MODULES}
+    fi
+    ln -sf /usr/lib/modules ${IMAGE_ROOTFS}/lib
+
+    # Move rootfs data to userfs directory
+    # Content of userfs is added to data volume
+    DATA_DIR="${IMAGE_ROOTFS}/data"
+    CONFIG_DIR="${DATA_DIR}/configs"
+    LOGS_DIR="${DATA_DIR}/logs"
+    if [ ! -d ${DATA_DIR} ]; then
+        mkdir ${DATA_DIR}
+    fi
+    if [ ! -d ${CONFIG_DIR} ]; then
+        mkdir ${CONFIG_DIR}
+    fi
+    if [ ! -d ${LOGS_DIR} ]; then
+        mkdir ${LOGS_DIR}
+    fi
+    rm -rf ${USERIMAGE_ROOTFS}
+    mkdir -p ${USERIMAGE_ROOTFS}
+    mv ${DATA_DIR}/* ${USERIMAGE_ROOTFS}
 }
 
 create_symlink_systemd_ubi_mount_rootfs() {
@@ -125,7 +127,7 @@ image="${SYSTEMIMAGE_UBIFS_TARGET}"
 vol_id=0
 vol_type=dynamic
 vol_name=rootfs
-vol_size="${SYSTEM_VOLUME_SIZE}"
+vol_size="${ROOTFS_VOLUME_SIZE}"
 [usrfs_volume]
 mode=ubi
 image="${USERIMAGE_UBIFS_TARGET}"
