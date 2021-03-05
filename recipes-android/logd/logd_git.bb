@@ -14,26 +14,24 @@ S = "${WORKDIR}/logd"
 
 DEPENDS += "libbase libutils libcutils libsysutils liblog"
 
-EXTRA_OECONF = " --with-core-includes=${WORKSPACE}/system/core/include"
+EXTRA_OECONF = " ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '--with-systemd', "",d)} "
 
 do_install_append() {
-    install -d ${D}${systemd_unitdir}/system/
-    install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
-    install -d ${D}${systemd_unitdir}/system/ffbm.target.wants/
-    install -m 0644 ${S}/logd.path -D ${D}${systemd_unitdir}/system/logd.path
-    install -m 0644 ${S}/earlyinit-logd.service -D ${D}${systemd_unitdir}/system/earlyinit-logd.service
-    install -m 0644 ${S}/logd.service -D ${D}${systemd_unitdir}/system/logd.service
+    if ${@bb.utils.contains('EXTRA_OECONF', '--with-systemd', 'true', 'false', d)}; then
+        install -d ${D}${systemd_unitdir}/system/
+        install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
+        install -d ${D}${systemd_unitdir}/system/ffbm.target.wants/
 
-    ln -sf ${systemd_unitdir}/system/logd.path \
-           ${D}${systemd_unitdir}/system/multi-user.target.wants/logd.path
-    ln -sf ${systemd_unitdir}/system/earlyinit-logd.service \
-           ${D}${systemd_unitdir}/system/multi-user.target.wants/earlyinit-logd.service
+        ln -sf ${systemd_unitdir}/system/logd.path \
+               ${D}${systemd_unitdir}/system/multi-user.target.wants/logd.path
+        ln -sf ${systemd_unitdir}/system/earlyinit-logd.service \
+               ${D}${systemd_unitdir}/system/multi-user.target.wants/earlyinit-logd.service
 
-    ln -sf ${systemd_unitdir}/system/logd.path \
-           ${D}${systemd_unitdir}/system/ffbm.target.wants/logd.path
-    ln -sf ${systemd_unitdir}/system/earlyinit-logd.service \
-           ${D}${systemd_unitdir}/system/ffbm.target.wants/earlyinit-logd.service
+        ln -sf ${systemd_unitdir}/system/logd.path \
+               ${D}${systemd_unitdir}/system/ffbm.target.wants/logd.path
+        ln -sf ${systemd_unitdir}/system/earlyinit-logd.service \
+               ${D}${systemd_unitdir}/system/ffbm.target.wants/earlyinit-logd.service
+    fi
 }
-
 
 FILES_${PN} += "${systemd_unitdir}/system/"
