@@ -75,7 +75,7 @@ create_symlink_systemd_ext4_mount_rootfs() {
             elif [[ "$mountname" == "cache" ]] ; then
                 ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/multi-user.target.wants/${mountname}.mount
             elif [[ "$mountname" == "persist" ]] ; then
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/sysinit.target.wants/${mountname}.mount
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/${mountname}.mount
             else
                 ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/${mountname}.mount
             fi

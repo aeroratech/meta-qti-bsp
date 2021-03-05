@@ -26,7 +26,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
 [Unit]
-After=sysinit.target
+Before=local-fs.target
+DefaultDependencies=no
 
 [Mount]
 What=/dev/disk/by-partlabel/persist
