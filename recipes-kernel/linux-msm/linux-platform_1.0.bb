@@ -75,12 +75,13 @@ do_deploy () {
      # Copy vmlinux and zImage into deploydir for boot.img creation
      install -d ${DEPLOYDIR}/build-artifacts
      install -d ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
+     install -d ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
      install -d ${DEPLOYDIR}/build-artifacts/dtb
 
      cp  ${STAGING_KERNEL_DIR}/usr/gen_initramfs.sh ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
-     cp -a ${STAGING_KERNEL_BUILDDIR}/usr/gen_init_cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/
-     cp -a ${STAGING_KERNEL_BUILDDIR}/usr/initramfs_data.cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/
-     cp -a ${STAGING_KERNEL_BUILDDIR}/usr/initramfs_inc_data ${DEPLOYDIR}/build-artifacts/kernel_scripts/
+     cp -a ${STAGING_KERNEL_BUILDDIR}/usr/gen_init_cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
+     cp -a ${STAGING_KERNEL_BUILDDIR}/usr/initramfs_data.cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
+     cp -a ${STAGING_KERNEL_BUILDDIR}/usr/initramfs_inc_data ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
 
      cp -a ${STAGING_KERNEL_BUILDDIR}/arch/arm64/boot/dts/vendor/qcom/*.dtb ${DEPLOYDIR}/build-artifacts/dtb
      cp -a ${STAGING_KERNEL_BUILDDIR}/vmlinux ${DEPLOYDIR}
