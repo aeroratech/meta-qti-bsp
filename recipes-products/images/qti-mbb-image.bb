@@ -4,6 +4,8 @@
 
 require qti-mbb-minimal-image.bb
 
+IMAGE_FEATURES += "nand2x"
+
 CORE_IMAGE_EXTRA_INSTALL += "\
               ${@bb.utils.contains('MACHINE_FEATURES', 'qti-bluetooth', "packagegroup-qti-bluetooth", "", d)} \
               ${@bb.utils.contains('MACHINE_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
