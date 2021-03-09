@@ -12,18 +12,10 @@ FILESPATH =+ "${WORKSPACE}/system/core/:"
 SRC_URI   = "file://liblog \
              file://include"
 
-SRC_URI  += "file://50-log.rules"
-
 S = "${WORKDIR}/liblog"
 
 BBCLASSEXTEND = "native"
 
-EXTRA_OECONF += " --with-core-includes=${WORKSPACE}/system/core/include"
 EXTRA_OECONF += " --disable-static"
 EXTRA_OECONF_append_class-target = " --with-logd-logging"
-
-do_install_append() {
-    if [ "${CLASSOVERRIDE}" = "class-target" ]; then
-       install -m 0644 -D ../50-log.rules ${D}${sysconfdir}/udev/rules.d/50-log.rules
-    fi
-}
+EXTRA_OECONF += "${@bb.utils.contains('CLASSOVERRIDE', 'class-target', '--with-class-target', '',d)}"
