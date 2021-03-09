@@ -9,7 +9,9 @@ ${LICENSE};md5=89aea4e17d99a7cacdbeed46a0096b10"
 PR = "r1"
 
 FILESPATH =+ "${WORKSPACE}/system/core/:"
-SRC_URI   = "file://liblog"
+SRC_URI   = "file://liblog \
+             file://include"
+
 SRC_URI  += "file://50-log.rules"
 
 S = "${WORKDIR}/liblog"
