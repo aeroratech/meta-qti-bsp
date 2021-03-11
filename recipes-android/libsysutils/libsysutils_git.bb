@@ -13,5 +13,3 @@ SRC_URI   = "file://libsysutils \
              file://include"
 
 S = "${WORKDIR}/libsysutils"
-
-EXTRA_OECONF += "--with-core-includes=${WORKSPACE}/system/core/include"
