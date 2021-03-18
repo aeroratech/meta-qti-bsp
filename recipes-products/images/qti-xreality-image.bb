@@ -53,3 +53,5 @@ CORE_IMAGE_EXTRA_INSTALL += " \
             wayland \
             gbm \
             "
+# To include protoc compiler in SDK
+TOOLCHAIN_HOST_TASK_append = " nativesdk-protobuf-compiler "
