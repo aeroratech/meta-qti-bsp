@@ -13,7 +13,8 @@ DEPENDS += "libcutils libselinux"
 BBCLASSEXTEND = "native"
 
 FILESPATH =+ "${WORKSPACE}/system/core/:"
-SRC_URI   = "file://base"
+SRC_URI   = "file://base \
+             file://include"
 
 S = "${WORKDIR}/base"
 
