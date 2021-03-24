@@ -4,7 +4,7 @@ RM_WORK_EXCLUDE_ITEMS += "rootfs rootfs-dbg"
 
 RECOVERY_IMAGE_ROOTFS = "$(echo ${IMAGE_ROOTFS} | sed 's#${PN}#qti-recovery-image#')"
 
-IMAGE_SYSTEM_MOUNT_POINT = "/"
+IMAGE_SYSTEM_MOUNT_POINT = "/system"
 OTA_TARGET_IMAGE_ROOTFS_UBI = "${WORKDIR}/ota-target-image-ubi"
 OTA_TARGET_FILES_UBI = "target-files-ubi.zip"
 OTA_TARGET_FILES_UBI_PATH = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_UBI}"
@@ -49,6 +49,7 @@ do_recovery_ubi() {
     cp ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${BOOTIMAGE_TARGET} ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOTABLE_IMAGES/recovery.img
 
     # copy the contents of system rootfs
+    mkdir ${RECOVERY_IMAGE_ROOTFS}/system
     cp -r ${IMAGE_ROOTFS}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM/.
     cd  ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM
     rm -rf var/run
@@ -63,7 +64,6 @@ do_recovery_ubi() {
     echo /cache    ubifs  cache >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/recovery.fstab
     echo /data     ubifs  userdata >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/recovery.fstab
     echo /recovery mtd     recovery >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/recovery.fstab
-    echo ${IMAGE_SYSTEM_MOUNT_POINT}   mtd  rootfs >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/recovery.fstab
 
     #Copy contents of userdata rootfs
     cp -r ${IMAGE_ROOTFS}/data/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/DATA/.
