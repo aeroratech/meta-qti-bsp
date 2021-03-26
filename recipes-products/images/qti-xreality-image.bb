@@ -55,3 +55,6 @@ CORE_IMAGE_EXTRA_INSTALL += " \
             "
 # To include protoc compiler in SDK
 TOOLCHAIN_HOST_TASK_append = " nativesdk-protobuf-compiler "
+
+# To include kernel headers in SDK
+TOOLCHAIN_TARGET_TASK_append = " linux-msm-headers-dev"
