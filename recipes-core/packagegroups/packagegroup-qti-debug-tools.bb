@@ -15,4 +15,5 @@ RDEPENDS_packagegroup-qti-debug-tools = " \
             strace \
             valgrind \
             systemd-analyze \
+            procrank \
         "
