@@ -13,6 +13,7 @@ S = "${WORKDIR}/usb"
 
 USBCOMPOSITION ?= "901D"
 
+DEPENDS += "libcutils libutils"
 do_install_append() {
    install -d ${D}${sysconfdir}/usb/
    install -b -m 0644 /dev/null ${D}${sysconfdir}/usb/boot_hsic_comp
@@ -36,10 +37,13 @@ do_install_append() {
    install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
    install -d ${D}${systemd_unitdir}/system/ffbm.target.wants/
    install -m 0644 ${S}/usb.service -D ${D}${systemd_unitdir}/system/usb.service
+   install -m 0644 ${S}/usbd.service -D ${D}${systemd_unitdir}/system/usbd.service
    ln -sf ${systemd_unitdir}/system/usb.service \
         ${D}${systemd_unitdir}/system/multi-user.target.wants/usb.service
    ln -sf ${systemd_unitdir}/system/usb.service \
         ${D}${systemd_unitdir}/system/ffbm.target.wants/usb.service
+   ln -sf ${systemd_unitdir}/system/usbd.service \
+        ${D}${systemd_unitdir}/system/multi-user.target.wants/usbd.service
 
    # For SDX targets, start USB early in boot chain and hence needs early mount-copybinds.
    if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', 'true', 'false', d)}; then
