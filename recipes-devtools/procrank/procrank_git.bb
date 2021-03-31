@@ -14,12 +14,3 @@ FILESPATH =+ "${WORKSPACE}/system/extras/:"
 SRC_URI = "file://procrank"
 
 S = "${WORKDIR}/procrank"
-
-CFLAGS = "-I${STAGING_INCDIR}/pagemap"
-CFLAGS += "-I${STAGING_INCDIR}/cutils"
-
-CFLAGS += "-include signal.h"
-CFLAGS += "-include stdio.h"
-CFLAGS += "-include memory.h"
-CFLAGS += "-include unistd.h"
-CFLAGS += "-D_GNU_SOURCE"
