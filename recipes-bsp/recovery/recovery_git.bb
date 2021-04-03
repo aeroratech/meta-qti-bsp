@@ -21,10 +21,9 @@ EXTRA_OECONF += "${@bb.utils.contains('DISTRO_FEATURES', 'ota-package-verificati
 
 CFLAGS += "-lsparse -llog"
 
-
 PARALLEL_MAKE = ""
 
-FILES_${PN}  = "${bindir} ${libdir} ${includedir} /res /cache /data"
+FILES_${PN}  = "${bindir} ${libdir} ${includedir} ${systemd_unitdir} /res /cache /data"
 
 RM_WORK_EXCLUDE += "${PN}"
 
@@ -33,5 +32,4 @@ do_install_append() {
     install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
     install -m 0644 ${WORKDIR}/recovery.service -D ${D}${systemd_unitdir}/system/recovery.service
     ln -sf ${systemd_unitdir}/system/recovery.service ${D}${systemd_unitdir}/system/multi-user.target.wants/recovery.service
-
 }
