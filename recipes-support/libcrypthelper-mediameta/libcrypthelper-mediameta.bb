@@ -8,17 +8,11 @@ LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/\
 ${LICENSE};md5=3775480a712fc46a69647678acb234cb"
 
+FILESEXTRAPATHS_prepend := "${WORKSPACE}/system/extras/libcrypthelper-mediameta/:"
 SRC_URI   = "file://crypthelper-mediameta"
-SRC_URI  += "file://sdmsteppe/media-encryption.conf"
+SRC_URI  += "file://sdmsteppe/"
 
 S = "${WORKDIR}/crypthelper-mediameta"
-
-CFLAGS += "-I${S}/libs"
-
-do_install_append() {
-    install -m 0644 ${WORKDIR}/sdmsteppe/media-encryption.conf -D ${D}/${sysconfdir}/conf/media-encryption.conf
-}
-
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
