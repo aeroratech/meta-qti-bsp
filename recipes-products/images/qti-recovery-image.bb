@@ -82,7 +82,7 @@ create_ubinize_config() {
     fi
 }
 
-do_create_recoveryfs_ubi() {
+fakeroot do_create_recoveryfs_ubi() {
     mkfs.ubifs -r ${IMAGE_ROOTFS} ${RECOVERY_UBI_SELINUX_OPTIONS} -o ${RECOVOERY_UBIFS_IMAGE} ${RECOVERY_MKUBIFS_ARGS}
     ubinize -o ${RECOVOERY_UBI_IMAGE} ${UBINIZE_ARGS} ${RECOVERY_UBINIZE_CFG}
     chmod 644 ${RECOVOERY_UBI_IMAGE}
