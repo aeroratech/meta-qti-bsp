@@ -5,9 +5,9 @@ Subject: [PATCH 1/1] Add automake support
 
 Change-Id: Iace9ae11173f644a0732f4a09ce70b14aacd5d08
 ---
- Makefile.am  |  4 ++++
+ Makefile.am  |  6 ++++
  configure.ac | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 37 insertions(+)
+ 2 files changed, 39 insertions(+)
  create mode 100644 Makefile.am
  create mode 100644 configure.ac
 
@@ -16,11 +16,13 @@ new file mode 100644
 index 0000000..e7ccd9d
 --- /dev/null
 +++ b/Makefile.am
-@@ -0,0 +1,4 @@
-+lib_LTLIBRARIES = libsafe_iop.la
+@@ -0,0 +1,6 @@
++ACLOCAL_AMFLAGS = -I m4
++
++lib_LTLIBRARIES        = libsafe_iop.la
 +libsafe_iop_la_SOURCES = src/safe_iop.c
-+libsafe_iop_la_CFLAGS = -Iinclude
-+include_HEADERS = include/safe_iop.h
++libsafe_iop_la_CFLAGS  = -Iinclude
++include_HEADERS        = include/safe_iop.h
 diff --git a/configure.ac b/configure.ac
 new file mode 100644
 index 0000000..0796f4f
@@ -28,12 +30,12 @@ index 0000000..0796f4f
 +++ b/configure.ac
 @@ -0,0 +1,33 @@
 +AC_PREREQ([2.65])
-+AC_INIT("safe_iop", "0.0.1", "")
-+AM_INIT_AUTOMAKE([1.10 no-define foreign])
++AC_INIT([safe_iop],0.0.1)
++AM_INIT_AUTOMAKE([1.10 no-define foreign subdir-objects])
 +AC_CONFIG_SRCDIR([src/safe_iop.c])
 +AC_CONFIG_HEADERS([config.h])
 +AC_CONFIG_FILES([Makefile])
-+
++AC_CONFIG_MACRO_DIRS([m4])
 +
 +AC_PROG_CXX
 +AC_PROG_CC
@@ -62,4 +64,3 @@ index 0000000..0796f4f
 +AC_OUTPUT
 -- 
 1.8.2.1
-
