@@ -2,6 +2,7 @@ require recipes-kernel/linux-msm/linux-msm.inc
 COMPATIBLE_MACHINE = "genericarmv8|sdxlemur|scuba|qrbx210-rbx|sa2150p|sa2150p-nand|sa410m"
 
 SRC_URI_append_sdxlemur += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-audio', 'file://0001-ALSA-uapi-add-check-to-avoid-duplicate-include-of-ti.patch', '', d)}"
+SRC_URI_append_sdxlemur += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'file://gluebi.cfg', '', d)}"
 
 S         =  "${WORKDIR}/kernel/msm-5.4"
 PR        =  "r0"
