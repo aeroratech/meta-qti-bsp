@@ -7,6 +7,7 @@ S = "${WORKDIR}"
 
 IMAGETYPE ??= ""
 OVERLAY_MNT_POINTS ??= "etc data cache"
+OVERLAY_MNT_POINTS_qrb5165 = "etc data cache usr-share"
 
 do_install_append () {
     install -d 0644 ${D}${sysconfdir}/initscripts
