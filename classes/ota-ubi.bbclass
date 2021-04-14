@@ -2,7 +2,7 @@ DEPENDS += "releasetools-native zip-native fsconfig-native applypatch-native bc-
 
 RM_WORK_EXCLUDE_ITEMS += "rootfs rootfs-dbg"
 
-RECOVERY_IMAGE_ROOTFS = "$(echo ${IMAGE_ROOTFS} | sed 's#${PN}#qti-recovery-image#')"
+RECOVERY_IMAGE_ROOTFS = "$(echo ${IMAGE_ROOTFS} | sed 's#/${PN}/#/qti-recovery-image/#')"
 
 IMAGE_SYSTEM_MOUNT_POINT = "/system"
 OTA_TARGET_IMAGE_ROOTFS_UBI = "${WORKDIR}/ota-target-image-ubi"
