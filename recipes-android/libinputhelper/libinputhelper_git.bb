@@ -14,5 +14,3 @@ SRC_URI = "file://input_helper"
 S = "${WORKDIR}/input_helper"
 
 DEPENDS = "libinput libevdev"
-
-CFLAGS += "-I${STAGING_INCDIR}/libevdev-1.0"
