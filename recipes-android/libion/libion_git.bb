@@ -12,16 +12,13 @@ FILESPATH =+ "${WORKSPACE}/system/core/:"
 SRC_URI   = "file://libion"
 
 S = "${WORKDIR}/libion"
-DEPENDS += "virtual/kernel liblog"
-
-# To get kernel headers for compilation
-do_configure[depends] += "virtual/kernel:do_shared_workdir"
+DEPENDS += "liblog linux-msm-headers"
 
 LEGACYION = "${@d.getVar('LEGACY_ION_USAGE') or "False"}"
 
 EXTRA_OECONF_append = " \
     --disable-static \
-    --with-sanitized-headers=${STAGING_KERNEL_BUILDDIR}/usr/include \
+    --with-sanitized-headers=${STAGING_INCDIR}/linux-msm/usr/include \
     ${@oe.utils.conditional('LEGACYION', 'True', ' --enable-legacyion', '', d)} \
 "
 
