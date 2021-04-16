@@ -90,6 +90,8 @@ create_symlink_systemd_ubi_mount_rootfs() {
     rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/dsp.mount
     rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/bt_firmware.mount
     rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/sysinit.target.wants/ab-updater.service
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/sysinit.target.wants/rmt_storage.service
+    rm -rf ${IMAGE_ROOTFS}/etc/udev/rules.d/rmtstorage.rules
     rm -rf ${IMAGE_ROOTFS}/etc/systemd/system/local-fs-pre.target.wants/set-slotsuffix.service
     # Recheck when overlay support added for ubi
     rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.wants/overlay-restore.service
