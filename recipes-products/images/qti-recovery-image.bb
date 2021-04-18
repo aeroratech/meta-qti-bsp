@@ -92,6 +92,12 @@ do_fsconfig() {
     chmod go-r ${IMAGE_ROOTFS}/etc/passwd
 }
 
+create_system_dir() {
+    if [ ! -e ${IMAGE_ROOTFS}/system ]; then
+        mkdir -p ${IMAGE_ROOTFS}/system
+    fi
+}
+
 # Below is to generate sparse ext4 recovery image (OE by default supports raw ext4 images)
 do_create_recoveryfs_ext4() {
     if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'false', 'true', d)}; then
@@ -103,6 +109,7 @@ do_create_recoveryfs_ext4() {
 
 do_create_recoveryfs_ubi[prefuncs] += "update_usb_composition"
 do_create_recoveryfs_ubi[prefuncs] += "generate_public_key"
+do_create_recoveryfs_ubi[prefuncs] += "create_system_dir"
 do_create_recoveryfs_ubi[prefuncs] += "create_ubinize_config"
 do_create_recoveryfs_ubi[dirs] = "${IMGDEPLOYDIR}"
 

@@ -49,7 +49,6 @@ do_recovery_ubi() {
     cp ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${BOOTIMAGE_TARGET} ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOTABLE_IMAGES/recovery.img
 
     # copy the contents of system rootfs
-    mkdir ${RECOVERY_IMAGE_ROOTFS}/system
     cp -r ${IMAGE_ROOTFS}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM/.
     cd  ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM
     rm -rf var/run
