@@ -1,5 +1,5 @@
 require recipes-kernel/linux-msm/linux-msm.inc
-COMPATIBLE_MACHINE = "genericarmv8|sdxlemur|scuba|qrbx210-rbx"
+COMPATIBLE_MACHINE = "genericarmv8|sdxlemur|scuba|qrbx210-rbx|sa2150p|sa2150p-nand"
 
 SRC_DIR   =  "${WORKSPACE}/kernel/msm-5.4"
 S         =  "${WORKDIR}/kernel/msm-5.4"

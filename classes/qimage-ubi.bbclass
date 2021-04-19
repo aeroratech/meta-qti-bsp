@@ -28,7 +28,7 @@ do_image_multiubi[noexec] = "1"
 ################################################
 ### Generate sysfs.ubi #########################
 ################################################
-
+SYSTEM_VOLUME_SIZE_G ??= "200MiB"
 ROOTFS_VOLUME_SIZE = "${@bb.utils.contains('IMAGE_FEATURES', 'nand2x', '${SYSTEM_VOLUME_SIZE_G}', '${SYSTEM_VOLUME_SIZE}', d)}"
 IMAGE_ROOTFS_UBI = "${WORKDIR}/rootfs-ubi"
 
