@@ -16,7 +16,7 @@ def get_filesmap(d):
 
     for o in overrides:
         opath = "poky/meta-qti-bsp/recipes-bsp/base-files-recovery/" + o + "/radio/filesmap"
-        path = os.path.join(d.getVar('THISDIR'), '../../../', opath)
+        path = os.path.join(d.getVar('WORKSPACEROOT'), opath)
         if os.path.exists(path):
             filesmap_path = path
             break
