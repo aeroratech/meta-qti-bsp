@@ -19,7 +19,6 @@ SRC_URI   = "file://libcutils \
 S = "${WORKDIR}/libcutils"
 
 EXTRA_OECONF += "\
-            --with-core-includes=${WORKSPACE}/system/core/include \
             --with-host-os=${HOST_OS} \
             --disable-static \
             ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', '', '--enable-leproperties', d)} \
