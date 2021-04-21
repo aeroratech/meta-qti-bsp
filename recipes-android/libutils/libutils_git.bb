@@ -15,8 +15,3 @@ SRC_URI   =  "file://libutils \
 S = "${WORKDIR}/libutils"
 
 DEPENDS += "safe-iop"
-
-EXTRA_OECONF += "\
-            --with-system-core-includes=${WORKSPACE}/system/core/include \
-            --with-liblog-includes=${WORKSPACE}/system/core/liblog \
-"
