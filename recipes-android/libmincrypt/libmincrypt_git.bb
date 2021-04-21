@@ -11,5 +11,3 @@ SRC_URI   = "file://libmincrypt \
              file://include"
 
 S = "${WORKDIR}/libmincrypt"
-
-EXTRA_OECONF = " --with-core-includes=${WORKSPACE}/system/core/include"
