@@ -97,8 +97,10 @@ do_compile_append() {
 # since it checks if the .pem file exists which is not the case, so we need to explicitely copy
 # the x509 (public key) file
 do_shared_workdir_append () {
+    if [ -e certs/signing_key.x509 ]; then
         mkdir -p $kerneldir/certs
         cp certs/signing_key.x509 $kerneldir/certs/
+    fi
 }
 # Path for dtbo generation is kernel version dependent.
 DTBO_SRC_PATH ?= "${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/qcom/"
