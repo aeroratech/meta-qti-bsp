@@ -1,4 +1,4 @@
-inherit autotools pkgconfig native
+inherit autotools pkgconfig native deploy
 
 PR = "r4"
 
@@ -18,3 +18,9 @@ EXTRA_OECONF = "--with-sanitized-headers=${STAGING_KERNEL_BUILDDIR}/usr/include 
                 --with-core-headers=${STAGING_INCDIR_NATIVE}"
 
 BBCLASSEXTEND = "native"
+
+do_deploy[cleandirs] = "${DEPLOYDIR}/ota-scripts"
+do_deploy() {
+    install -m 755 ${D}${bindir}/bsdiff ${DEPLOYDIR}/ota-scripts
+}
+addtask deploy after do_install
