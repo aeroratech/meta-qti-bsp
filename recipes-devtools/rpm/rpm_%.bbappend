@@ -3,11 +3,6 @@ RDEPENDS_${PN}_remove = "bash"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRC_URI += " \
-	file://0001-rpm-shell-changes-to-sh.patch \
-	file://0001-rpmdb_loader-script-changes-to-sh.patch \
-"
-
 #Below CAF is mirror from "github.com/rpm-software-management/rpm"
 SRC_URI  = "git://source.codeaurora.org/quic/le/rpm.git;protocol=https;branch=rpm/rpm-4.14.x"
 
@@ -32,3 +27,8 @@ SRC_URI += " \
             file://0001-Rip-out-partial-support-for-unused-MD2-and-RIPEMD160.patch \
             file://0001-rpmplugins.c-call-dlerror-prior-to-dlsym.patch \
             "
+
+SRC_URI += " \
+        file://0001-rpm-shell-changes-to-sh.patch \
+        file://0001-rpmdb_loader-script-changes-to-sh.patch \
+"
