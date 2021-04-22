@@ -11,10 +11,6 @@ PR = "r1"
 DEPENDS = "libselinux-native libsparse-native libcutils-native libpcre-native"
 
 FILESPATH =+ "${WORKSPACE}/system/extras/:"
-SRC_URI = "file://ext4_utils"
+SRC_URI   = "file://ext4_utils"
 
 S = "${WORKDIR}/ext4_utils"
-
-EXTRA_OECONF = "--with-core-includes=${WORKSPACE}/system/core/include"
-
-CPPFLAGS += "-I${STAGING_INCDIR}/libselinux"
