@@ -254,6 +254,16 @@ python do_make_bootimg () {
 }
 do_make_bootimg[dirs]      = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 # Make sure native tools and vmlinux ready to create boot.img
-do_make_bootimg[depends] += "virtual/kernel:do_deploy"
+do_make_bootimg[depends] += "virtual/kernel:do_deploy mkbootimg-native:do_populate_sysroot"
+SSTATETASKS += "do_make_bootimg"
+SSTATE_SKIP_CREATION_task-make-bootimg = '1'
+do_make_bootimg[sstate-inputdirs] = "${IMGDEPLOYDIR}"
+do_make_bootimg[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
+do_make_bootimg[stamp-extra-info] = "${MACHINE_ARCH}"
 
-addtask do_make_bootimg before do_image_complete after do_rootfs
+python do_make_bootimg_setscene () {
+    sstate_setscene(d)
+}
+addtask do_make_bootimg_setscene
+
+addtask do_make_bootimg before do_image_complete
