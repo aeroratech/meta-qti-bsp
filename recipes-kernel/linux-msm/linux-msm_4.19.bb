@@ -2,7 +2,6 @@ require recipes-kernel/linux-msm/linux-msm.inc
 
 COMPATIBLE_MACHINE = "qrb5165|sxr2130"
 
-SRC_DIR   =  "${WORKSPACE}/kernel/msm-4.19"
 S         =  "${WORKDIR}/kernel/msm-4.19"
 
 # Kona specific
@@ -12,6 +11,7 @@ SRC_URI_append_kona += " file://android_binderfs.cfg"
 # Robotics specific
 SRC_URI_append_qrb5165 += " file://fbcon.cfg"
 SRC_URI_append_qrb5165 += " file://qca6390.cfg"
+SRC_URI_append_qrb5165 += "${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'file://virtualization_robomaker.cfg', '', d)}"
 
 #XR specific
 SRC_URI_append_sxr2130 += " file://qca6490.cfg"

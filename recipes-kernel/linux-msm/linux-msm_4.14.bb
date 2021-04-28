@@ -12,6 +12,7 @@ DBGCFG_qti-distro-debug = "file://debug.cfg"
 SRC_URI_append_qcs610 = " \
     file://disableipa3.cfg \
     file://sdmsteppe_iot_configs.cfg \
+    ${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'file://audio_targets.cfg', '', d)} \
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-bluetooth', 'file://bluetooth.cfg', '', d)} \
     ${@bb.utils.contains_any('COMBINED_FEATURES', 'qti-video qti-camera', 'file://multimedia.cfg', '', d)} \
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-video', 'file://video.cfg', '', d)} \
@@ -28,7 +29,6 @@ SRC_URI_append_qcs40x = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '', 'file://disableselinux.cfg', d)} \
 "
 
-SRC_DIR   =  "${WORKSPACE}/kernel/msm-4.14"
 S         =  "${WORKDIR}/kernel/msm-4.14"
 
 DEPENDS += "dtc-native"

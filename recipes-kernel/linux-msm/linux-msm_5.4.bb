@@ -1,7 +1,8 @@
 require recipes-kernel/linux-msm/linux-msm.inc
 COMPATIBLE_MACHINE = "genericarmv8|sdxlemur|scuba|qrbx210-rbx|sa2150p|sa2150p-nand"
 
-SRC_DIR   =  "${WORKSPACE}/kernel/msm-5.4"
+SRC_URI_append_sdxlemur += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-audio', 'file://0001-ALSA-uapi-add-check-to-avoid-duplicate-include-of-ti.patch', '', d)}"
+
 S         =  "${WORKDIR}/kernel/msm-5.4"
 PR        =  "r0"
 
@@ -18,15 +19,15 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 #dts path is changed to vendor/qcom
 DTBO_SRC_PATH = "${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/vendor/qcom/"
 
-DYNAMIC_DEFCONFIG_SUPPORT = "sdxlemur scuba-32 qrbx210-rbx"
+# Auto generate kernel config by appending .cfg(s) from kernel tree.
+DYNAMIC_DEFCONFIG = "${@d.getVar('KERNEL_DYNAMIC_DEFCONFIG') or "False"}"
 
-do_configure_prepend() {
-        if ${@bb.utils.contains('DYNAMIC_DEFCONFIG_SUPPORT', '${MACHINE}', 'true', 'false', d)}; then
-                ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} REAL_CC=${STAGING_BINDIR_NATIVE}/clang \
-                LD=${CCACHE}${HOST_PREFIX}ld KERN_OUT=${STAGING_KERNEL_BUILDDIR} \
-                ${STAGING_KERNEL_DIR}/scripts/gki/generate_defconfig.sh ${KERNEL_CONFIG}
-        fi
+do_generate_defconfig () {
+        ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} REAL_CC=${STAGING_BINDIR_NATIVE}/clang \
+        LD=${CCACHE}${HOST_PREFIX}ld KERN_OUT=${STAGING_KERNEL_BUILDDIR} \
+        ${STAGING_KERNEL_DIR}/scripts/gki/generate_defconfig.sh ${KERNEL_CONFIG}
 }
+do_configure[prefuncs] += "${@oe.utils.conditional('DYNAMIC_DEFCONFIG', 'True', 'do_generate_defconfig', '', d)}"
 
 do_shared_workdir_append () {
         cp Makefile $kerneldir/

@@ -2,7 +2,6 @@ require recipes-kernel/linux-msm/linux-msm.inc
 
 COMPATIBLE_MACHINE = "apq8009"
 
-SRC_DIR   =  "${WORKSPACE}/kernel/msm-4.9"
 S         =  "${WORKDIR}/kernel/msm-4.9"
 PR = "r5"
 

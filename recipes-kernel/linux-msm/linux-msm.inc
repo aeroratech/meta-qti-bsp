@@ -32,10 +32,6 @@ SRC_URI   =  "file://kernel \
               ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'file://verity.cfg', '', d)} \
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'file://audio_common.cfg', '', d)} \
 	      "
-SRC_URI_append_qcs610 += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'file://audio_targets.cfg', '', d)}"
-SRC_URI_append_sdxlemur += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-audio', 'file://0001-ALSA-uapi-add-check-to-avoid-duplicate-include-of-ti.patch', '', d)}"
-SRC_URI_append_qrb5165 += "${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'file://virtualization_robomaker.cfg', '', d)}"
-
 # Don't set any version extention on debug build
 LINUX_VERSION_EXTENSION ?= "-perf"
 LINUX_VERSION_EXTENSION_qti-distro-debug = ""
