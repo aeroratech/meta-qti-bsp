@@ -1,6 +1,6 @@
-From 4f0920debedcbec450a1365e71e8349a54b4e3e2 Mon Sep 17 00:00:00 2001
-From: Lei wang <leiwan@codeaurora.org>
-Date: Tue, 19 Jun 2018 14:10:49 +0800
+From b229c13d55b0a356d2303be3640a116874c2fca3 Mon Sep 17 00:00:00 2001
+From: Raghuvar S <raghuvar@codeaurora.org>
+Date: Sun, 2 May 2021 21:04:14 +0530
 Subject: [PATCH] libufdt: support autoconf compile
 
 add makefile.am support in libufdt, so ycoto
@@ -9,35 +9,35 @@ can compile it automatically
 Change-Id: I9ccb298f69a8d83ff178503c10e10a74ecdb2c3c
 Signed-off-by: Lei wang <leiwan@codeaurora.org>
 ---
- Makefile.am  | 39 +++++++++++++++++++++++++++++++++++++++
- configure.ac | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ Makefile.am  | 38 +++++++++++++++++++++++++++++++++++++++
+ configure.ac | 45 ++++++++++++++++++++++++++++++++++++++++++++
  2 files changed, 83 insertions(+)
  create mode 100644 Makefile.am
  create mode 100644 configure.ac
 
 diff --git a/Makefile.am b/Makefile.am
 new file mode 100644
-index 0000000..6150ee5
+index 0000000..cf76919
 --- /dev/null
 +++ b/Makefile.am
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,38 @@
++ACLOCAL_AMFLAGS = -I m4
++
 +AM_CFLAGS = -Wundef \
 +            -I${top_srcdir}/include \
 +            -I${top_srcdir}/sysdeps/include
 +
-+ACLOCAL_AMFLAGS = -I m4
-+
 +# create libufdt_sysdeps.a and libufdt.a
-+lib_LIBRARIES := \
++lib_LIBRARIES = \
 +    libufdt_sysdeps.a \
 +    libufdt.a
 +
-+libufdt_sysdeps_a_SOURCES := \
++libufdt_sysdeps_a_SOURCES = \
 +    ${top_srcdir}/sysdeps/libufdt_sysdeps_posix.c
 +
 +libufdt_sysdeps_a_LDFLAGS = -Wall -Werror
 +
-+libufdt_a_SOURCES :=  \
++libufdt_a_SOURCES =  \
 +    ufdt_overlay.c \
 +    ufdt_convert.c \
 +    ufdt_node.c \
@@ -48,7 +48,7 @@ index 0000000..6150ee5
 +
 +bin_PROGRAMS = mkdtimg
 +
-+mkdtimg_SOURCES := \
++mkdtimg_SOURCES = \
 +    ${top_srcdir}/utils/src/mkdtimg.c \
 +    ${top_srcdir}/utils/src/mkdtimg_cfg_create.c \
 +    ${top_srcdir}/utils/src/mkdtimg_core.c \
@@ -59,13 +59,12 @@ index 0000000..6150ee5
 +mkdtimg_LDFLAGS = -Wall -Werror -lfdt
 +
 +mkdtimg_LDADD = ${top_builddir}/libufdt_sysdeps.a
-+
 diff --git a/configure.ac b/configure.ac
 new file mode 100644
-index 0000000..5d75bc9
+index 0000000..ab0d64c
 --- /dev/null
 +++ b/configure.ac
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,45 @@
 +#                                               -*- Autoconf -*-
 +# Process this file with autoconf to produce a configure script.
 +
@@ -78,6 +77,7 @@ index 0000000..5d75bc9
 +AC_CONFIG_MACRO_DIR([m4])
 +
 +# Checks for programs.
++AM_PROG_AR
 +AM_PROG_AS
 +AC_PROG_CXX
 +AC_PROG_CC
@@ -110,6 +110,6 @@ index 0000000..5d75bc9
 +
 +AC_OUTPUT
 +
--- 
-1.9.1
+--
+2.7.4
 
