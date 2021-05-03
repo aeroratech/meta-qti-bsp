@@ -137,7 +137,7 @@ do_recovery_ubi() {
     echo blocksize=131072 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
 
     # boot_size: Size of boot partition from partition.xml
-    echo boot_size=0x00C00000 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
+    echo boot_size=0x00CFA000 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
 
     # recovery_size : Size of recovery partition from partition.xml
     echo recovery_size=0x00C00000 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
