@@ -1,5 +1,5 @@
 require recipes-kernel/linux-msm/linux-msm.inc
-COMPATIBLE_MACHINE = "genericarmv8|sdxlemur|scuba"
+COMPATIBLE_MACHINE = "genericarmv8|sdxlemur|scuba|qrbx210-rbx"
 
 SRC_DIR   =  "${WORKSPACE}/kernel/msm-5.4"
 S         =  "${WORKDIR}/kernel/msm-5.4"
@@ -18,12 +18,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 #dts path is changed to vendor/qcom
 DTBO_SRC_PATH = "${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/vendor/qcom/"
 
-DYNAMIC_DEFCONFIG_SUPPORT = "sdxlemur scuba-32"
+DYNAMIC_DEFCONFIG_SUPPORT = "sdxlemur scuba-32 qrbx210-rbx"
 
 do_configure_prepend() {
         if ${@bb.utils.contains('DYNAMIC_DEFCONFIG_SUPPORT', '${MACHINE}', 'true', 'false', d)}; then
                 ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} REAL_CC=${STAGING_BINDIR_NATIVE}/clang \
-                LD=arm-oe-linux-gnueabi-ld KERN_OUT=${STAGING_KERNEL_BUILDDIR} \
+                LD=${CCACHE}${HOST_PREFIX}ld KERN_OUT=${STAGING_KERNEL_BUILDDIR} \
                 ${STAGING_KERNEL_DIR}/scripts/gki/generate_defconfig.sh ${KERNEL_CONFIG}
         fi
 }
