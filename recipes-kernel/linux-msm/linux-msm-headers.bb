@@ -12,6 +12,8 @@ SRC_URI   =  "file://kernel"
 LINUXMSM_VERSION = "${@d.getVar('PREFERRED_VERSION_linux-msm', True)}"
 PV = "${LINUXMSM_VERSION}"
 
+DEPENDS += "rsync-native"
+
 S  =  "${WORKDIR}/kernel/msm-${LINUXMSM_VERSION}"
 
 do_configure[noexec] = "1"
