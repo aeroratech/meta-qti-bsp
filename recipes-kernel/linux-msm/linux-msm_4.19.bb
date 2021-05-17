@@ -22,6 +22,9 @@ EXTRA_OEMAKE += "INSTALL_MOD_STRIP=1"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
+# Path for dtbo generation is kernel version dependent.
+DTBO_SRC_PATH = "${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/vendor/qcom/"
+
 do_shared_workdir_append () {
         cp Makefile $kerneldir/
         cp -fR usr $kerneldir/
