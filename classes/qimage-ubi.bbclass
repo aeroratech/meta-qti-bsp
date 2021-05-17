@@ -35,7 +35,7 @@ create_symlink_userfs() {
     #Symlink modules
     LIB_MODULES="${IMAGE_ROOTFS}/lib/modules"
     if [ -d ${LIB_MODULES} ]; then
-        cp -rf ${LIB_MODULES} ${IMAGE_ROOTFS}/usr/lib/
+        cp -rp ${LIB_MODULES} ${IMAGE_ROOTFS}/usr/lib/
         rm -rf ${LIB_MODULES}
     fi
     ln -sf /usr/lib/modules ${IMAGE_ROOTFS}/lib
