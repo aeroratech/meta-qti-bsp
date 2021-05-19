@@ -1,2 +1,3 @@
 ACTION=="add", KERNEL=="mhi*", OWNER="root", GROUP="radio", MODE="0660"
 ACTION=="add", KERNEL=="android_adb", SUBSYSTEM=="mhi", OWNER="adb", GROUP="adb", MODE="0664"
+ACTION=="add", KERNEL=="mhi_pipe_4", OWNER="system", GROUP="system", MODE="0660"
