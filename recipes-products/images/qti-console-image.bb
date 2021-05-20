@@ -24,7 +24,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               libxml2 \
               packagegroup-android-utils \
               packagegroup-qti-core-prop \
-              packagegroup-qti-data \
+              ${@bb.utils.contains('MACHINE_FEATURES', 'qti-data-modem', "packagegroup-qti-data", "", d)} \
               packagegroup-qti-dsp \
               packagegroup-qti-ss-mgr \
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
