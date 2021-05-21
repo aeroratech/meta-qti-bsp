@@ -10,6 +10,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-startup-scripts \
     e2fsprogs-mke2fs \
     powerapp \
+    procrank \
 "
 CORE_IMAGE_EXTRA_INSTALL += " ${@oe.utils.conditional('ENABLE_DISPLAY', 'True', 'packagegroup-qti-display', '', d)}"
 CORE_IMAGE_EXTRA_INSTALL += " ${@oe.utils.conditional('ENABLE_SECUREMSM', 'True', 'packagegroup-qti-securemsm', '', d)}"
