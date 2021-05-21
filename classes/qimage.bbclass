@@ -177,6 +177,15 @@ do_deploy_fixup () {
     if [ -f ${DEPLOY_DIR_IMAGE}/ipa-fws/ipa_fws.elf ]; then
        install -m 0644 ${DEPLOY_DIR_IMAGE}/ipa-fws/ipa_fws.elf .
     fi
+
+    # Copy recovery images
+    if [ -f ${DEPLOY_DIR_IMAGE}/recoveryfs.img ]; then
+       install -m 0644 ${DEPLOY_DIR_IMAGE}/recoveryfs.img .
+    fi
+    if [ -f ${DEPLOY_DIR_IMAGE}/recoveryfs.ubi ]; then
+       install -m 0644 ${DEPLOY_DIR_IMAGE}/recoveryfs.ubi .
+    fi
+
 }
 addtask do_deploy_fixup after do_rootfs before do_image
 
