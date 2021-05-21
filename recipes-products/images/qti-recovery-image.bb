@@ -2,7 +2,7 @@ inherit core-image
 
 # This class creates recoveryfs
 DEPENDS += "virtual/kernel"
-DEPENDS += "pkgconfig-native gtk-doc-native gettext-native mkbootimg-native"
+DEPENDS += "pkgconfig-native gtk-doc-native gettext-native mkbootimg-native prelink-native"
 DEPENDS += "bzip2 fsconfig-native applypatch-native bsdiff-native ext4-utils-native mtd-utils-native"
 
 # Use busybox as login manager
@@ -15,6 +15,7 @@ IMAGE_INITSCRIPTS ?= ""
 
 IMAGE_LINGUAS = ""
 
+do_rootfs[depends] += "prelink-native:do_populate_sysroot"
 do_rootfs[nostamp] = "1"
 do_build[nostamp]  = "1"
 
