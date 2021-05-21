@@ -232,6 +232,8 @@ python rootfs_ignore_packages() {
 ################################################
 ############# Generate boot.img ################
 ################################################
+BOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-bootimage-complete"
+
 python do_make_bootimg () {
     import subprocess
 
@@ -261,12 +263,12 @@ python do_make_bootimg () {
         bb.error("Running: %s failed." % cmd)
 
 }
-do_make_bootimg[dirs]      = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+do_make_bootimg[dirs]      = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"
 # Make sure native tools and vmlinux ready to create boot.img
 do_make_bootimg[depends] += "virtual/kernel:do_deploy mkbootimg-native:do_populate_sysroot"
 SSTATETASKS += "do_make_bootimg"
 SSTATE_SKIP_CREATION_task-make-bootimg = '1'
-do_make_bootimg[sstate-inputdirs] = "${IMGDEPLOYDIR}"
+do_make_bootimg[sstate-inputdirs] = "${BOOTIMGDEPLOYDIR}"
 do_make_bootimg[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 do_make_bootimg[stamp-extra-info] = "${MACHINE_ARCH}"
 
