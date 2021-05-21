@@ -65,7 +65,7 @@ do_recovery_ubi() {
     echo /recovery mtd     recovery >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/recovery.fstab
 
     #Copy contents of userdata rootfs
-    cp -r ${IMAGE_ROOTFS}/data/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/DATA/.
+    cp -r ${USERIMAGE_ROOTFS}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/DATA/.
 
     #Getting content for OTA folder
     mkdir -p ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin
