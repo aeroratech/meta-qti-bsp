@@ -282,7 +282,7 @@ python do_make_veritybootimg () {
 }
 do_make_veritybootimg[depends]  += "${PN}:do_makesystem"
 do_make_veritybootimg[depends]  += "${PN}:do_makeuserdata"
-do_make_veritybootimg[dirs]      = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+do_make_veritybootimg[dirs]      = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"
 do_make_veritybootimg[depends] += "virtual/kernel:do_deploy"
 
 python () {
