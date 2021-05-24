@@ -7,7 +7,6 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-startup-scripts \
 "
 CORE_IMAGE_EXTRA_INSTALL += "packagegroup-qti-display"
-CORE_IMAGE_EXTRA_INSTALL += "packagegroup-qti-securemsm"
 
 #Exclude packages
 PACKAGE_EXCLUDE += "readline"
