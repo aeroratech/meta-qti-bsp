@@ -7,11 +7,11 @@ S         =  "${WORKDIR}/kernel/msm-4.19"
 
 # Kona specific
 SRC_URI_append_kona  = " file://disableipa3.cfg"
+SRC_URI_append_kona += " file://android_binderfs.cfg"
 
 # Robotics specific
 SRC_URI_append_qrb5165 += " file://fbcon.cfg"
 SRC_URI_append_qrb5165 += " file://qca6390.cfg"
-SRC_URI_append_qrb5165 += " file://android_binderfs.cfg"
 
 #XR specific
 SRC_URI_append_sxr2130 += " file://qca6490.cfg"
