@@ -5,3 +5,4 @@ require conf/machine/include/arm/arch-armv8a.inc
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
 PREFERRED_VERSION_linux-msm ?= "4.19"
+PREFERRED_VERSION_linux-msm-headers ?= "4.19"

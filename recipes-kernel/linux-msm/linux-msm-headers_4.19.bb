@@ -9,12 +9,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI   =  "file://kernel"
 
-LINUXMSM_VERSION = "${@d.getVar('PREFERRED_VERSION_linux-msm', True)}"
-PV = "${LINUXMSM_VERSION}"
-
 DEPENDS += "rsync-native"
 
-S  =  "${WORKDIR}/kernel/msm-${LINUXMSM_VERSION}"
+S  =  "${WORKDIR}/kernel/msm-4.19"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"

@@ -7,7 +7,6 @@ COMPATIBLE_MACHINE = "neo-mtp"
 
 S = "${WORKDIR}/kernel-5.10/kernel_platform/msm-kernel"
 PR = "r0"
-EXTERNALSRC = "True"
 
 DEPENDS += "kernel-toolchain-native dtc-android-build-native rsync-native"
 
@@ -16,6 +15,8 @@ TARGET_CXXFLAGS += "-Wno-format"
 KERNEL_CC = "${STAGING_BINDIR_NATIVE}/clang/bin/clang -target ${TARGET_ARCH}${TARGET_VENDOR}-${TARGET_OS}"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
+
+KERNEL_USE_PREBUILTS = "${@d.getVar('MACHINE_KERNEL_USE_PREBUILTS') or "False"}"
 
 #dts path is changed to vendor/qcom
 DTBO_SRC_PATH = "${STAGING_KERNEL_BUILDDIR}/arch/${ARCH}/boot/dts/vendor/qcom/"
@@ -43,8 +44,8 @@ DTBO_MACHINE = "${@d.getVar('MACHINE_SUPPORTS_DTBO') or "False"}"
 FILESPATH =+ "${WORKSPACE}:"
 
 SRC_URI   =  "file://kernel-5.10/kernel_platform/msm-kernel \
-              file://kernel-5.10/kernel_platform/msm-kernel/arch/${ARCH}/configs/vendor/neo.config \
-              file://kernel-5.10/kernel_platform/msm-kernel/arch/${ARCH}/configs/vendor/waipio_tuivm_debug.config \
+              ${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', '', 'file://kernel-5.10/kernel_platform/msm-kernel/arch/${ARCH}/configs/vendor/neo.config',d)} \
+              ${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', '', 'file://kernel-5.10/kernel_platform/msm-kernel/arch/${ARCH}/configs/vendor/waipio_tuivm_debug.config',d)} \
              "
 # Don't set any version extention on debug build
 LINUX_VERSION_EXTENSION ?= "-perf"
@@ -84,6 +85,17 @@ do_configure_prepend() {
     fi
 }
 
+python () {
+    if d.getVar('KERNEL_USE_PREBUILTS') == 'True':
+        d.setVarFlag("do_configure", 'noexec', "1")
+        d.setVarFlag("do_compile", 'noexec', "1")
+}
+
+configure_populate_artifacts() {
+    cp -a ${WORKSPACE}/kernel-5.10/out/neo/msm-kernel/.config ${B}
+}
+do_prepare_recipe_sysroot[postfuncs] += "${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', ' configure_populate_artifacts ', '',d)}"
+
 # append DTB
 # msm kernel trees have a special treatment for DTS, and both arm and
 # arm64 DTS are located in arch/arm64/boot/dts/qcom folder, which
@@ -92,6 +104,11 @@ do_configure_prepend() {
 # then we can append the DTBs that we need for $MACHINE.
 KERNEL_EXTRA_ARGS += "dtbs"
 KERNEL_EXTRA_ARGS += "DTC_EXT=${STAGING_DIR_NATIVE}/usr/bin/dtc/bin/dtc"
+
+compile_populate_artifacts() {
+    cp -a ${WORKSPACE}/kernel-5.10/out/neo/msm-kernel/* ${B}
+}
+do_prepare_recipe_sysroot[postfuncs] += "${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', ' compile_populate_artifacts ', '',d)}"
 
 do_compile_append() {
     for dtbf in ${KERNEL_DTB_NAMES}; do
@@ -124,8 +141,10 @@ do_shared_workdir_append () {
                 cp -fR arch/${ARCH}/boot/* $kerneldir/arch/${ARCH}/boot/
         fi
 
-        # Generate kernel headers
-        oe_runmake_call -C ${STAGING_KERNEL_DIR} ARCH=${ARCH} CC="${KERNEL_CC}" LD="${KERNEL_LD}" headers_install O=${STAGING_KERNEL_BUILDDIR}
+        if [  "${KERNEL_USE_PREBUILTS}" == "True" ]; then
+            # Generate kernel headers
+            oe_runmake_call -C ${STAGING_KERNEL_DIR} ARCH=${ARCH} CC="${KERNEL_CC}" LD="${KERNEL_LD}" headers_install O=${STAGING_KERNEL_BUILDDIR}
+        fi
 }
 
 # Path for dtbo generation is kernel version dependent.
