@@ -30,10 +30,9 @@ do_image_multiubi[noexec] = "1"
 ################################################
 
 ROOTFS_VOLUME_SIZE = "${@bb.utils.contains('IMAGE_FEATURES', 'nand2x', '${SYSTEM_VOLUME_SIZE_G}', '${SYSTEM_VOLUME_SIZE}', d)}"
-PSEUDO_IGNORE_PATHS .= ",${IMAGE_ROOTFS}/lib/modules"
 
 create_symlink_userfs[cleandirs] = "${USERIMAGE_ROOTFS}"
-create_symlink_userfs() {
+fakeroot create_symlink_userfs() {
     #Symlink modules
     LIB_MODULES="${IMAGE_ROOTFS}/lib/modules"
     if [ -d ${LIB_MODULES} ]; then
@@ -49,7 +48,7 @@ create_symlink_userfs() {
     mv ${IMAGE_ROOTFS}/data/* ${USERIMAGE_ROOTFS}
 }
 
-create_symlink_systemd_ubi_mount_rootfs() {
+fakeroot create_symlink_systemd_ubi_mount_rootfs() {
     # Symlink ubi mount files to systemd targets
     for entry in ${MACHINE_MNT_POINTS}; do
         mountname="${entry:1}"
