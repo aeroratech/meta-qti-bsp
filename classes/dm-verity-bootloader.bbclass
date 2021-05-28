@@ -253,6 +253,8 @@ def get_verity_cmdline(d):
 # But many a times when only kernel need to be built waiting for full image is
 # time consuming. To over come this make_veritybootimg task is added to build boot
 # img with verity. Normal do_make_bootimg continue to build boot.img without verity.
+VBOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-veritybootimg-complete"
+
 python do_make_veritybootimg () {
     import subprocess
 
@@ -280,14 +282,20 @@ python do_make_veritybootimg () {
     if ret != 0:
         bb.error("Running: %s failed." % cmd)
 }
+do_make_veritybootimg[dirs]      = "${VBOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"
+# Make sure native tools and vmlinux ready to create boot.img
+do_make_veritybootimg[depends] += "virtual/kernel:do_deploy mkbootimg-native:do_populate_sysroot"
 do_make_veritybootimg[depends]  += "${PN}:do_makesystem"
 do_make_veritybootimg[depends]  += "${PN}:do_makeuserdata"
-do_make_veritybootimg[dirs]      = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"
-do_make_veritybootimg[depends] += "virtual/kernel:do_deploy"
+SSTATETASKS += "do_make_veritybootimg"
+SSTATE_SKIP_CREATION_task-make-veritybootimg = '1'
+do_make_veritybootimg[sstate-inputdirs] = "${VBOOTIMGDEPLOYDIR}"
+do_make_veritybootimg[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
+do_make_veritybootimg[stamp-extra-info] = "${MACHINE_ARCH}"
 
-python () {
-    if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
-        bb.build.addtask('do_make_veritybootimg', 'do_image_complete', 'do_rootfs', d)
+python do_make_veritybootimg_setscene () {
+    sstate_setscene(d)
 }
+addtask do_make_veritybootimg_setscene
 
-do_makesystem[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+addtask do_make_veritybootimg before do_image_complete
