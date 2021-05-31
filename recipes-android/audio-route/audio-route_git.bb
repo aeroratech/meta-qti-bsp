@@ -12,5 +12,3 @@ FILESPATH =+ "${WORKSPACE}/frameworks/:"
 SRC_URI   = "file://audio_route/"
 
 S = "${WORKDIR}/audio_route"
-
-#EXTRA_OECONF += " --with-glib"
