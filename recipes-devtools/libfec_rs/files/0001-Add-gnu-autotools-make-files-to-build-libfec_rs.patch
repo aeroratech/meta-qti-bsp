@@ -14,66 +14,66 @@ Subject: [PATCH] Add gnu autotools make files to build libfec_rs
 
 diff --git a/Makefile.am b/Makefile.am
 new file mode 100644
-index 0000000..755ca74
+index 0000000..52c9a44
 --- /dev/null
 +++ b/Makefile.am
 @@ -0,0 +1,22 @@
-+AM_CFLAGS := -Wall\
-+             -O3\
-+             -I.
-+
 +ACLOCAL_AMFLAGS = -I m4
 +
-+libfec_rs_c_sources := encode_rs_char.c\
-+                       decode_rs_char.c\
++AM_CFLAGS = -Wall \
++             -O3 \
++             -I.
++
++libfec_rs_c_sources  = encode_rs_char.c \
++                       decode_rs_char.c \
 +                       init_rs_char.c
 +
-+libfec_rs_h_sources := fec.h
++libfec_rs_h_sources  = fec.h
 +
 +libfec_rs_la_SOURCES = $(libfec_rs_c_sources)
 +
 +lib_LTLIBRARIES = libfec_rs.la
 +
-+pkgconfigdir = $(libdir)/pkgconfig
++pkgconfigdir   = $(libdir)/pkgconfig
 +pkgconfig_DATA = libfec_rs.pc
-+EXTRA_DIST = $(pkgconfig_DATA)
++EXTRA_DIST     = $(pkgconfig_DATA)
 +
-+fec_rs_includedir= $(includedir)
++fec_rs_includedir      = $(includedir)
 +fec_rs_include_HEADERS = $(libfec_rs_h_sources)
 diff --git a/configure.ac b/configure.ac
 new file mode 100644
-index 0000000..72000c2
+index 0000000..295b394
 --- /dev/null
 +++ b/configure.ac
 @@ -0,0 +1,28 @@
-+  AC_PREREQ(2.61)
++AC_PREREQ(2.61)
 +
-+  AC_INIT([libfec_rs],1.0.0)
++AC_INIT([libfec_rs],1.0.0)
 +
-+  AM_INIT_AUTOMAKE([foreign])
++AM_INIT_AUTOMAKE([foreign])
 +
-+  AM_MAINTAINER_MODE
++AM_MAINTAINER_MODE
 +
-+  AC_CONFIG_HEADER([config.h])
-+  AC_CONFIG_MACRO_DIR([m4])
++AC_CONFIG_HEADER([config.h])
++AC_CONFIG_MACRO_DIR([m4])
 +
-+  # Checks for programs.
-+  AM_PROG_AS
-+  AC_PROG_CC
-+  AM_PROG_CC_C_O
-+  AC_PROG_LIBTOOL
-+  AC_PROG_AWK
-+  AC_PROG_CPP
-+  AC_PROG_CXX
-+  AC_PROG_INSTALL
-+  AC_PROG_LN_S
-+  AC_PROG_MAKE_SET
++# Checks for programs.
++AM_PROG_AR
++AM_PROG_AS
++AC_PROG_CC
++AM_PROG_CC_C_O
++AC_PROG_LIBTOOL
++AC_PROG_AWK
++AC_PROG_CPP
++AC_PROG_CXX
++AC_PROG_INSTALL
++AC_PROG_LN_S
++AC_PROG_MAKE_SET
 +
-+ AC_OUTPUT([ \
-+          Makefile \
-+          libfec_rs.pc
-+  ])
-+
++AC_OUTPUT([ \
++        Makefile \
++        libfec_rs.pc
++])
 diff --git a/libfec_rs.pc.in b/libfec_rs.pc.in
 new file mode 100644
 index 0000000..030ed61
