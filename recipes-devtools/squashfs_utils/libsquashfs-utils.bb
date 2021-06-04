@@ -14,7 +14,4 @@ S = "${WORKDIR}/squashfs_utils"
 
 DEPENDS += "libcutils"
 
-EXTRA_OECONF += "--with-squashfstools-includes=${WORKDIR}/squashfs-tools"
-EXTRA_OECONF_class-native += "--with-squashfstools-includes=${WORKDIR}/squashfs-tools"
-
 BBCLASSEXTEND += "native"
