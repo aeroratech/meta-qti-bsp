@@ -12,8 +12,6 @@ SRC_URI += "file://0001-openssl-1.1.1-compatibility.patch"
 
 S = "${WORKDIR}/libcrypto_utils"
 
-EXTRA_OECONF_class-native = "--with-header-includes=${S}/include"
-
 DEPENDS += "openssl"
 
 BBCLASSEXTEND += "native"
