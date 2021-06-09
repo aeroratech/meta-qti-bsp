@@ -1,4 +1,4 @@
-inherit core-image image-prelink
+inherit core-image
 
 # This class creates recoveryfs
 DEPENDS += "virtual/kernel"
@@ -118,7 +118,7 @@ do_create_recoveryfs_ext4[dirs] = "${IMGDEPLOYDIR}"
 
 python () {
     if bb.utils.contains('IMAGE_FSTYPES', 'ubi', True, False, d):
-        bb.build.addtask('do_create_recoveryfs_ubi', 'do_image_complete', 'do_rootfs', d)
+        bb.build.addtask('do_create_recoveryfs_ubi', 'do_image_complete', 'do_image', d)
     if bb.utils.contains('IMAGE_FSTYPES', 'ext4', True, False, d):
-        bb.build.addtask('do_create_recoveryfs_ext4', 'do_image_complete', 'do_rootfs', d)
+        bb.build.addtask('do_create_recoveryfs_ext4', 'do_image_complete', 'do_image', d)
 }
