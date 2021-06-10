@@ -1,30 +1,30 @@
 INIT_RAMDISK = "${@d.getVar('MACHINE_SUPPORTS_INIT_RAMDISK') or "False"}"
+RAMDISKDIR = "${WORKDIR}/ramdisk"
 
+do_ramdisk_create[depends] += "virtual/kernel:do_deploy"
+do_ramdisk_create[cleandirs] += "${RAMDISKDIR}"
 fakeroot do_ramdisk_create() {
-        CURRENT_DIR=`pwd`
-        rm -rf ${TMPDIR}/ramdisk
-        mkdir -p ${TMPDIR}/ramdisk
-        mkdir -p ${TMPDIR}/ramdisk/bin
-        mkdir -p ${TMPDIR}/ramdisk/etc
-        mkdir -p ${TMPDIR}/ramdisk/etc/init.d
-        mkdir -p ${TMPDIR}/ramdisk/lib
-        mkdir -p ${TMPDIR}/ramdisk/usr
-        mkdir -p ${TMPDIR}/ramdisk/usr/bin
-        mkdir -p ${TMPDIR}/ramdisk/usr/sbin
-        mkdir -p ${TMPDIR}/ramdisk/dev
-        mknod -m 0600 ${TMPDIR}/ramdisk/dev/console c 5 1
-        mknod -m 0600 ${TMPDIR}/ramdisk/dev/tty c 5 0
-        mknod -m 0600 ${TMPDIR}/ramdisk/dev/tty0 c 4 0
-        mknod -m 0600 ${TMPDIR}/ramdisk/dev/tty1 c 4 1
-        mknod -m 0600 ${TMPDIR}/ramdisk/dev/tty2 c 4 2
-        mknod -m 0600 ${TMPDIR}/ramdisk/dev/tty3 c 4 3
-        mknod -m 0600 ${TMPDIR}/ramdisk/dev/tty4 c 4 4
-        mknod -m 0600 ${TMPDIR}/ramdisk/dev/zero c 1 5
-        mkdir -p ${TMPDIR}/ramdisk/dev/pts
-        mkdir -p ${TMPDIR}/ramdisk/root
-        mkdir -p ${TMPDIR}/ramdisk/proc
-        mkdir -p ${TMPDIR}/ramdisk/sys
-        cd ${TMPDIR}/ramdisk
+        mkdir -p ${RAMDISKDIR}/bin
+        mkdir -p ${RAMDISKDIR}/etc
+        mkdir -p ${RAMDISKDIR}/etc/init.d
+        mkdir -p ${RAMDISKDIR}/lib
+        mkdir -p ${RAMDISKDIR}/usr
+        mkdir -p ${RAMDISKDIR}/usr/bin
+        mkdir -p ${RAMDISKDIR}/usr/sbin
+        mkdir -p ${RAMDISKDIR}/dev
+        mknod -m 0600 ${RAMDISKDIR}/dev/console c 5 1
+        mknod -m 0600 ${RAMDISKDIR}/dev/tty c 5 0
+        mknod -m 0600 ${RAMDISKDIR}/dev/tty0 c 4 0
+        mknod -m 0600 ${RAMDISKDIR}/dev/tty1 c 4 1
+        mknod -m 0600 ${RAMDISKDIR}/dev/tty2 c 4 2
+        mknod -m 0600 ${RAMDISKDIR}/dev/tty3 c 4 3
+        mknod -m 0600 ${RAMDISKDIR}/dev/tty4 c 4 4
+        mknod -m 0600 ${RAMDISKDIR}/dev/zero c 1 5
+        mkdir -p ${RAMDISKDIR}/dev/pts
+        mkdir -p ${RAMDISKDIR}/root
+        mkdir -p ${RAMDISKDIR}/proc
+        mkdir -p ${RAMDISKDIR}/sys
+        cd ${RAMDISKDIR}
         ln -s bin sbin
         cp ${IMAGE_ROOTFS}/bin/busybox bin/
         cp ${IMAGE_ROOTFS}/bin/busybox.suid bin/
@@ -117,12 +117,15 @@ fakeroot do_ramdisk_create() {
 
         #gen_initramfs_list.sh expects to be run from kernel directory
         cd ${DEPLOY_DIR_IMAGE}/build-artifacts/kernel_scripts
-
+        # remove the initrd.gz file if exist
+        rm -rf ${IMGDEPLOYDIR}/${PN}-initrd.gz
         if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-msm', '5.10', 'true', 'false', d)}; then
-            bash ./scripts/gen_initramfs.sh -o ${DEPLOY_DIR_IMAGE}/${PN}-initrd.gz -u 0 -g 0 ${TMPDIR}/ramdisk
+            bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd.gz -u 0 -g 0 ${RAMDISKDIR}
         else
-            bash ./scripts/gen_initramfs_list.sh -o ${DEPLOY_DIR_IMAGE}/${PN}-initrd.gz -u 0 -g 0 ${TMPDIR}/ramdisk
+            bash ./scripts/gen_initramfs_list.sh -o ${IMGDEPLOYDIR}/${PN}-initrd.gz -u 0 -g 0 ${RAMDISKDIR}
         fi
 
         cd ${CURRENT_DIR}
 }
+
+addtask do_ramdisk_create after do_image before do_image_complete
