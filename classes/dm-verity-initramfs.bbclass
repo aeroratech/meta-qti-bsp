@@ -1,4 +1,4 @@
-DEPENDS += "cryptsetup-native openssl-native mod-signing-keys"
+DEPENDS += "cryptsetup-native openssl-native"
 
 CORE_IMAGE_EXTRA_INSTALL += "cryptsetup"
 
@@ -50,7 +50,7 @@ append_verity_metadata_to_system_image () {
 
     # Sign the root hash
     echo -n "${root_hash}" > ${WORKDIR}/roothash.txt
-    openssl smime -sign -nocerts -noattr -binary -in ${WORKDIR}/roothash.txt -inkey ${STAGING_DIR_TARGET}/kernel-certs/verity_key.pem -signer ${STAGING_DIR_TARGET}/kernel-certs/verity_cert.pem -outform der -out ${WORKDIR}/verity_sig.txt
+    openssl smime -sign -nocerts -noattr -binary -in ${WORKDIR}/roothash.txt -inkey ${STAGING_KERNEL_BUILDDIR}/certs/verity_key.pem -signer ${STAGING_KERNEL_BUILDDIR}/certs/verity_cert.pem -outform der -out ${WORKDIR}/verity_sig.txt
 
     # Clean up large files that are no longer needed
     rm ${VERITY_HASH_DEVICE}
