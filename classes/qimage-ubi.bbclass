@@ -30,81 +30,83 @@ do_image_multiubi[noexec] = "1"
 ################################################
 
 ROOTFS_VOLUME_SIZE = "${@bb.utils.contains('IMAGE_FEATURES', 'nand2x', '${SYSTEM_VOLUME_SIZE_G}', '${SYSTEM_VOLUME_SIZE}', d)}"
+IMAGE_ROOTFS_UBI = "${WORKDIR}/rootfs-ubi"
 
 create_symlink_userfs[cleandirs] = "${USERIMAGE_ROOTFS}"
-fakeroot create_symlink_userfs() {
+create_symlink_userfs() {
+
     #Symlink modules
-    LIB_MODULES="${IMAGE_ROOTFS}/lib/modules"
+    LIB_MODULES="${IMAGE_ROOTFS_UBI}/lib/modules"
     if [ -d ${LIB_MODULES} ]; then
-        cp -rp ${LIB_MODULES} ${IMAGE_ROOTFS}/usr/lib/
+        cp -rp ${LIB_MODULES} ${IMAGE_ROOTFS_UBI}/usr/lib/
         rm -rf ${LIB_MODULES}
     fi
-    ln -sf /usr/lib/modules ${IMAGE_ROOTFS}/lib
+    ln -sf /usr/lib/modules ${IMAGE_ROOTFS_UBI}/lib
 
     # Move rootfs data to userfs directory
     # Content of userfs is added to data volume
-    mkdir -p ${IMAGE_ROOTFS}/data/configs
-    mkdir -p ${IMAGE_ROOTFS}/data/logs
-    mv ${IMAGE_ROOTFS}/data/* ${USERIMAGE_ROOTFS}
+    mkdir -p ${IMAGE_ROOTFS_UBI}/data/configs
+    mkdir -p ${IMAGE_ROOTFS_UBI}/data/logs
+    mv ${IMAGE_ROOTFS_UBI}/data/* ${USERIMAGE_ROOTFS}
 }
 
-fakeroot create_symlink_systemd_ubi_mount_rootfs() {
+create_symlink_systemd_ubi_mount_rootfs() {
     # Symlink ubi mount files to systemd targets
     for entry in ${MACHINE_MNT_POINTS}; do
         mountname="${entry:1}"
         if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" ]] ; then
-            cp -f ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-mount-ubi.service ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-mount.service
-            ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/${mountname}-mount.service
+            cp -f ${IMAGE_ROOTFS_UBI}/lib/systemd/system/${mountname}-mount-ubi.service ${IMAGE_ROOTFS_UBI}/lib/systemd/system/${mountname}-mount.service
+            ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.requires/${mountname}-mount.service
         else
-            cp ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}-ubi.mount ${IMAGE_ROOTFS}/lib/systemd/system/${mountname}.mount
+            cp ${IMAGE_ROOTFS_UBI}/lib/systemd/system/${mountname}-ubi.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/${mountname}.mount
             if [ "$mountname" = "systemrw" ]; then
-                mkdir -p ${IMAGE_ROOTFS}/lib/systemd/system/systemrw.mount.d
-                cp ${IMAGE_ROOTFS}/lib/systemd/system/systemrw-ubi.conf ${IMAGE_ROOTFS}/lib/systemd/system/systemrw.mount.d/systemrw.conf
+                mkdir -p ${IMAGE_ROOTFS_UBI}/lib/systemd/system/systemrw.mount.d
+                cp ${IMAGE_ROOTFS_UBI}/lib/systemd/system/systemrw-ubi.conf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/systemrw.mount.d/systemrw.conf
             fi
             if [[ "$mountname" == "$userfsdatadir" ]] ; then
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.wants/${mountname}.mount
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.wants/${mountname}.mount
             elif [[ "$mountname" == "cache" ]] ; then
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/multi-user.target.wants/${mountname}.mount
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/multi-user.target.wants/${mountname}.mount
             elif [[ "$mountname" == "persist" ]] ; then
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/sysinit.target.wants/${mountname}.mount
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/sysinit.target.wants/${mountname}.mount
             else
-                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/${mountname}.mount
+                ln -sf ${systemd_unitdir}/system/${mountname}.mount ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.requires/${mountname}.mount
             fi
         fi
     done
 
     #remove additional ext4 symlinks if present
-    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs-pre.target.requires/systemd-fsck*
-    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/firmware.mount
-    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/dsp.mount
-    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.requires/bt_firmware.mount
-    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/sysinit.target.wants/ab-updater.service
-    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/sysinit.target.wants/rmt_storage.service
-    rm -rf ${IMAGE_ROOTFS}/etc/udev/rules.d/rmtstorage.rules
-    rm -rf ${IMAGE_ROOTFS}/etc/systemd/system/local-fs-pre.target.wants/set-slotsuffix.service
+    rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs-pre.target.requires/systemd-fsck*
+    rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.requires/firmware.mount
+    rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.requires/dsp.mount
+    rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.requires/bt_firmware.mount
+    rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/sysinit.target.wants/ab-updater.service
+    rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/sysinit.target.wants/rmt_storage.service
+    rm -rf ${IMAGE_ROOTFS_UBI}/etc/udev/rules.d/rmtstorage.rules
+    rm -rf ${IMAGE_ROOTFS_UBI}/etc/systemd/system/local-fs-pre.target.wants/set-slotsuffix.service
     # Recheck when overlay support added for ubi
-    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system/local-fs.target.wants/overlay-restore.service
+    rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.wants/overlay-restore.service
 
    # Remove rules to automount block devices.
-   sed -i '/SUBSYSTEM=="block", TAG+="systemd"/d' ${IMAGE_ROOTFS}/lib/udev/rules.d/99-systemd.rules
-   sed -i '/SUBSYSTEM=="block", ACTION=="add", ENV{DM_UDEV_DISABLE_OTHER_RULES_FLAG}=="1", ENV{SYSTEMD_READY}="0"/d' ${IMAGE_ROOTFS}/lib/udev/rules.d/99-systemd.rules
+   sed -i '/SUBSYSTEM=="block", TAG+="systemd"/d' ${IMAGE_ROOTFS_UBI}/lib/udev/rules.d/99-systemd.rules
+   sed -i '/SUBSYSTEM=="block", ACTION=="add", ENV{DM_UDEV_DISABLE_OTHER_RULES_FLAG}=="1", ENV{SYSTEMD_READY}="0"/d' ${IMAGE_ROOTFS_UBI}/lib/udev/rules.d/99-systemd.rules
 
    # Remove generator binaries and ensure that we don't rely on generators for mount or service files.
-   rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-debug-generator
-   rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-fstab-generator
-   rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-getty-generator
-   rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-gpt-auto-generator
-   rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-hibernate-resume-generator
-   rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-rc-local-generator
-   rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-system-update-generator
-   rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-sysv-generator
+   rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system-generators/systemd-debug-generator
+   rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system-generators/systemd-fstab-generator
+   rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system-generators/systemd-getty-generator
+   rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system-generators/systemd-gpt-auto-generator
+   rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system-generators/systemd-hibernate-resume-generator
+   rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system-generators/systemd-rc-local-generator
+   rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system-generators/systemd-system-update-generator
+   rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system-generators/systemd-sysv-generator
 
    # Start systemd-udev-trigger.service after sysinit.target
-   sed -i '/Before=sysinit.target/a After=sysinit.target init_sys_mss.service' ${IMAGE_ROOTFS}/lib/systemd/system/systemd-udev-trigger.service
-   sed -i '/Before=sysinit.target/d' ${IMAGE_ROOTFS}/lib/systemd/system/systemd-udev-trigger.service
+   sed -i '/Before=sysinit.target/a After=sysinit.target init_sys_mss.service' ${IMAGE_ROOTFS_UBI}/lib/systemd/system/systemd-udev-trigger.service
+   sed -i '/Before=sysinit.target/d' ${IMAGE_ROOTFS_UBI}/lib/systemd/system/systemd-udev-trigger.service
 
    # Copy sdcard mount rules
-   cp ${IMAGE_ROOTFS}/etc/udev/rules.d/mountpartitions ${IMAGE_ROOTFS}/etc/udev/rules.d/mountpartitions.rules
+   cp ${IMAGE_ROOTFS_UBI}/etc/udev/rules.d/mountpartitions ${IMAGE_ROOTFS_UBI}/etc/udev/rules.d/mountpartitions.rules
 }
 
 # Need to copy ubinize.cfg file in the deploy directory
@@ -152,6 +154,17 @@ EOF
 
 }
 
+create_rootfs_ubi[cleandirs] = "${IMAGE_ROOTFS_UBI}"
+python create_rootfs_ubi () {
+    src_dir = d.getVar("IMAGE_ROOTFS")
+    dest_dir = d.getVar("IMAGE_ROOTFS_UBI")
+    if os.path.isdir(src_dir):
+        oe.path.copyhardlinktree(src_dir, dest_dir)
+    else:
+        bb.error("rootfs is not generated")
+}
+
+do_makesystem_ubi[prefuncs] += "create_rootfs_ubi"
 do_makesystem_ubi[prefuncs] += "create_symlink_userfs"
 do_makesystem_ubi[prefuncs] += "create_symlink_systemd_ubi_mount_rootfs"
 do_makesystem_ubi[prefuncs] += "do_create_ubinize_config"
@@ -159,7 +172,7 @@ do_makesystem_ubi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'd
 do_makesystem_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_makesystem_ubi() {
-    mkfs.ubifs -r ${IMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${SYSTEMIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
+    mkfs.ubifs -r ${IMAGE_ROOTFS_UBI} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${SYSTEMIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
     mkfs.ubifs -r ${USERIMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS_DATA} -o ${USERIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
     ubinize -o ${SYSTEMIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_CFG}
 }
