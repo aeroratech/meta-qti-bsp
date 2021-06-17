@@ -27,7 +27,7 @@ do_recovery_ubi[cleandirs] += "${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOT/RAMDISK"
 do_recovery_ubi[depends] += "qti-recovery-image:do_build"
 
 do_recovery_ubi() {
-    echo "base image rootfs: ${IMAGE_ROOTFS}"
+    echo "base image rootfs: ${IMAGE_ROOTFS_UBI}"
     echo "recovery image rootfs: ${RECOVERY_IMAGE_ROOTFS}"
 
     # if exists copy filesmap into RADIO directory
@@ -39,7 +39,7 @@ do_recovery_ubi() {
     cp ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${BOOTIMAGE_TARGET} ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOTABLE_IMAGES/recovery.img
 
     # copy the contents of system rootfs
-    cp -r ${IMAGE_ROOTFS}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM/.
+    cp -r ${IMAGE_ROOTFS_UBI}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM/.
     cd  ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM
     rm -rf var/run
     ln -snf ../run var/run
@@ -101,14 +101,14 @@ do_recovery_ubi() {
 
     #cp and modify file_contexts to BOOT/RAMDISK folder
     if [[ "${DISTRO_FEATURES}" =~ "selinux" ]]; then
-        cp -a ${IMAGE_ROOTFS}/etc/selinux/mls/contexts/files/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOT/RAMDISK/.
+        cp -a ${IMAGE_ROOTFS_UBI}/etc/selinux/mls/contexts/files/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOT/RAMDISK/.
         sed -i 's#^/#/system/#g' ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOT/RAMDISK/file_contexts
         # Keep a copy of file_context.subs_dist & file_contexts.homedirs
         # in the same folder as file_contexts
         # Also append "/system" to each absolute path entry in these files
         [[ -e ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOT/RAMDISK/homedir_template ]] && \
             sed -i 's#^/#/system/#g' ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOT/RAMDISK/homedir_template
-        grep -v -e '^$' ${IMAGE_ROOTFS}/etc/selinux/mls/contexts/files/file_contexts.subs_dist | \
+        grep -v -e '^$' ${IMAGE_ROOTFS_UBI}/etc/selinux/mls/contexts/files/file_contexts.subs_dist | \
             grep -v '^[#]' | awk '{print "/system"$1,"/system"$2}' > \
             ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOT/RAMDISK/file_contexts.subs_dist
         sed -i 's#^/#/system/#g' ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOT/RAMDISK/file_contexts.homedirs
@@ -157,7 +157,7 @@ addtask do_recovery_ubi after do_image_complete before do_build
 
 do_gen_otazip_ubi[dirs] += "${DEPLOY_DIR_IMAGE}/ota-scripts"
 do_gen_otazip_ubi() {
-    ./full_ota.sh ${OTA_TARGET_FILES_UBI_PATH} ${IMAGE_ROOTFS} ubi --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
+    ./full_ota.sh ${OTA_TARGET_FILES_UBI_PATH} ${IMAGE_ROOTFS_UBI} ubi --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
 
     if [[ -e update_ubi.zip ]]; then
         cp update_ubi.zip ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}
