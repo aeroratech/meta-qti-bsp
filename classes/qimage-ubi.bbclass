@@ -168,7 +168,7 @@ python () {
     if bb.utils.contains('IMAGE_FSTYPES', 'ext4', True, False, d):
         bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_makesystem', d)
     else:
-        bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_rootfs', d)
+        bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_image', d)
 }
 
 do_patch_ubitools() {
