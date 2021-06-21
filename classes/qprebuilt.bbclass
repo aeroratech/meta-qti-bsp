@@ -85,11 +85,11 @@
 #     PREBUILT_SRC_DIR = "/home/vendor/prebuilt1 /home/vendor/prebuilt2"
 #
 # It's possible to search under prebuilt_<PREBUILT_VARIANTS> directories
-# present at root of WORKSPACE root by setting USE_DEFAULT_PREBUILT_SRC_DIR
-# variable to "1", default is "0". These additional paths are considered
-# along with the ones defined in PREBUILT_SRC_DIR. No sanity checks are
-# in place for dupliate tarballs. Users need to carefully provide paths
-# to avoid surprizes.
+# present under same parent directory as that of WORKSPACE root by setting
+# USE_DEFAULT_PREBUILT_SRC_DIR variable to "1", default is "0". These
+# additional paths are considered along with the ones defined in
+# PREBUILT_SRC_DIR. No sanity checks are in place for dupliate tarballs.
+# Users need to carefully provide paths to avoid surprizes.
 #
 # In which the prebuilt package is populated. If prebuilt class
 # finds a package compatible with the recipe, it will be used to
@@ -117,9 +117,10 @@ def get_prebuilt_paths(d):
 
     defaultsrc = d.getVar('USE_DEFAULT_PREBUILT_SRC_DIR')
     if defaultsrc == "1":
+        dpbpath = os.path.dirname(os.path.abspath(d.getVar('WORKSPACE')))
         pbvariants = (d.getVar("PREBUILT_VARIANTS") or "").split()
         for variant in pbvariants:
-            pbpaths.append(os.path.abspath(d.getVar('WORKSPACEROOT') + '/' + 'prebuilt_' + variant))
+            pbpaths.append(dpbpath + '/' + 'prebuilt_' + variant)
 
     bb.debug(1,"Searching for prebuilts in: %s" % pbpaths)
 
