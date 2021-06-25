@@ -176,12 +176,7 @@ fakeroot do_makesystem_ubi() {
     ubinize -o ${SYSTEMIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_CFG}
 }
 
-python () {
-    if bb.utils.contains('IMAGE_FSTYPES', 'ext4', True, False, d):
-        bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_makesystem', d)
-    else:
-        bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_image', d)
-}
+addtask do_makesystem_ubi after do_image before do_image_complete
 
 do_patch_ubitools[lockfiles] += "${IMGDEPLOYDIR}/patch_ubitools.lock"
 do_patch_ubitools() {
