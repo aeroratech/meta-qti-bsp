@@ -18,12 +18,4 @@ SYSTEM_SIZE_EXT4 ?= "225000000"
 USERDATA_SIZE_EXT4 ?= "25000000"
 VM_SIZE_EXT4 ?= "270000000"
 
-python (){
-    KERNEL_PATH = os.path.abspath(d.getVar('WORKSPACEROOT') + '/src/kernel-' + d.getVar('PREFERRED_VERSION_linux-msm'))
-    if os.path.exists(KERNEL_PATH):
-        d.setVar('PREFERRED_VERSION_linux-msm', "5.10")
-    else:
-        d.setVar('PREFERRED_VERSION_linux-msm', "5.4")
-}
-
 addtask ramdisk_create after do_makesystem before do_image_complete
