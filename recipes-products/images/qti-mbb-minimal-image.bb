@@ -2,7 +2,7 @@
 # Provides packages required to build an mbb minimal image with
 # boot to console
 
-inherit qimage
+inherit qimage qramdisk
 
 IMAGE_FEATURES += "read-only-rootfs persist-volume"
 
