@@ -101,6 +101,9 @@ python create_rootfs_ext4 () {
 do_makesystem[prefuncs] += "create_rootfs_ext4"
 do_makesystem[prefuncs] += "create_symlink_systemd_ext4_mount_rootfs"
 do_makesystem() {
+    # Empty the /persist folder so that it doesn't end up
+    # in system image as well
+    rm -rf ${IMAGE_ROOTFS_EXT4}/persist/*
     cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig.conf
     # An ugly hack to mitigate a bug in libsparse were random
     # asserts are observed during unsparsing if image size is large.
@@ -155,9 +158,6 @@ do_makepersist() {
                 ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${PERSISTIMAGE_TARGET} \
                 ${IMAGE_ROOTFS}/persist
 
-    # Empty the /persist folder so that it doesn't end up
-    # in system image as well
-    rm -rf ${IMAGE_ROOTFS}/persist/*
 }
 # It must be before do_makesystem to remove /persist
 addtask do_makepersist after do_image before do_makesystem
