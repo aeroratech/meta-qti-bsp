@@ -9,7 +9,8 @@ DEFAULTTUNE ?= "armv7ahf-neon"
 include conf/machine/include/tune-cortexa7.inc
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
-PREFERRED_VERSION_linux-msm ?= "4.9"
+PREFERRED_VERSION_linux-msm ?= "4.14"
+PREFERRED_VERSION_linux-msm-headers ?= "4.14"
 
 SERIAL_CONSOLE ?= "115200 ttyHSL0"
 

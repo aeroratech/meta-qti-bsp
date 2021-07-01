@@ -5,6 +5,8 @@ DEFAULTTUNE = "aarch64"
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
 PREFERRED_VERSION_linux-msm = "5.4"
+PREFERRED_VERSION_linux-msm-headers ?= "5.4"
+
 KERNEL_IMAGETYPE = "Image.gz"
 KERNEL_BASE = "0x80000000"
 KERNEL_TAGS_OFFSET = "0x1e00000"
