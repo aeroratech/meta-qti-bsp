@@ -24,6 +24,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-cvp \
         packagegroup-qti-gfx \
         packagegroup-qti-sensors-see \
+        packagegroup-qti-test-sensors-see \
         packagegroup-qti-ss-mgr \
         packagegroup-qti-securemsm \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
