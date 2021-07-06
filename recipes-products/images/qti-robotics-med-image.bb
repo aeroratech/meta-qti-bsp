@@ -23,7 +23,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               libnl \
               libxml2 \
               packagegroup-android-utils \
-              packagegroup-qti-core-prop \
+              packagegroup-qti-core \
               packagegroup-qti-data \
               packagegroup-qti-dsp \
               packagegroup-qti-ss-mgr \

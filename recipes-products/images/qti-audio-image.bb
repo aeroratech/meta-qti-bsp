@@ -18,7 +18,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-android-utils \
         packagegroup-qti-audio \
         packagegroup-qti-bluetooth \
-        packagegroup-qti-core-prop \
+        packagegroup-qti-core \
         packagegroup-qti-data \
         packagegroup-qti-dsp \
         packagegroup-qti-fastcv \

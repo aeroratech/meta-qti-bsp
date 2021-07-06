@@ -23,7 +23,6 @@ do_image_ubi[noexec] = "1"
 do_image_ubifs[noexec] = "1"
 do_image_multiubi[noexec] = "1"
 
-
 CORE_IMAGE_EXTRA_INSTALL += "\
             packagegroup-qti-recoveryfs \
 "
