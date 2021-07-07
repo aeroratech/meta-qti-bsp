@@ -168,6 +168,7 @@ do_makesystem_ubi[prefuncs] += "create_rootfs_ubi"
 do_makesystem_ubi[prefuncs] += "create_symlink_userfs"
 do_makesystem_ubi[prefuncs] += "create_symlink_systemd_ubi_mount_rootfs"
 do_makesystem_ubi[prefuncs] += "do_create_ubinize_config"
+do_makesystem_ubi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
 do_makesystem_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_makesystem_ubi() {
@@ -178,9 +179,7 @@ fakeroot do_makesystem_ubi() {
 
 addtask do_makesystem_ubi after do_image before do_image_complete
 
-do_patch_ubitools[lockfiles] += "${IMGDEPLOYDIR}/patch_ubitools.lock"
 do_patch_ubitools() {
     ${UNINATIVE_STAGING_DIR}-uninative/x86_64-linux/usr/bin/patchelf-uninative --set-interpreter /lib64/ld-linux-x86-64.so.2 ${STAGING_DIR}-components/x86_64/mtd-utils-native/usr/sbin/mkfs.ubifs
     ${UNINATIVE_STAGING_DIR}-uninative/x86_64-linux/usr/bin/patchelf-uninative --set-interpreter /lib64/ld-linux-x86-64.so.2 ${STAGING_DIR}-components/x86_64/mtd-utils-native/usr/sbin/ubinize
 }
-do_image_complete[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
