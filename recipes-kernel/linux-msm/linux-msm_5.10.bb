@@ -5,6 +5,12 @@ LICENSE = "GPLv2.0-with-linux-syscall-note"
 
 COMPATIBLE_MACHINE = "neo-mtp"
 
+FILESPATH =+ "${WORKSPACE}:"
+
+SRC_URI   =  "file://kernel-5.10/kernel_platform/msm-kernel \
+              ${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', '', 'file://kernel-5.10/kernel_platform/msm-kernel/arch/${ARCH}/configs/vendor/neo.config',d)} \
+              ${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', '', 'file://kernel-5.10/kernel_platform/msm-kernel/arch/${ARCH}/configs/vendor/waipio_tuivm_debug.config',d)} \
+             "
 S = "${WORKDIR}/kernel-5.10/kernel_platform/msm-kernel"
 PR = "r0"
 
@@ -41,12 +47,6 @@ KERNEL_EXTRA_ARGS        += "O=${B}"
 # Additional configs needed for supporting DTBO partition.
 DTBO_MACHINE = "${@d.getVar('MACHINE_SUPPORTS_DTBO') or "False"}"
 
-FILESPATH =+ "${WORKSPACE}:"
-
-SRC_URI   =  "file://kernel-5.10/kernel_platform/msm-kernel \
-              ${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', '', 'file://kernel-5.10/kernel_platform/msm-kernel/arch/${ARCH}/configs/vendor/neo.config',d)} \
-              ${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', '', 'file://kernel-5.10/kernel_platform/msm-kernel/arch/${ARCH}/configs/vendor/waipio_tuivm_debug.config',d)} \
-             "
 # Don't set any version extention on debug build
 LINUX_VERSION_EXTENSION ?= "-perf"
 LINUX_VERSION_EXTENSION_qti-distro-debug = ""
@@ -85,16 +85,96 @@ do_configure_prepend() {
     fi
 }
 
-python () {
-    if d.getVar('KERNEL_USE_PREBUILTS') == 'True':
-        d.setVarFlag("do_configure", 'noexec', "1")
-        d.setVarFlag("do_compile", 'noexec', "1")
+do_prebuilt_configure() {
+    cd ${KERNEL_PREBUILT_PATH}
+
+    install -d ${B}/include/config
+    install -d ${B}/include/generated
+    install -d ${B}/scripts
+    # Some of the artifacts needed for module compilation are present under
+    # msm-kernel path, for now copy them for this path to avoid build failures.
+    # Ask prebuilt providers to make these available in KERNEL_PREBUILT_PATH.
+    install -m 0644 ../msm-kernel/.config ${B}
+    install -m 0644 ../msm-kernel/Module.symvers ${B}
+    install -m 0644 ../msm-kernel/include/config/kernel.release ${B}/include/config/kernel.release
+    install -m 0644 ../msm-kernel/scripts/module.lds ${B}/scripts/module.lds
+    install -m 0644 ../msm-kernel/include/generated/utsrelease.h ${B}/include/generated
+
+    install -d ${B}/${KERNEL_OUTPUT_DIR}
+    for typeformake in ${KERNEL_IMAGETYPE_FOR_MAKE} ; do
+        install -m 0644 ${typeformake} ${B}/${KERNEL_OUTPUT_DIR}
+    done
+    install -m 0644 vmlinux ${B}
+    install -m 0644 System.map ${B}
 }
 
-configure_populate_artifacts() {
-    cp -a ${WORKSPACE}/kernel-5.10/out/neo/msm-kernel/.config ${B}
+do_prebuilt_shared_workdir[cleandirs] += " ${STAGING_KERNEL_BUILDDIR}"
+do_prebuilt_shared_workdir() {
+    cd ${B}
+
+    kerneldir=${STAGING_KERNEL_BUILDDIR}
+    install -d $kerneldir
+
+    #
+    # Store the kernel version in sysroots for module-base.bbclass
+    #
+
+    echo "${KERNEL_VERSION}" > $kerneldir/${KERNEL_PACKAGE_NAME}-abiversion
+
+    # Copy files required for module builds
+    install -m 0644 System.map $kerneldir/System.map-${KERNEL_VERSION}
+    [ -e Module.symvers ] && install -m 0644 Module.symvers $kerneldir/
+    install -m 0644 .config $kerneldir/
+    mkdir -p $kerneldir/include/config
+    mkdir -p $kerneldir/scripts
+    install -m 0644 include/config/kernel.release $kerneldir/include/config/kernel.release
+    if [ -e "${B}/scripts/module.lds" ]; then
+        install -m 0644 ${B}/scripts/module.lds ${STAGING_KERNEL_BUILDDIR}/scripts/module.lds
+    fi
 }
-do_prepare_recipe_sysroot[postfuncs] += "${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', ' configure_populate_artifacts ', '',d)}"
+
+do_prebuilt_install[dirs] = "${B}"
+fakeroot do_prebuilt_install() {
+    #
+    # Install various kernel output (zImage, map file, config, module support files)
+    # From prebuilt paths
+    #
+    install -d ${D}/${KERNEL_IMAGEDEST}
+    install -d ${D}/boot
+    for imageType in ${KERNEL_IMAGETYPES} ; do
+        install -m 0644 ${KERNEL_OUTPUT_DIR}/${imageType} ${D}/${KERNEL_IMAGEDEST}/${imageType}-${KERNEL_VERSION}
+        if [ "${KERNEL_PACKAGE_NAME}" = "kernel" ]; then
+            ln -sf ${imageType}-${KERNEL_VERSION} ${D}/${KERNEL_IMAGEDEST}/${imageType}
+        fi
+    done
+    install -m 0644 System.map ${D}/boot/System.map-${KERNEL_VERSION}
+    install -m 0644 .config ${D}/boot/config-${KERNEL_VERSION}
+    install -m 0644 vmlinux ${D}/boot/vmlinux-${KERNEL_VERSION}
+    [ -e Module.symvers ] && install -m 0644 Module.symvers ${D}/boot/Module.symvers-${KERNEL_VERSION}
+    install -d ${D}${sysconfdir}/modules-load.d
+    install -d ${D}${sysconfdir}/modprobe.d
+
+    # Copied files may cause host contamination due to invalid UID. Change ownership to root.
+    find ${D} -name '*' -exec chown -h root:root {} \;
+}
+
+# Must be ran no earlier than after do_kernel_checkout or else Makefile won't be in ${S}/Makefile
+PREBUILT_DISCARDED_TASKS += "\
+    do_configure \
+    do_compile \
+    do_kernel_link_images \
+    do_compile_kernelmodules \
+    do_shared_workdir \
+    do_install \
+"
+python () {
+    if d.getVar('KERNEL_USE_PREBUILTS') == 'True':
+        for task in d.getVar('PREBUILT_DISCARDED_TASKS').split():
+            d.setVarFlag(task, 'noexec', '1')
+        bb.build.addtask('do_prebuilt_configure', 'do_configure', 'do_unpack', d)
+        bb.build.addtask('do_prebuilt_install', 'do_install', 'do_compile', d)
+        bb.build.addtask('do_prebuilt_shared_workdir', 'do_compile_kernelmodules', 'do_compile', d)
+}
 
 # append DTB
 # msm kernel trees have a special treatment for DTS, and both arm and
@@ -104,11 +184,6 @@ do_prepare_recipe_sysroot[postfuncs] += "${@oe.utils.conditional('KERNEL_USE_PRE
 # then we can append the DTBs that we need for $MACHINE.
 KERNEL_EXTRA_ARGS += "dtbs"
 KERNEL_EXTRA_ARGS += "DTC_EXT=${STAGING_DIR_NATIVE}/usr/bin/dtc/bin/dtc"
-
-compile_populate_artifacts() {
-    cp -a ${WORKSPACE}/kernel-5.10/out/neo/msm-kernel/* ${B}
-}
-do_prepare_recipe_sysroot[postfuncs] += "${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', ' compile_populate_artifacts ', '',d)}"
 
 do_compile_append() {
     for dtbf in ${KERNEL_DTB_NAMES}; do
@@ -141,10 +216,8 @@ do_shared_workdir_append () {
                 cp -fR arch/${ARCH}/boot/* $kerneldir/arch/${ARCH}/boot/
         fi
 
-        if [  "${KERNEL_USE_PREBUILTS}" == "True" ]; then
-            # Generate kernel headers
-            oe_runmake_call -C ${STAGING_KERNEL_DIR} ARCH=${ARCH} CC="${KERNEL_CC}" LD="${KERNEL_LD}" headers_install O=${STAGING_KERNEL_BUILDDIR}
-        fi
+        # Generate kernel headers
+        oe_runmake_call -C ${STAGING_KERNEL_DIR} ARCH=${ARCH} CC="${KERNEL_CC}" LD="${KERNEL_LD}" headers_install O=${STAGING_KERNEL_BUILDDIR}
 }
 
 # Path for dtbo generation is kernel version dependent.
