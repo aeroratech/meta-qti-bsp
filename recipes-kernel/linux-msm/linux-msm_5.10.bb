@@ -3,7 +3,7 @@ inherit kernel
 DESCRIPTION = "CAF Linux Kernel"
 LICENSE = "GPLv2.0-with-linux-syscall-note"
 
-COMPATIBLE_MACHINE = "neo-mtp"
+COMPATIBLE_MACHINE = "sxrneo"
 
 FILESPATH =+ "${WORKSPACE}:"
 
