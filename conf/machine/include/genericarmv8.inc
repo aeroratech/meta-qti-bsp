@@ -1,6 +1,5 @@
 BASEMACHINE ?= "genericarmv8"
 require conf/machine/include/basemachine.inc
-require ${COREBASE}/meta-qti-bsp/recipes-products/images/include/qti-ramdisk.inc
 
 DEFAULTTUNE ?= "aarch64"
 include conf/machine/include/arm/arch-armv8a.inc
@@ -18,5 +17,3 @@ EXTRA_IMAGECMD ?= "-N 2048"
 SYSTEM_SIZE_EXT4 ?= "225000000"
 USERDATA_SIZE_EXT4 ?= "25000000"
 VM_SIZE_EXT4 ?= "270000000"
-
-addtask ramdisk_create after do_makesystem before do_image_complete
