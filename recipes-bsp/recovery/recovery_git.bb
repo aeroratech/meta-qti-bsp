@@ -18,6 +18,7 @@ S = "${WORKDIR}/OTA/recovery/"
 EXTRA_OECONF = "--with-glib --with-sanitized-headers=${STAGING_KERNEL_BUILDDIR}/usr/include \
                 --with-core-headers=${STAGING_INCDIR}"
 EXTRA_OECONF += "${@bb.utils.contains('DISTRO_FEATURES', 'ota-package-verification', 'TARGET_SUPPORTS_OTA_VERIFICATION=true', '', d)}"
+EXTRA_OECONF_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', 'TARGET_SUPPORTS_NAND_DM_VERITY=true', '', d)}"
 
 CFLAGS += "-lsparse -llog"
 

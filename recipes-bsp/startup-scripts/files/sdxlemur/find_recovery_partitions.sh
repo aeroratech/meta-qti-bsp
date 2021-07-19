@@ -47,7 +47,7 @@ FindAndAttachUBI() {
    partition=$1
    num_volumes=$2
 
-   mtd_block_number=`cat $mtd_file | grep -i $partition | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+   mtd_block_number=`cat $mtd_file | grep -i "\b$partition\b" | sed 's/^mtd//' | awk -F ':' '{print $1}'`
    if [ -z "$mtd_block_number" ]; then
       echo "MTD : Partition $partition not found" > /dev/kmsg
    else
