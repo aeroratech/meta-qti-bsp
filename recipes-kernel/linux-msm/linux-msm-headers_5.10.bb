@@ -17,7 +17,7 @@ do_compile[noexec] = "1"
 
 do_populate_kernel_header_artifacts() {
     mkdir -p ${B}/headers
-    cp -a ${WORKSPACE}/kernel-5.10/out/neo/dist/kernel-uapi-headers.tar.gz ${B}/headers
+    cp -a ${KERNEL_PREBUILT_PATH}/kernel-uapi-headers.tar.gz ${B}/headers
     cd ${B}/headers
     tar -xvzf kernel-uapi-headers.tar.gz
     rm -f kernel-uapi-headers.tar.gz
