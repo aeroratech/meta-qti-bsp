@@ -15,17 +15,10 @@ PACKAGES = ' \
 
 # Android Core Image and Debugging utilities
 RDEPENDS_packagegroup-android-utils = "\
-    adbd \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', '', 'binder', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', '', 'leproperties', d)} \
-    logcat \
-    logd \
-    ${@oe.utils.conditional('PROPERTIES_SUPPORT', 'True', 'system-prop', '', d)} \
+    packagegroup-android-utils-base \
     "
 
 # Startup scripts needed during device bootup
 RDEPENDS_packagegroup-startup-scripts = "\
-    ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'ab-slot-util', '', d)} \
-    ${@oe.utils.conditional('USB_SUPPORT', 'True', 'usb-composition', '', d)} \
-    post-boot \
+    packagegroup-startup-scripts-base \
     "
