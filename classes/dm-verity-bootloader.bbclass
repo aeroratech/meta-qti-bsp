@@ -19,6 +19,8 @@ SIZE_IN_SECTORS = ""
 FEC_OFFSET = "0"
 FEC_SIZE = "0"
 METADATA_TREE_SIZE = "0"
+NAND_IGNORE = "1"
+NAND_IGNORE_qti-distro-base-user = "0"
 
 FEC_SUPPORT = "1"
 DEPENDS += " ${@bb.utils.contains('FEC_SUPPORT', '1', 'fec-native', '', d)}"
@@ -228,6 +230,7 @@ python make_verity_enabled_system_image () {
         dm_key_args_list.append( d.getVar('DATA_BLOCKS_NUMBER', True))
         dm_key_args_list.append( str(d.getVar('ROOT_HASH', True)))
         dm_key_args_list.append( d.getVar('FEC_OFFSET', True))
+        dm_key_args_list.append( d.getVar('NAND_IGNORE', True))
         dm_key =  dm_prefix + " ".join(dm_key_args_list)+ " " +'\\"'
         cmdline = "verity=\\" + dm_key
 
