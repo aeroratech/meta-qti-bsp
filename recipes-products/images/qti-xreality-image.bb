@@ -24,6 +24,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-gfx \
         packagegroup-qti-gst \
         packagegroup-qti-pulseaudio \
+        packagegroup-qti-qvr \
         packagegroup-qti-securemsm \
         packagegroup-qti-sensors-see \
         packagegroup-qti-ss-mgr \

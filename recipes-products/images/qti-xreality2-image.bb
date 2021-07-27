@@ -17,6 +17,7 @@ CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-test-sensors-see"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-securemsm"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-video"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-gst"
+CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-qvr"
 
 # Remove unsupported packages
 CORE_IMAGE_EXTRA_INSTALL_remove = "gbm"
