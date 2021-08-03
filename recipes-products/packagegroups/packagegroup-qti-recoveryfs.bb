@@ -13,6 +13,7 @@ PACKAGES = ' \
 # Startup scripts needed during device bootup
 RDEPENDS_packagegroup-qti-recoveryfs = " \
             adbd \
+            coreutils \
             find-recovery-partitions \
             mtd-utils-ubifs \
             logd \
