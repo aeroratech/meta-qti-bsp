@@ -57,3 +57,6 @@ append_verity_metadata_to_system_image () {
     rm ${VERITY_FEC_DEVICE}
 }
 do_makesystem[postfuncs] += "append_verity_metadata_to_system_image"
+
+# ramdisk creation now requires the verity artifacts
+do_ramdisk_create[depends] += "${PN}:do_makesystem"
