@@ -41,7 +41,6 @@ CORE_IMAGE_EXTRA_INSTALL += " \
             init-audio \
             tinyalsa \
             tinycompress \
-            soundtrigger \
 "
 #install drm
 CORE_IMAGE_EXTRA_INSTALL += " \
