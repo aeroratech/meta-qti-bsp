@@ -29,11 +29,13 @@ EXTRA_OECONF_remove_sdmsteppe = "--enable-32bit-binder-ipc"
 
 do_install_append() {
    if ${@bb.utils.contains('EXTRA_OECONF', '--with-systemd', 'true', 'false', d)}; then
-       install -d ${D}${systemd_unitdir}/system/
-       install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
-       # enable the service for multi-user.target
-       ln -sf ${systemd_unitdir}/system/servicemanager.service \
-            ${D}${systemd_unitdir}/system/multi-user.target.wants/servicemanager.service
+       if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', 'false', 'true', d)}; then
+           install -d ${D}${systemd_unitdir}/system/
+           install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
+           # enable the service for multi-user.target
+           ln -sf ${systemd_unitdir}/system/servicemanager.service \
+               ${D}${systemd_unitdir}/system/multi-user.target.wants/servicemanager.service
+       fi
    fi
 }
 
