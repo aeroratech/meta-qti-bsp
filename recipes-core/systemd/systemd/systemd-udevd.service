@@ -44,3 +44,7 @@ ExecStart=/lib/systemd/systemd-udevd
 MountFlags=shared
 KillMode=mixed
 WatchdogSec=1min
+#Few services need access to kmsg before udevd sets all permissions.
+#To address same updating the kmsg node permissions
+ExecStartPost=-+/bin/chgrp kmsg /dev/kmsg
+ExecStartPost=-+/bin/chmod g+w /dev/kmsg
