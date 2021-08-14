@@ -48,7 +48,7 @@ do_recovery_ubi() {
         cp ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/verity/system-gluebi.ext4/system-gluebi.ext4 ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOTABLE_IMAGES/system.img
         echo dm_verity_nand=1 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
     else
-        cp -r ${IMAGE_ROOTFS}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM/.
+        cp -r ${IMAGE_ROOTFS_UBI}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM/.
         cd  ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM
         rm -rf var/run
         ln -snf ../run var/run
