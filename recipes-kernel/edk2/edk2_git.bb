@@ -22,12 +22,15 @@ EARLY_ETH = "${@bb.utils.contains('DISTRO_FEATURES', 'early-eth', '1', '0', d)}"
 
 SYSTEMD_BOOTSLOT_ENABLED = "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot','1', '0', d)}"
 
+DM_MOD_FOR_KERNEL5_4 = "${@bb.utils.contains('BASEMACHINE', 'qrbx210', '1', '0', d)}"
+
 EXTRA_OEMAKE = " \
     'TARGET_ARCHITECTURE=${TARGET_ARCH}' \
     'BUILDDIR=${B}' \
     'BOOTLOADER_OUT=${B}/out' \
     'ENABLE_LE_VARIANT=true' \
     'ENABLE_SYSTEMD_BOOTSLOT=${SYSTEMD_BOOTSLOT_ENABLED}'\
+    'ENABLE_DM_MOD_FOR_KERNEL5_4=${DM_MOD_FOR_KERNEL5_4}'\
     'VERIFIED_BOOT_LE=${VBLE}' \
     'VERITY_LE=${VERITY_ENABLED}' \
     'INIT_BIN_LE=\"/sbin/init\"' \
