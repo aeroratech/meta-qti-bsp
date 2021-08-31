@@ -44,7 +44,7 @@ do_recovery_ext4() {
 
     # if exists copy filesmap into RADIO directory
     radiofilesmap=${MACHINE_FILESMAP_FULL_PATH}
-    [[ ! -z "$radiofilesmap" ]] && install -m 755 $radiofilesmap ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/RADIO/
+    [[ ! -z "$radiofilesmap" ]] && install -m 755 $radiofilesmap ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/RADIO/filesmap
 
     # copy the boot\recovery images
     cp ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${BOOTIMAGE_TARGET} ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/BOOTABLE_IMAGES/boot.img
