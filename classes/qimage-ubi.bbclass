@@ -18,8 +18,13 @@ USERIMAGE_ROOTFS ?= "${WORKDIR}/usrfs"
 
 UBINIZE_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubinize_system.cfg"
 
-IMAGE_UBIFS_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '--selinux=${SELINUX_FILE_CONTEXTS}', '', d)}"
-IMAGE_UBIFS_SELINUX_OPTIONS_DATA = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '--selinux=${SELINUX_FILE_CONTEXTS_DATA}', '', d)}"
+# Ensure SELinux file context variable is defined
+SELINUX_FILE_CONTEXTS ?= ""
+SELINUX_FILE_CONTEXTS_DATA ?= ""
+SELINUX_IMG_UBI_S = "${@['--selinux=${SELINUX_FILE_CONTEXTS}', ''][d.getVar('SELINUX_FILE_CONTEXTS') == '']}"
+SELINUX_IMG_UBI_S_DATA = "${@['--selinux=${SELINUX_FILE_CONTEXTS_DATA}', ''][d.getVar('SELINUX_FILE_CONTEXTS_DATA') == '']}"
+IMAGE_UBIFS_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '${SELINUX_IMG_UBI_S}', '', d)}"
+IMAGE_UBIFS_SELINUX_OPTIONS_DATA = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '${SELINUX_IMG_UBI_S_DATA}', '', d)}"
 
 do_image_ubi[noexec] = "1"
 do_image_ubifs[noexec] = "1"

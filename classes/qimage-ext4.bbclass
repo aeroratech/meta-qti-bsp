@@ -23,7 +23,10 @@ DTBOIMAGE_TARGET ?= "dtbo.img"
 CACHEIMAGE_TARGET ?= "cache.img"
 SYSTEMRWIMAGE_TARGET ?= "systemrw.img"
 
-IMAGE_EXT4_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '-S ${SELINUX_FILE_CONTEXTS}', '', d)}"
+# Ensure SELinux file context variable is defined
+SELINUX_FILE_CONTEXTS ?= ""
+SELINUX_IMG_S = "${@['-S ${SELINUX_FILE_CONTEXTS}', ''][d.getVar('SELINUX_FILE_CONTEXTS') == '']}"
+IMAGE_EXT4_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '${SELINUX_IMG_S}', '', d)}"
 
 ROOTFS_POSTPROCESS_COMMAND += "gen_buildprop;do_fsconfig;"
 ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('MACHINE_MNT_POINTS', 'overlay', 'gen_overlayfs;', '', d)}"
