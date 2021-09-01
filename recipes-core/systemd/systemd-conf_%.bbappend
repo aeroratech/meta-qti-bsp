@@ -43,6 +43,8 @@ do_install_append() {
 
 # system.conf
 do_install_append() {
+    # Set LogTarget as syslog
+    sed -i '$aLogTarget=syslog' ${D}${systemd_unitdir}/system.conf.d/00-${PN}.conf
 }
 
 # user.conf
