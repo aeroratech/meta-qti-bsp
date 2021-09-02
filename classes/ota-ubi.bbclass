@@ -32,7 +32,7 @@ do_recovery_ubi() {
 
     # if exists copy filesmap into RADIO directory
     radiofilesmap=${MACHINE_FILESMAP_FULL_PATH}
-    [[ ! -z "$radiofilesmap" ]] && install -m 755 $radiofilesmap ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RADIO/
+    [[ ! -z "$radiofilesmap" ]] && install -m 755 $radiofilesmap ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RADIO/filesmap
 
     # copy the boot\recovery images
     if ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('IMAGE_FEATURES', 'gluebi', 'true', 'false', d), 'false', d)}; then
