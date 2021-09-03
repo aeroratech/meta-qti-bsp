@@ -47,12 +47,11 @@ do_recovery_ubi() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('IMAGE_FEATURES', 'gluebi', 'true', 'false', d), 'false', d)}; then
         cp ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/verity/system-gluebi.ext4/system-gluebi.ext4 ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOTABLE_IMAGES/system.img
         echo dm_verity_nand=1 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
-    else
-        cp -r ${IMAGE_ROOTFS_UBI}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM/.
-        cd  ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM
-        rm -rf var/run
-        ln -snf ../run var/run
     fi
+    cp -r ${IMAGE_ROOTFS_UBI}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM/.
+    cd  ${OTA_TARGET_IMAGE_ROOTFS_UBI}/SYSTEM
+    rm -rf var/run
+    ln -snf ../run var/run
 
     #copy contents of recovery rootfs
     cp -r ${RECOVERY_IMAGE_ROOTFS}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/.
