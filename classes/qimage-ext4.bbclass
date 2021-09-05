@@ -3,6 +3,7 @@ GENERATE_AB_OTA_PACKAGE ?= "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-bo
 
 QIMGEXT4CLASSES  = ""
 QIMGEXT4CLASSES += "${@bb.utils.contains('GENERATE_AB_OTA_PACKAGE', '1', 'ab-ota-ext4', '', d)}"
+QIMGEXT4CLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota-ext4', '', d)}"
 
 inherit ${QIMGEXT4CLASSES}
 
