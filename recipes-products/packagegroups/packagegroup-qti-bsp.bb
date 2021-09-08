@@ -26,6 +26,8 @@ RDEPENDS_packagegroup-startup-scripts = "\
 # Other essential utilites
 RDEPENDS_packagegroup-support-utils = "\
     chrony \
+    libinput \
+    libinput-bin \
     libnl \
     libxml2 \
     "
