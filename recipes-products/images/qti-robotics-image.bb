@@ -9,7 +9,6 @@ IMAGE_FEATURES += "ssh-server-openssh"
 CORE_IMAGE_EXTRA_INSTALL += "\
         alsa-utils \
         canutils \
-        chrony \
         chronyc \
         e2fsprogs \
         e2fsprogs-e2fsck \
@@ -17,8 +16,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         e2fsprogs-tune2fs \
         glib-2.0 \
         kernel-modules \
-        libnl \
-        libxml2 \
         packagegroup-android-utils \
         packagegroup-qti-audio \
         packagegroup-qti-bluetooth \
@@ -26,24 +23,25 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('DISTRO_FEATURES','virtualization', 'packagegroup-qti-containers', '', d)} \
         packagegroup-qti-core \
         packagegroup-qti-core-prop \
+        packagegroup-qti-cvp \
         packagegroup-qti-data \
         packagegroup-qti-display \
         packagegroup-qti-dsp \
         packagegroup-qti-fastcv \
-        packagegroup-qti-cvp \
         packagegroup-qti-gfx \
         packagegroup-qti-gst \
         packagegroup-qti-ml \
+        packagegroup-qti-mmframeworks \
         packagegroup-qti-qmmf \
         packagegroup-qti-robotics \
         packagegroup-qti-securemsm \
-        packagegroup-qti-test-sensors-see \
         packagegroup-qti-ss-mgr \
+        packagegroup-qti-test-sensors-see \
         packagegroup-qti-video \
         packagegroup-qti-wifi \
         ${@bb.utils.contains('DISTRO_FEATURES', 'ros2', 'packagegroup-ros2-foxy', '', d)} \
         packagegroup-startup-scripts \
-        ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
+        packagegroup-support-utils \
         systemd-machine-units \
-        packagegroup-qti-mmframeworks \
+        ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
 "

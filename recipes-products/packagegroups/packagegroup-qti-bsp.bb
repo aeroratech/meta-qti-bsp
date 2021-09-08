@@ -10,6 +10,7 @@ PROPERTIES_SUPPORT = "${@d.getVar('MACHINE_SUPPORTS_ANDROID_PROPERTIES') or "Tru
 
 PACKAGES = ' \
     packagegroup-android-utils \
+    packagegroup-support-utils \
     packagegroup-startup-scripts \
     '
 
@@ -21,4 +22,10 @@ RDEPENDS_packagegroup-android-utils = "\
 # Startup scripts needed during device bootup
 RDEPENDS_packagegroup-startup-scripts = "\
     packagegroup-startup-scripts-base \
+    "
+# Other essential utilites
+RDEPENDS_packagegroup-support-utils = "\
+    chrony \
+    libnl \
+    libxml2 \
     "
