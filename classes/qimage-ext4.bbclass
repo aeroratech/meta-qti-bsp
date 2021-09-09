@@ -145,7 +145,9 @@ addtask do_makesystem after do_image before do_image_complete
 do_makeuserdata[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makeuserdata() {
-    make_ext4fs -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_MAP_TARGET} \
+    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig.conf
+    make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
+                -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_MAP_TARGET} \
                 -a /data ${IMAGE_EXT4_SELINUX_OPTIONS} \
                 ${SPARSE_SYSTEMIMAGE_FLAG} -b 4096 -l ${USERDATA_SIZE_EXT4} \
                 ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_TARGET} \
