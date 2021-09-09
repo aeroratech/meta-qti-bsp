@@ -101,7 +101,7 @@ create_system_dir() {
 # Below is to generate sparse ext4 recovery image (OE by default supports raw ext4 images)
 do_create_recoveryfs_ext4() {
     if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'false', 'true', d)}; then
-        make_ext4fs -l ${RECOVERYFS_SIZE_EXT4} ${RECOVOERY_EXT4_IMAGE} ${IMAGE_ROOTFS}
+        make_ext4fs -l ${RECOVERYFS_SIZE_EXT4} ${RECOVOERY_EXT4_IMAGE} -a / ${RECOVERY_EXT4_SELINUX_OPTIONS} ${IMAGE_ROOTFS}
         # Create an unsparse image as well to be included as part of ota target-files
         #simg2img ${RECOVOERY_EXT4_IMAGE} recovery-unsparsed.ext4
     fi
