@@ -12,14 +12,11 @@ FILESPATH =+ "${WORKSPACE}/system/memory/:"
 SRC_URI   = "file://libdmabufheap"
 
 S = "${WORKDIR}/libdmabufheap"
-DEPENDS += "virtual/kernel libbase libion"
-
-# To get kernel headers for compilation
-do_configure[depends] += "virtual/kernel:do_shared_workdir"
+DEPENDS += "linux-msm-headers libbase libion"
 
 EXTRA_OECONF_append = " \
     --disable-static \
-    --with-sanitized-headers=${STAGING_KERNEL_BUILDDIR}/usr/include \
+    --with-sanitized-headers=${STAGING_INCDIR}/linux-msm/usr/include \
 "
 
 PACKAGES +="${PN}-test-bin"
