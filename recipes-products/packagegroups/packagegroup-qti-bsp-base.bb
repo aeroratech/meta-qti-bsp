@@ -20,6 +20,7 @@ RDEPENDS_packagegroup-android-utils-base = "\
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', '', 'leproperties', d)} \
     logcat \
     logd \
+    libsync \
     ${@oe.utils.conditional('PROPERTIES_SUPPORT', 'True', 'system-prop', '', d)} \
     "
 
