@@ -52,7 +52,7 @@ if [ -f "$mountpoint" ]; then
     fi
 
     mount -o "bind" "$spec" "$mountpoint"
-    /sbin/restorecon "$mountpoint"
+    test ! -x /sbin/restorecon || /sbin/restorecon "$mountpoint"
 fi
 
 if [ -d "$mountpoint" ]; then
@@ -72,7 +72,7 @@ if [ -d "$mountpoint" ]; then
                 cp --preserve=all "$file" "$spec/"
             fi
             mount -o "bind" "$spec/$file" "$mountpoint/$file"
-            /sbin/restorecon "$mountpoint/$file"
+            test ! -x /sbin/restorecon || /sbin/restorecon "$mountpoint/$file"
         fi
    done
 fi
