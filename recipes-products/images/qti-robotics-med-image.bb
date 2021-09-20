@@ -20,12 +20,14 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               glib-2.0 \
               kernel-modules \
               packagegroup-android-utils \
+              ${@bb.utils.contains('COMBINED_FEATURES', 'qti-bluetooth', "packagegroup-qti-bluetooth", "", d)} \
               packagegroup-qti-core \
               packagegroup-qti-data \
               packagegroup-qti-dsp \
               packagegroup-qti-ss-mgr \
+              packagegroup-qti-sensors-see \
+              packagegroup-qti-test-sensors-see \
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
-              ${@bb.utils.contains('COMBINED_FEATURES', 'qti-bluetooth', "packagegroup-qti-bluetooth", "", d)} \
               packagegroup-startup-scripts \
               packagegroup-support-utils \
               systemd-machine-units \
