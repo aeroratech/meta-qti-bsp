@@ -12,6 +12,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         glib-2.0 \
         kernel-modules \
         packagegroup-android-utils \
+        packagegroup-qti-audio \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-bluetooth', "packagegroup-qti-bluetooth", "", d)} \
         packagegroup-qti-camera \
         packagegroup-qti-core \
@@ -22,6 +23,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-fastcv \
         packagegroup-qti-gfx \
         packagegroup-qti-gst \
+        packagegroup-qti-pulseaudio \
         packagegroup-qti-securemsm \
         packagegroup-qti-sensors-see \
         packagegroup-qti-ss-mgr \
@@ -33,13 +35,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         systemd-machine-units \
         ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
 "
-#Install packages for audio
-CORE_IMAGE_EXTRA_INSTALL += " \
-            audiodlkm \
-            init-audio \
-            tinyalsa \
-            tinycompress \
-"
+
 #install drm
 CORE_IMAGE_EXTRA_INSTALL += " \
             libdrm \
