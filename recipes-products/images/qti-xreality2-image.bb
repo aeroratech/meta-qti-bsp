@@ -6,6 +6,7 @@ require qti-xreality-image.bb
 # Remove unsupported package groups
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-camera"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-display"
+CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-dsp"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-fastcv"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-cvp"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-gfx"
