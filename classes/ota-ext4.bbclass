@@ -17,8 +17,8 @@ OTA_FULL_UPDATE_EXT4_PATH = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_FULL_UP
 OTA_INCREMENTAL_UPDATE_EXT4 = "incremental_update_ext4.zip"
 OTA_INCREMENTAL_UPDATE_EXT4_PATH = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_INCREMENTAL_UPDATE_EXT4}"
 
-MACHINE_FILESMAP_SEARCH_PATH ?= "${@':'.join('%s/conf/machine/filesmap' % p for p in '${BBPATH}'.split(':'))}}"
-MACHINE_FILESMAP_FULL_PATH = "${@machine_search(d.getVar('MACHINE_FILESMAP_CONF'), d.getVar('MACHINE_FILESMAP_SEARCH_PATH')) or ''}"
+MACHINE_FILESMAP_SEARCH_PATH_EXT4 ?= "${@':'.join('%s/conf/machine/filesmap' % p for p in '${BBPATH}'.split(':'))}}"
+MACHINE_FILESMAP_FULL_PATH_EXT4 = "${@machine_search(d.getVar('MACHINE_FILESMAP_CONF_EMMC'), d.getVar('MACHINE_FILESMAP_SEARCH_PATH_EXT4')) or ''}"
 
 #Create directory structure for targetfiles.zip
 do_recovery_ext4[cleandirs] += "${OTA_TARGET_IMAGE_ROOTFS_EXT4}"
@@ -44,7 +44,7 @@ do_recovery_ext4() {
     echo "recovery image rootfs: ${RECOVERY_IMAGE_ROOTFS}"
 
     # if exists copy filesmap into RADIO directory
-    radiofilesmap=${MACHINE_FILESMAP_FULL_PATH}
+    radiofilesmap=${MACHINE_FILESMAP_FULL_PATH_EXT4}
     [[ ! -z "$radiofilesmap" ]] && install -m 755 $radiofilesmap ${OTA_TARGET_IMAGE_ROOTFS_EXT4}/RADIO/filesmap
 
     # copy the boot\recovery images
