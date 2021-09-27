@@ -44,3 +44,5 @@ TOOLCHAIN_TARGET_TASK_append = " linux-msm-headers-dev"
 
 # To include kernel sources in SDK to build kernel modules
 TOOLCHAIN_TARGET_TASK_append = " kernel-devsrc"
+
+TOOLCHAIN_TARGET_TASK_append = "  ath6kl-utils-staticdev"
