@@ -22,7 +22,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-dsp \
         packagegroup-qti-fastcv \
         packagegroup-qti-gfx \
-        packagegroup-qti-gst \
         packagegroup-qti-pulseaudio \
         packagegroup-qti-qvr \
         packagegroup-qti-securemsm \
