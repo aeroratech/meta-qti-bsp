@@ -24,3 +24,6 @@ CORE_IMAGE_EXTRA_INSTALL_remove = "gbm"
 CORE_IMAGE_EXTRA_INSTALL_remove = "libdrm"
 CORE_IMAGE_EXTRA_INSTALL_remove = "libdrm-tests"
 CORE_IMAGE_EXTRA_INSTALL_remove = "libdrm-kms"
+
+# Remove unsupported SDK packages
+TOOLCHAIN_TARGET_TASK_remove = "ath6kl-utils-staticdev"
