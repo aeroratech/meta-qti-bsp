@@ -34,3 +34,5 @@ ro.debuggable=1
 # Camera hal module
 ro.hardware.camera=qcom
 
+#enable weston during boot
+persist.display.launch.weston.at.bootup=true
