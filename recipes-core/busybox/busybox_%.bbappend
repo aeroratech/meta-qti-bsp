@@ -23,6 +23,7 @@ SRC_URI += "\
             file://0001-Support-MTP-function.patch \
             file://fix-mdev-crash.patch \
             file://sensors.sh \
+            file://add_lock_util.patch \
 "
 SRC_URI_append_apq8053 += "file://apq8053/mdev.conf"
 
