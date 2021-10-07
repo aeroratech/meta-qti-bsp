@@ -293,7 +293,7 @@ def do_make_one_veritybootimg(d, img):
     import subprocess
 
     xtra_parms=""
-    if bb.utils.contains('DISTRO_FEATURES', 'nand-boot', True, False, d):
+    if bb.utils.contains('MACHINE_FEATURES', 'nand-boot', True, False, d):
         xtra_parms = " --tags-addr" + " " + d.getVar('KERNEL_TAGS_OFFSET')
 
     verity_cmdline = ""

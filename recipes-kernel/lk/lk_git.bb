@@ -25,9 +25,9 @@ MY_TARGET_apq8053  = "msm8953"
 MY_TARGET_apq8017  = "msm8952"
 MY_TARGET         ?= "${BASEMACHINE}"
 
-BOOTLOADER_NAME = "${@bb.utils.contains('DISTRO_FEATURES', 'emmc-boot', 'emmc_appsboot', 'appsboot', d)}"
+BOOTLOADER_NAME = "${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'emmc_appsboot', 'appsboot', d)}"
 
-emmc_bootloader = "${@bb.utils.contains('DISTRO_FEATURES', 'emmc-boot', '1', '0', d)}"
+emmc_bootloader = "${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', '1', '0', d)}"
 
 LIBGCC = "${STAGING_LIBDIR}/${TARGET_SYS}/8.2.0/libgcc.a"
 
