@@ -29,3 +29,5 @@ CORE_IMAGE_EXTRA_INSTALL_remove = "libdrm-kms"
 
 # Remove unsupported SDK packages
 TOOLCHAIN_TARGET_TASK_remove = "ath6kl-utils-staticdev"
+TOOLCHAIN_TARGET_TASK_remove = "fluoride-staticdev"
+TOOLCHAIN_TARGET_TASK_remove = "btobex-staticdev"
