@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://NOTICE;md5=eeec5cfa0edfb54bfdba757236c7b531"
 
 PR = "r0"
 
-FILESPATH =+ "${WORKSPACE}/kernel-5.10/kernel_platform/prebuilts-master/clang/host/linux-x86/:"
+FILESPATH =+ "${WORKSPACE}/kernel-5.10/kernel_platform/prebuilts-master/clang/host/linux-x86/:${WORKSPACE}/kernel-5.10/kernel_platform/prebuilts/clang/host/linux-x86/:"
 SRC_URI    = "file://clang-${PV}"
 PV = "r416183b"
 
