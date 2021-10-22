@@ -1,6 +1,9 @@
 INIT_RAMDISK = "${@d.getVar('MACHINE_SUPPORTS_INIT_RAMDISK') or "False"}"
 RAMDISKDIR = "${WORKDIR}/ramdisk"
 
+TOYBOX_RAMDISK ?= "False"
+PACKAGE_INSTALL += "${@bb.utils.contains('TOYBOX_RAMDISK', 'True', 'toybox mksh', '', d)}"
+
 do_ramdisk_create[depends] += "virtual/kernel:do_deploy"
 do_ramdisk_create[cleandirs] += "${RAMDISKDIR}"
 fakeroot do_ramdisk_create() {
@@ -26,15 +29,43 @@ fakeroot do_ramdisk_create() {
         mkdir -p ${RAMDISKDIR}/sys
         cd ${RAMDISKDIR}
         ln -s bin sbin
-        cp ${IMAGE_ROOTFS}/bin/busybox bin/
-        cp ${IMAGE_ROOTFS}/bin/busybox.suid bin/
+        if [[ "${TOYBOX_RAMDISK}" == "True" ]]; then
+            cp ${IMAGE_ROOTFS}/usr/lib/libcrypt.so.2 lib/libcrypt.so.2
+            cp ${IMAGE_ROOTFS}/bin/toybox bin/
+            cp ${IMAGE_ROOTFS}/bin/mksh bin/
+            ln -s mksh bin/sh
+            # install all the toybox commands
+            if [ -r ${IMAGE_ROOTFS}/etc/toybox.links ]; then
+                while read -r LREAD; do
+                    ln -s toybox ${LREAD:1}
+                done < ${IMAGE_ROOTFS}/etc/toybox.links
+            fi
+        else
+            cp ${IMAGE_ROOTFS}/bin/busybox bin/
+            cp ${IMAGE_ROOTFS}/bin/busybox.suid bin/
+            cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/fstab etc/
+            cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/inittab etc/
+            cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/profile etc/
+            cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/rcS etc/init.d
+            # Run rcS script only if busybox is init manager in ramdisk.
+            # In other cases, ramdisk will be used in early boot but no init in busybox.
+            if ${@oe.utils.conditional('INIT_RAMDISK', 'True', 'true', 'false', d)}; then
+                chmod 744 etc/init.d/rcS
+            fi
+            ln -s busybox bin/sh
+            ln -s busybox bin/echo
+            ln -s busybox.suid bin/mount
+            ln -s busybox.suid bin/umount
+            if ${@bb.utils.contains('IMAGE_DEV_MANAGER', 'mdev', 'true', 'false', d)}; then
+                ln -s busybox bin/mdev
+            fi
+        fi
         if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'true', 'false', d)}; then
             cp ${IMAGE_ROOTFS}/lib/ld-linux-aarch64.so.1 lib/ld-linux-aarch64.so.1
             cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/vmrd-init .
             chmod 744 vmrd-init
             ln -s vmrd-init init
         else
-            cp ${IMAGE_ROOTFS}/lib/ld-linux-armhf.so.3 lib/ld-linux-armhf.so.3
             cp ${IMAGE_ROOTFS}/sbin/adbd sbin/
             cp ${IMAGE_ROOTFS}/sbin/usb_composition sbin/
             cp -r ${IMAGE_ROOTFS}/sbin/usb/ sbin/
@@ -52,7 +83,15 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/lib/libgcc_s.so.1 lib/libgcc_s.so.1
             #cp ${IMAGE_ROOTFS}/lib/libcrypto.so.1.0.0 lib/libcrypto.so.1.0.0
             cp ${IMAGE_ROOTFS}/usr/lib/libstdc++.so.6 lib/libstdc++.so.6
-            ln -s bin/busybox init
+            if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-csm', 'true', 'false', d)}; then
+                cp ${IMAGE_ROOTFS}/lib/ld-linux-aarch64.so.1 lib/ld-linux-aarch64.so.1
+                cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/csmrd-init .
+                chmod 744 csmrd-init
+                ln -s csmrd-init init
+            else
+                cp ${IMAGE_ROOTFS}/lib/ld-linux-armhf.so.3 lib/ld-linux-armhf.so.3
+                ln -s bin/busybox init
+            fi
         fi
         cp ${IMAGE_ROOTFS}/lib/libz.so.1 lib/libz.so.1
         cp ${IMAGE_ROOTFS}/lib/libc.so.6 lib/libc.so.6
@@ -61,21 +100,11 @@ fakeroot do_ramdisk_create() {
         cp ${IMAGE_ROOTFS}/lib/libpthread.so.0 lib/libpthread.so.0
         cp ${IMAGE_ROOTFS}/lib/libdl.so.2 lib/libdl.so.2
         cp ${IMAGE_ROOTFS}/lib/libresolv.so.2 lib/libresolv.so.2
-        cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/fstab etc/
-        cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/inittab etc/
-        cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/profile etc/
-        cp ${COREBASE}/meta-qti-bsp/recipes-core/busybox/files/rcS etc/init.d
         if ${@bb.utils.contains('IMAGE_DEV_MANAGER', 'mdev', 'true', 'false', d)}; then
             cp ${IMAGE_ROOTFS}/etc/init.d/mdev etc/init.d/
             cp ${IMAGE_ROOTFS}/etc/mdev.conf etc/
             cp -r ${IMAGE_ROOTFS}/etc/mdev etc/
             cat etc/init.d/mdev >> etc/init.d/rcS
-        fi
-
-        # Run rcS script only if busybox is init manager in ramdisk.
-        # In other cases, ramdisk will be used in early boot but no init in busybox.
-        if ${@oe.utils.conditional('INIT_RAMDISK', 'True', 'true', 'false', d)}; then
-            chmod 744 etc/init.d/rcS
         fi
 
         if ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'true', 'false', d)}; then
@@ -88,13 +117,6 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/usr/lib/libpcre.so.1 lib/libpcre.so.1
         else
             cp ${IMAGE_ROOTFS}/lib/libpcre.so.1 lib/libpcre.so.1
-        fi
-        ln -s busybox bin/sh
-        ln -s busybox bin/echo
-        ln -s busybox.suid bin/mount
-        ln -s busybox.suid bin/umount
-        if ${@bb.utils.contains('IMAGE_DEV_MANAGER', 'mdev', 'true', 'false', d)}; then
-            ln -s busybox bin/mdev
         fi
 
         if ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs', 'true', 'false', d), 'false', d)}; then
