@@ -31,8 +31,6 @@
 
 inherit populate_sdk_ext
 
-addtask populate_sdk after do_install before do_build
-
 # To include protoc compiler in SDK
 TOOLCHAIN_HOST_TASK_append = " nativesdk-protobuf-compiler "
 
