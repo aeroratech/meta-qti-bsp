@@ -5,6 +5,9 @@ inherit qimage
 
 IMAGE_FEATURES += "ssh-server-openssh"
 
+# This image doesn't support abl generation
+EXTRA_IMAGEDEPENDS_remove = "edk2"
+
 CORE_IMAGE_EXTRA_INSTALL += "\
         e2fsprogs \
         e2fsprogs-e2fsck \
