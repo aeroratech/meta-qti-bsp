@@ -30,3 +30,7 @@ ro.product.board=qrbx210
 
 # If ro.debuggable is 1, then enable adb root
 ro.debuggable=1
+
+# Camera hal module
+ro.hardware.camera=qcom
+
