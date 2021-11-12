@@ -17,6 +17,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-camera \
         packagegroup-qti-core \
         packagegroup-qti-cvp \
+        ${@bb.utils.contains('MACHINE_FEATURES', 'qti-eva', "packagegroup-qti-eva", "", d)} \
         ${@bb.utils.contains('MACHINE_FEATURES', 'qti-data-modem', "packagegroup-qti-data", "", d)} \
         packagegroup-qti-display \
         packagegroup-qti-dsp \
