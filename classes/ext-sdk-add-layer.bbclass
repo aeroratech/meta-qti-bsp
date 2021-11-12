@@ -1,4 +1,4 @@
-# Copyright (c) 2021, The Linux Foundation. All rights reserved.
+# Copyright (c) 2021 The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -25,30 +25,22 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# The majority of populate_sdk is located in populate_sdk_base
-# which is inherited by populate_sdk_ext. So inheriting
-# populate_sdk_ext also helps to run populate_sdk task.
-
-inherit populate_sdk_ext
-
-python copy_buildsystem_append() {
-    # Create src directory in extensible SDK to copy the project sources
-    bb.utils.mkdirhier(baseoutpath + '/src')
-    # Enable the use of WORKSPACE variable on an extensible SDK
-    with open(baseoutpath + '/conf/bblayers.conf', 'a') as f:
-        f.write('WORKSPACE = "$' + '{TOPDIR}/src"\n')
+# This function creates a script to add custom bitbake layers
+# to an extensible SDK.
+ext_sdk_add_layer_script() {
+        add_layer_script=${1:-${SDK_OUTPUT}/${SDKPATH}/add_bitbake_layer}
+        rm -f $add_layer_script
+        touch $add_layer_script
+        echo 'read -p  "Please enter the path to your custom layer: " layer_path' >> $add_layer_script
+        echo 'if [[ -r ${layer_path}/conf/layer.conf ]] ;' >> $add_layer_script
+        echo 'then' >> $add_layer_script
+        echo '    working_dir=`pwd`' >> $add_layer_script
+        echo '    cd ${SDK_ROOT}' >> $add_layer_script
+        echo '    ${SDK_ROOT}/layers/poky/bitbake/bin/bitbake-layers add-layer ${layer_path}' >> $add_layer_script
+        echo '    echo "Your layer is successfully added to the eSDK workspace."' >> $add_layer_script
+        echo '    echo "You may now start the development using devtools"' >> $add_layer_script
+        echo '    cd ${working_dir}' >> $add_layer_script
+        echo 'else' >> $add_layer_script
+        echo '    echo "`tput setaf 3`Specified layer directory ${layer_path} does not contain a conf/layer.conf file`tput sgr0`"' >> $add_layer_script
+        echo 'fi' >> $add_layer_script
 }
-
-# To include protoc compiler in SDK
-TOOLCHAIN_HOST_TASK_append = " nativesdk-protobuf-compiler "
-
-# Add nativesdk-llvm-arm-toolchain in SDK to run on SDKMACHINE
-TOOLCHAIN_HOST_TASK_append = " nativesdk-llvm-arm-toolchain"
-
-# To include kernel headers in SDK
-TOOLCHAIN_TARGET_TASK_append = " linux-msm-headers-dev"
-
-# To include kernel sources in SDK to build kernel modules
-TOOLCHAIN_TARGET_TASK_append = " kernel-devsrc"
-
-TOOLCHAIN_TARGET_TASK_append = "  ath6kl-utils-staticdev"
