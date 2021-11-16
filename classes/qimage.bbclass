@@ -155,6 +155,8 @@ python(){
                 deps += " %s:%s" % (dep, task)
             elif 'lk' in dep:
                 deps += " %s:%s" % (dep, task)
+            elif 'linux-host' in dep:
+                deps += " %s:%s" % (dep, task)
         return deps
 
     d.appendVarFlag('do_rootfs', 'depends', extraimage_getdepends('do_populate_sysroot'))
