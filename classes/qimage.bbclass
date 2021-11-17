@@ -67,7 +67,6 @@ IMAGE_LOGIN_MANAGER = "busybox-static"
 DEPENDS += "\
              ext4-utils-native \
              gen-partitions-tool-native \
-             mkbootimg-native \
              mtd-utils-native \
              openssl-native \
              pkgconfig-native \
@@ -222,7 +221,7 @@ python do_make_bootimg () {
 }
 do_make_bootimg[dirs]      = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"
 # Make sure native tools and vmlinux ready to create boot.img
-do_make_bootimg[depends] += "virtual/kernel:do_deploy mkbootimg-native:do_populate_sysroot"
+do_make_bootimg[depends] += "virtual/kernel:do_deploy virtual/mkbootimg-native:do_populate_sysroot"
 SSTATETASKS += "do_make_bootimg"
 SSTATE_SKIP_CREATION_task-make-bootimg = '1'
 do_make_bootimg[sstate-inputdirs] = "${BOOTIMGDEPLOYDIR}"

@@ -13,3 +13,5 @@ S = "${WORKDIR}/${BPN}"
 DEPENDS += "libmincrypt-native"
 
 NATIVE_INSTALL_WORKS = "1"
+
+PROVIDES = "virtual/mkbootimg-native"
