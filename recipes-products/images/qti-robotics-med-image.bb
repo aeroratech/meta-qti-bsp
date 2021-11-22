@@ -32,6 +32,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-security', "packagegroup-qti-securemsm", "", d)} \
               packagegroup-qti-sensors-see \
               packagegroup-qti-test-sensors-see \
+              packagegroup-qti-video \
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
               packagegroup-startup-scripts \
               packagegroup-support-utils \
