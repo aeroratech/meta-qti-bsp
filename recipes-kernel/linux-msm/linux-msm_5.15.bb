@@ -106,6 +106,11 @@ do_prebuilt_configure() {
     done
     install -m 0644 vmlinux ${B}
     install -m 0644 System.map ${B}
+    # copy initramfs scripts
+    install -d ${B}/usr
+    cp -R ../msm-kernel/usr/gen_init_cpio ${B}/usr
+    cp -R ../msm-kernel/usr/initramfs_data.cpio ${B}/usr
+    cp -R ../msm-kernel/usr/initramfs_inc_data ${B}/usr
 }
 
 do_prebuilt_shared_workdir[cleandirs] += " ${STAGING_KERNEL_BUILDDIR}"
@@ -242,6 +247,17 @@ do_deploy() {
              ${DEPLOYDIR}/*.dtbo
 
     fi
+
+    # copy initramfs scripts
+     install -d ${DEPLOYDIR}/build-artifacts
+     install -d ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
+     install -d ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
+
+     cp  ${S}/usr/gen_initramfs.sh ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
+     cp -a ${B}/usr/gen_init_cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
+     cp -a ${B}/usr/initramfs_data.cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
+     cp -a ${B}/usr/initramfs_inc_data ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
+
 }
 
 # Put the zImage in the kernel-dev pkg
