@@ -14,6 +14,7 @@ RDEPENDS_${PN} = "\
     bash \
     bind-utils \
     bzip2 \
+    coreutils \
     dhcp-client \
     diffutils \
     e2fsprogs \
