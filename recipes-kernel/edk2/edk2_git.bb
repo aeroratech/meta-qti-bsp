@@ -24,8 +24,6 @@ SYSTEMD_BOOTSLOT_ENABLED = "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-bo
 
 DM_MOD_FOR_KERNEL5_4 = "${@bb.utils.contains('BASEMACHINE', 'qrbx210', '1', '0', d)}"
 
-VERITY_DEVICE_WAIT = "${@bb.utils.contains('BASEMACHINE', 'sdxlemur', '1', '0', d)}"
-
 EXTRA_OEMAKE = " \
     'TARGET_ARCHITECTURE=${TARGET_ARCH}' \
     'BUILDDIR=${B}' \
@@ -39,7 +37,6 @@ EXTRA_OEMAKE = " \
     'EDK_TOOLS_PATH=${S}/BaseTools' \
     'EARLY_ETH_ENABLED=${EARLY_ETH}' \
     'OVERRIDE_ABL_LOAD_ADDRESS=${ABL_LOAD_ADDRESS}' \
-    'VERITY_DEVICE_WAIT_SUPPORT=${VERITY_DEVICE_WAIT}' \
 "
 EXTRA_OEMAKE_append_qcs40x = " 'DISABLE_PARALLEL_DOWNLOAD_FLASH=1'"
 NAND_SQUASHFS_SUPPORT = "${@bb.utils.contains('DISTRO_FEATURES', 'nand-squashfs', '1', '0', d)}"
