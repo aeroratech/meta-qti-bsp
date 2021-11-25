@@ -47,6 +47,7 @@ BTFM.bin                /dev/block/bootdevice/by-name/bluetooth
 abl.elf                 /dev/block/bootdevice/by-name/abl
 xbl.elf                 /dev/block/bootdevice/by-name/xbl
 pmic.elf                /dev/block/bootdevice/by-name/pmic
+dtbo.img                /dev/block/bootdevice/by-name/dtbo
 
 # filename + .bak       backup partition
 
