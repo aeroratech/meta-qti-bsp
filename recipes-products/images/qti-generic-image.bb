@@ -1,7 +1,7 @@
 # Provides packages required to build
 # QTI Generic Linux image.
 
-inherit qimage
+inherit qimage populate_sdk_ext
 
 IMAGE_FEATURES += "ssh-server-openssh"
 
@@ -25,3 +25,11 @@ CORE_IMAGE_EXTRA_INSTALL += " \
             libdrm \
             wayland \
             "
+
+python copy_buildsystem_append() {
+    # Create src directory in extensible SDK to copy the project sources
+    bb.utils.mkdirhier(baseoutpath + '/src')
+    # Enable the use of WORKSPACE variable on an extensible SDK
+    with open(baseoutpath + '/conf/bblayers.conf', 'a') as f:
+        f.write('WORKSPACE = "$' + '{TOPDIR}/src"\n')
+}
