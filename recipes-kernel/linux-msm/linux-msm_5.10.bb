@@ -16,7 +16,7 @@ SRC_URI_append_cinder  +=  "${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'Tru
 S = "${WORKDIR}/kernel-5.10/kernel_platform/msm-kernel"
 PR = "r0"
 
-DEPENDS += "kernel-toolchain-native dtc-android-build-native rsync-native"
+DEPENDS += "virtual/kernel-toolchain-native virtual/dtc-native rsync-native"
 
 LDFLAGS_aarch64 = "-O1 --hash-style=gnu --as-needed"
 TARGET_CXXFLAGS += "-Wno-format"

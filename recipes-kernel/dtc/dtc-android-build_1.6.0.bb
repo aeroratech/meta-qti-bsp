@@ -7,14 +7,14 @@ ${LICENSE};md5=801f80980d171dd6425610833a22dbe6"
 S = "${WORKDIR}/bin"
 BBCLASSEXTEND = "native"
 
+PROVIDES = "virtual/dtc-native"
+
 FILESPATH =+ "${WORKSPACE}/kernel-5.10/kernel_platform/prebuilts/kernel-build-tools/linux-x86/:"
 SRC_URI    = "file://bin"
 
 INHIBIT_SYSROOT_STRIP = "1"
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
-
-BBCLASSEXTEND = " native"
 
 do_install() {
     install -d ${D}/${bindir}/dtc/
