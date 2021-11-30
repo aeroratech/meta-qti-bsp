@@ -79,21 +79,16 @@
 #
 # ### Using prebuilt package(s)
 #
-# User needs to define a PREBUILT_SRC_DIR, E.g:
-#     PREBUILT_SRC_DIR = "/home/vendor/prebuilts"
-# To search under multiple paths mention in a space separated list, E.g:
+# PREBUILT_SRC_DIR will be defined in auto.conf file when the
+# setup-environment script is sourced. PREBUILT_SRC_DIR will
+# point to one or more paths mentioned in a space separated list.
+# E.g:
 #     PREBUILT_SRC_DIR = "/home/vendor/prebuilt1 /home/vendor/prebuilt2"
-#
-# It's possible to search under prebuilt_<PREBUILT_VARIANTS> directories
-# present under same parent directory as that of WORKSPACE root by setting
-# USE_DEFAULT_PREBUILT_SRC_DIR variable to "1", default is "0". These
-# additional paths are considered along with the ones defined in
-# PREBUILT_SRC_DIR. No sanity checks are in place for dupliate tarballs.
+# Note that there are no sanity checks are in place for dupliate tarballs.
 # Users need to carefully provide paths to avoid surprizes.
-#
-# In which the prebuilt package is populated. If prebuilt class
-# finds a package compatible with the recipe, it will be used to
-# populate ${D}, fetch, compile... functions will be discarded.
+# If prebuilt class finds a package compatible with the recipe in
+# a path mentioned in PREBUILT_SRC_DIR that is compatible with the recipe,
+# it will be used to populate ${D}. fetch, compile... functions will be discarded.
 
 # Anonymous function needs to be executed each time so that runqueue
 # can be updated
@@ -107,25 +102,6 @@ PREBUILT_INHIBIT_DEPS ?= "0"
 # Default prebuilt package
 PREBUILT_PACKAGES ?= "${PN}"
 
-# Compute prebuilt paths
-def get_prebuilt_paths(d):
-    pbpaths = []
-
-    srcdir = d.getVar('PREBUILT_SRC_DIR')
-    if srcdir:
-        pbpaths.append(srcdir)
-
-    defaultsrc = d.getVar('USE_DEFAULT_PREBUILT_SRC_DIR')
-    if defaultsrc == "1":
-        dpbpath = os.path.dirname(os.path.abspath(d.getVar('WORKSPACE')))
-        pbvariants = (d.getVar("PREBUILT_VARIANTS") or "").split()
-        for variant in pbvariants:
-            pbpaths.append(dpbpath + '/' + 'prebuilt_' + variant)
-
-    bb.debug(1,"Searching for prebuilts in: %s" % pbpaths)
-
-    return " ".join(pbpaths)
-
 # Install Prebuilt tarball
 do_install_prebuilt[dirs] = "${D}"
 do_install_prebuilt[doc] = "Populate Destination directory with prebuilt package content"
@@ -133,6 +109,7 @@ do_install_prebuilt[doc] = "Populate Destination directory with prebuilt package
 fakeroot python do_install_prebuilt() {
     import shutil
 
+    prebuiltsrcdir = d.getVar('PREBUILT_SRC_DIR')
     licensedir = d.getVar('LICENSE_DIRECTORY')
     arch = d.getVar('PACKAGE_ARCH')
     alternate_archs = (d.getVar('MACHINEOVERRIDES') or "").split(":")
@@ -143,7 +120,7 @@ fakeroot python do_install_prebuilt() {
     done = True
 
     # Check if prebuilt tarball exist
-    for prebuiltsrc in (get_prebuilt_paths(d) or "").split():
+    for prebuiltsrc in (prebuiltsrcdir or "").split():
         ppackages = (d.getVar("PREBUILT_PACKAGES") or "").split()
         for ppackage in ppackages:
             tbpath = prebuiltsrc + "/" + ppackage + "_" + pv + "_" + arch + ".tar.gz"
@@ -288,6 +265,7 @@ PREBUILT_DISCARDED_TASKS += "\
 "
 
 python () {
+    prebuiltsrcdir = d.getVar('PREBUILT_SRC_DIR')
     arch = d.getVar('PACKAGE_ARCH')
     alternate_archs = (d.getVar('MACHINEOVERRIDES') or "").split(":")
     pn = d.getVar('PN')
@@ -295,7 +273,7 @@ python () {
     found = False
 
     # Check if prebuilt tarball exist
-    for prebuiltsrc in (get_prebuilt_paths(d) or "").split():
+    for prebuiltsrc in (prebuiltsrcdir or "").split():
         ppackages = (d.getVar("PREBUILT_PACKAGES") or "").split()
         for ppackage in ppackages:
             tarball = ppackage + "_" + pv + "_" + arch + ".tar.gz"
