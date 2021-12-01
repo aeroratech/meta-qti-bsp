@@ -117,7 +117,7 @@ def get_prebuilt_paths(d):
 
     defaultsrc = d.getVar('USE_DEFAULT_PREBUILT_SRC_DIR')
     if defaultsrc == "1":
-        dpbpath = os.path.dirname(os.path.abspath(os.path.join(d.getVar('THISDIR'), '../../../src/')))
+        dpbpath = os.path.dirname(os.path.abspath(d.getVar('WORKSPACE')))
         pbvariants = (d.getVar("PREBUILT_VARIANTS") or "").split()
         for variant in pbvariants:
             pbpaths.append(dpbpath + '/' + 'prebuilt_' + variant)
