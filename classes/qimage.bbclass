@@ -190,6 +190,15 @@ python rootfs_ignore_packages() {
 ################################################
 BOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-bootimage-complete"
 
+INITRAMFS_IMAGE ?= ''
+RAMDISK = "${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.${INITRAMFS_FSTYPES}"
+def get_ramdisk_path(d):
+    if os.path.exists(d.getVar('RAMDISK')):
+        return '%s' %(d.getVar('RAMDISK'))
+    return '/dev/null'
+
+RAMDISK_PATH = "${@get_ramdisk_path(d)}"
+
 python do_make_bootimg () {
     import subprocess
 
@@ -198,6 +207,7 @@ python do_make_bootimg () {
         xtra_parms = " --tags-addr" + " " + d.getVar('KERNEL_TAGS_OFFSET')
 
     mkboot_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/mkbootimg'
+    ramdisk_path    = d.getVar('RAMDISK_PATH')
     zimg_path       = d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + d.getVar('KERNEL_IMAGETYPE', True)
     cmdline         = "\"" + d.getVar('KERNEL_CMD_PARAMS', True) + "\""
     pagesize        = d.getVar('PAGE_SIZE', True)
@@ -209,8 +219,8 @@ python do_make_bootimg () {
             output += ".noverity"
 
     # cmd to make boot.img
-    cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s %s --ramdisk /dev/null --ramdisk_offset 0x0 --output %s" \
-           % (zimg_path, cmdline, pagesize, base, xtra_parms, output )
+    cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s %s --ramdisk %s --ramdisk_offset 0x0 --output %s" \
+           % (zimg_path, cmdline, pagesize, base, xtra_parms, ramdisk_path, output )
 
     bb.debug(1, "do_make_bootimg cmd: %s" % (cmd))
 
@@ -239,7 +249,7 @@ python do_make_gki_bootimg () {
     import subprocess
 
     mkboot_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/scripts/mkbootimg.py'
-    ramdisk_path    = d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + 'qti-ramdisk-image-initrd.gz'
+    ramdisk_path    = d.getVar('RAMDISK_PATH')
     header_version = "3"
 
     zimg_path       = d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + d.getVar('KERNEL_IMAGETYPE', True)
