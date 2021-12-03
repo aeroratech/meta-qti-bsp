@@ -25,6 +25,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-audio', 'packagegroup-qti-audio', '', d)} \
         packagegroup-qti-ss-mgr \
         packagegroup-qti-telematics \
+        packagegroup-qti-telsdk \
         ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
         packagegroup-startup-scripts \
         packagegroup-support-utils \
