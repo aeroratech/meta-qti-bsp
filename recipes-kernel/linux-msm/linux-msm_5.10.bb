@@ -108,6 +108,10 @@ do_prebuilt_configure() {
     done
     install -m 0644 vmlinux ${B}
     install -m 0644 System.map ${B}
+
+    for dtbf in ${KERNEL_DTB_NAMES}; do
+        install -m 0644 $dtbf ${B}
+    done
 }
 
 do_prebuilt_shared_workdir[cleandirs] += " ${STAGING_KERNEL_BUILDDIR}"
@@ -189,7 +193,7 @@ KERNEL_EXTRA_ARGS += "DTC_EXT=${STAGING_DIR_NATIVE}/usr/bin/dtc/bin/dtc"
 
 do_compile_append() {
     for dtbf in ${KERNEL_DTB_NAMES}; do
-        dtbs="$dtbs arch/${ARCH}/boot/dts/$dtbf"
+        dtbs="$dtbs arch/${ARCH}/boot/dts/vendor/qcom/$dtbf"
     done
     cp arch/${ARCH}/boot/${KERNEL_IMAGETYPE} arch/${ARCH}/boot/${KERNEL_IMAGETYPE}.backup
     cat arch/${ARCH}/boot/${KERNEL_IMAGETYPE}.backup $dtbs > arch/${ARCH}/boot/${KERNEL_IMAGETYPE}
@@ -236,14 +240,9 @@ do_deploy() {
     install -m 0644 vmlinux ${DEPLOYDIR}
     install -m 0644 System.map ${DEPLOYDIR}
 
-    # copy dtbo files into deplydir and create dtbo.img if DTBO support enable
-    if [  "${DTBO_MACHINE}" == "True" ]; then
-        install -m 0644 ${DTBO_SRC_PATH}/*.dtbo ${DEPLOYDIR}
-        mkdtimg create ${DEPLOYDIR}/dtbo.img \
-             --page_size=${PAGE_SIZE} \
-             ${DEPLOYDIR}/*.dtbo
-
-    fi
+    for dtbf in ${KERNEL_DTB_NAMES}; do
+        install -m 0644 $dtbf ${DEPLOYDIR}
+    done
 }
 
 # Put the zImage in the kernel-dev pkg

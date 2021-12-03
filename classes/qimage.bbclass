@@ -199,14 +199,20 @@ def get_ramdisk_path(d):
 
 RAMDISK_PATH = "${@get_ramdisk_path(d)}"
 
+MKBOOTUTIL = '${@oe.utils.conditional("PREFERRED_PROVIDER_virtual/mkbootimg-native", "mkbootimg-gki-native", "scripts/mkbootimg.py", "mkbootimg", d)}'
+
 python do_make_bootimg () {
     import subprocess
 
     xtra_parms=""
     if bb.utils.contains('MACHINE_FEATURES', 'nand-boot', True, False, d):
         xtra_parms = " --tags-addr" + " " + d.getVar('KERNEL_TAGS_OFFSET')
+    if (d.getVar("BOOT_HEADER_VERSION") or "0") != "0":
+        xtra_parms += " --header_version " + d.getVar('BOOT_HEADER_VERSION')
+        # header version setting expects dtb to be passed seprately but not appended to kernel
+        xtra_parms += " --dtb " + d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + d.getVar('KERNEL_DTB_NAMES').strip()
 
-    mkboot_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/mkbootimg'
+    mkboot_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + "/" + d.getVar('MKBOOTUTIL')
     ramdisk_path    = d.getVar('RAMDISK_PATH')
     zimg_path       = d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + d.getVar('KERNEL_IMAGETYPE', True)
     cmdline         = "\"" + d.getVar('KERNEL_CMD_PARAMS', True) + "\""
@@ -219,8 +225,8 @@ python do_make_bootimg () {
             output += ".noverity"
 
     # cmd to make boot.img
-    cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s %s --ramdisk %s --ramdisk_offset 0x0 --output %s" \
-           % (zimg_path, cmdline, pagesize, base, xtra_parms, ramdisk_path, output )
+    cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s --ramdisk %s --ramdisk_offset 0x0 %s --output %s" \
+           % (zimg_path, cmdline, pagesize, base, ramdisk_path, xtra_parms, output )
 
     bb.debug(1, "do_make_bootimg cmd: %s" % (cmd))
 
@@ -244,32 +250,3 @@ python do_make_bootimg_setscene () {
 addtask do_make_bootimg_setscene
 
 addtask do_make_bootimg before do_image_complete
-
-python do_make_gki_bootimg () {
-    import subprocess
-
-    mkboot_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/scripts/mkbootimg.py'
-    ramdisk_path    = d.getVar('RAMDISK_PATH')
-    header_version = "3"
-
-    zimg_path       = d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + d.getVar('KERNEL_IMAGETYPE', True)
-    cmdline         = "\"" + d.getVar('KERNEL_CMD_PARAMS', True) + "\""
-    pagesize        = d.getVar('PAGE_SIZE', True)
-    base            = d.getVar('KERNEL_BASE', True)
-
-    # When verity is enabled add '.noverity' suffix to default boot img.
-    output          = d.getVar('BOOTIMAGE_TARGET', True)
-    if bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', True, False, d), False, d):
-            output += ".noverity"
-
-    # cmd to make boot.img
-    cmd =  mkboot_bin_path + " --header_version %s --kernel %s --cmdline %s --pagesize %s --base %s %s --ramdisk %s --ramdisk_offset 0x0 --output %s" \
-               % (header_version, zimg_path, cmdline, pagesize, base, xtra_parms, ramdisk_path, output )
-
-    bb.debug(1, "do_make_bootimg cmd: %s" % (cmd))
-
-    ret = subprocess.call(cmd, shell=True)
-    if ret != 0:
-        bb.error("Running: %s failed." % cmd)
-
-}
