@@ -1,5 +1,5 @@
 inherit autotools pkgconfig deploy
-COMPATIBLE_MACHINE = "genericarmv8"
+COMPATIBLE_MACHINE = "genericarmv8|trustedvm"
 
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform/"
