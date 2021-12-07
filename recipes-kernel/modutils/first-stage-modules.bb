@@ -36,7 +36,7 @@ do_compile () {
     for m in $loaded_modules; do
         if [ -f ${KERNEL_PREBUILT_PATH}/$m ]; then
             install -m 0644 ${KERNEL_PREBUILT_PATH}/$m ${B}
-            mname=`basename ${m}`
+            mname=`basename ${m} .ko`
             echo "$mname"
         else
             echo "# Module $m not found"
