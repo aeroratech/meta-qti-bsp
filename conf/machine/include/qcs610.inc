@@ -4,12 +4,11 @@ require conf/machine/include/basemachine.inc
 SOC_FAMILY ?= "qcs610"
 include conf/machine/include/soc-family.inc
 
-DEFAULTTUNE ?= "aarch64"
 include conf/machine/include/arm/arch-armv8a.inc
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
-PREFERRED_VERSION_linux-msm ?= "4.14"
-PREFERRED_VERSION_linux-msm-headers ?= "4.14"
+PREFERRED_VERSION_linux-msm ?= "5.4"
+PREFERRED_VERSION_linux-msm-headers ?= "5.4"
 
 PAGE_SIZE ?= '4096'
 
