@@ -15,6 +15,7 @@ PACKAGE_INSTALL = "\
     fsmgr \
     glib-2.0 \
     glibc \
+    initrd-release \
     libbase \
     libcutils \
     libgcc \
@@ -29,5 +30,8 @@ IMAGE_FSTYPES = "${INITRAMFS_FSTYPES}"
 IMAGE_NAME_SUFFIX = ""
 IMAGE_FEATURES = ""
 IMAGE_LINGUAS = ""
+
+# Set default target to initrd.target
+SYSTEMD_DEFAULT_TARGET = "initrd.target"
 
 inherit core-image
