@@ -23,28 +23,21 @@ do_install_append() {
     install -d ${D}${sysconfdir}
     install -m 0755 ${S}/launch_adbd -D ${D}${base_sbindir}/launch_adbd
     install -b -m 0644 /dev/null ${D}${sysconfdir}/adb_devid
-    install -m 0755 ${S}/start_pcie -D ${D}${sysconfdir}/start_pcie
 
     install -d ${D}${systemd_unitdir}/system/
-    install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
-    install -d ${D}${systemd_unitdir}/system/ffbm.target.wants/
     install -m 0644 ${S}/adbd.service -D ${D}${systemd_unitdir}/system/adbd.service
-    install -m 0644 ${S}/pcie.service -D ${D}${systemd_unitdir}/system/pcie.service
-    ln -sf ${systemd_unitdir}/system/adbd.service \
-        ${D}${systemd_unitdir}/system/multi-user.target.wants/adbd.service
-    ln -sf ${systemd_unitdir}/system/adbd.service \
-        ${D}${systemd_unitdir}/system/ffbm.target.wants/adbd.service
 
     if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', 'true', 'false', d)}; then
-        install -d ${D}${systemd_unitdir}/system/local-fs.target.wants/
-        rm -rf ${D}${systemd_unitdir}/system/multi-user.target.wants/adbd.service
-        rm -rf ${D}${systemd_unitdir}/system/multi-user.target.wants/usb.service
-        ln -sf ${systemd_unitdir}/system/adbd.service ${D}${systemd_unitdir}/system/local-fs.target.wants/adbd.service
-        ln -sf ${systemd_unitdir}/system/usb.service ${D}${systemd_unitdir}/system/local-fs.target.wants/usb.service
+        install -m 0755 ${S}/start_pcie -D ${D}${sysconfdir}/start_pcie
+        install -m 0644 ${S}/pcie.service -D ${D}${systemd_unitdir}/system/pcie.service
+        # Run adb as part of local-fs.target
         sed -i '/Requires=usb.service/s/$/ diag-router.service/' ${D}${systemd_unitdir}/system/adbd.service
-        ln -sf ${systemd_unitdir}/system/pcie.service ${D}${systemd_unitdir}/system/ffbm.target.wants/pcie.service
-        ln -sf ${systemd_unitdir}/system/pcie.service ${D}${systemd_unitdir}/system/local-fs.target.wants/pcie.service
+        sed -i 's/default.target/local-fs.target/g' ${D}${systemd_unitdir}/system/adbd.service
+        sed -i 's/default.target/local-fs.target/g' ${D}${systemd_unitdir}/system/pcie.service
     fi
 }
+
+SYSTEMD_SERVICE_${PN}  = " adbd.service "
+SYSTEMD_SERVICE_${PN} += "${@bb.utils.contains('MACHINE_FEATURES','qti-sdx',' pcie.service','',d)}"
 
 FILES_${PN} += "${systemd_unitdir}/system/"
