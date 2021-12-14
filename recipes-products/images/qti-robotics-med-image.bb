@@ -32,6 +32,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-gfx \
               packagegroup-qti-gst \
               packagegroup-qti-pulseaudio \
+              packagegroup-qti-robotics \
               packagegroup-qti-ss-mgr \
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-security', "packagegroup-qti-securemsm", "", d)} \
               packagegroup-qti-sensors-see \
