@@ -31,6 +31,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-fastcv \
               packagegroup-qti-gfx \
               packagegroup-qti-gst \
+              packagegroup-qti-ml \
               packagegroup-qti-pulseaudio \
               packagegroup-qti-robotics \
               packagegroup-qti-ss-mgr \
