@@ -3,6 +3,11 @@
 
 require qti-xreality-image.bb
 
+# Add aurora supported package groups
+CORE_IMAGE_EXTRA_INSTALL += "\
+        packagegroup-qti-camera-kernel \
+"
+
 # Remove unsupported package groups
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-audio"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-pulseaudio"
