@@ -21,9 +21,11 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               kernel-modules \
               packagegroup-android-utils \
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-bluetooth', "packagegroup-qti-bluetooth", "", d)} \
+              packagegroup-qti-camera \
               packagegroup-qti-core \
               packagegroup-qti-data \
               packagegroup-qti-dsp \
+              packagegroup-qti-fastcv \
               packagegroup-qti-gfx \
               packagegroup-qti-ss-mgr \
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-security', "packagegroup-qti-securemsm", "", d)} \
