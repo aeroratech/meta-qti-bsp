@@ -9,7 +9,7 @@ PR = "r0"
 LICENSE = "GPL-2.0 WITH Linux-syscall-note"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-DEPENDS += "mkdtimg-native bison-native"
+DEPENDS += "virtual/mkdtimg-native bison-native"
 
 do_unpack[cleandirs] += " ${S}"
 do_clean[cleandirs] += " ${S} ${STAGING_KERNEL_DIR} ${B} ${STAGING_KERNEL_BUILDDIR}"

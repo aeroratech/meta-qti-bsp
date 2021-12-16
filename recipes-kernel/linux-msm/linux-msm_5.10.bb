@@ -112,6 +112,9 @@ do_prebuilt_configure() {
     for dtbf in ${KERNEL_DTB_NAMES}; do
         install -m 0644 $dtbf ${B}
     done
+    for dtbof in $(find . -name "*.dtbo") ; do
+        install -m 0644 $dtbof ${B}
+    done
 }
 
 do_prebuilt_shared_workdir[cleandirs] += " ${STAGING_KERNEL_BUILDDIR}"
@@ -242,6 +245,10 @@ do_deploy() {
 
     for dtbf in ${KERNEL_DTB_NAMES}; do
         install -m 0644 $dtbf ${DEPLOYDIR}
+    done
+    install -d ${DEPLOYDIR}/DTOverlays
+    for dtbof in $(find . -name "*.dtbo") ; do
+        install -m 0644 $dtbof ${DEPLOYDIR}/DTOverlays
     done
 }
 

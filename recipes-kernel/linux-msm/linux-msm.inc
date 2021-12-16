@@ -4,7 +4,7 @@ DESCRIPTION = "CAF Linux Kernel"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
-DEPENDS += " mkbootimg-native openssl-native mod-signing-keys mkdtimg-native"
+DEPENDS += " mkbootimg-native openssl-native mod-signing-keys"
 RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
 
 LDFLAGS_aarch64 = "-O1 --hash-style=gnu --as-needed"
@@ -114,11 +114,8 @@ do_deploy() {
 
     # copy dtbo files into deplydir and create dtbo.img if DTBO support enable
     if [  "${DTBO_MACHINE}" == "True" ]; then
-        install -m 0644 ${DTBO_SRC_PATH}/*.dtbo ${DEPLOYDIR}
-        mkdtimg create ${DEPLOYDIR}/dtbo.img \
-             --page_size=${PAGE_SIZE} \
-             ${DEPLOYDIR}/*.dtbo
-
+        install -d ${DEPLOYDIR}/DTOverlays
+        install -m 0644 ${DTBO_SRC_PATH}/*.dtbo ${DEPLOYDIR}/DTOverlays
     fi
 }
 
