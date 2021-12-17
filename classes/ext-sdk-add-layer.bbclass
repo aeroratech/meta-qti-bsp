@@ -44,3 +44,52 @@ ext_sdk_add_layer_script() {
         echo '    echo "`tput setaf 3`Specified layer directory ${layer_path} does not contain a conf/layer.conf file`tput sgr0`"' >> $add_layer_script
         echo 'fi' >> $add_layer_script
 }
+
+# This function creates a script to add layers of an external workspace
+# to an extensible SDK
+ext_sdk_add_external_layers_script() {
+        add_external_layers_script=${1:-${SDK_OUTPUT}/${SDKPATH}/add_external_layers}
+        rm -f $add_external_layers_script
+        touch $add_external_layers_script
+        echo 'current_working_dir=`pwd`' >> $add_external_layers_script
+        echo 'read -p  "Please enter the path to root of the workspace: " workspace_root' >> $add_external_layers_script
+        echo 'cd ${workspace_root}/poky' >> $add_external_layers_script
+        echo 'rm -rf layerlist.txt' >> $add_external_layers_script
+        echo 'touch layerlist.txt' >> $add_external_layers_script
+        echo 'echo "`find -name layer.conf`" >> layerlist.txt' >> $add_external_layers_script
+        echo "sed -i 's+conf/layer.conf+ +g' layerlist.txt" >> $add_external_layers_script
+        echo 'lines=`cat layerlist.txt`' >> $add_external_layers_script
+        echo ': > layerlist.txt' >> $add_external_layers_script
+        echo '' >> $add_external_layers_script
+        echo 'for var in ${lines}' >> $add_external_layers_script
+        echo 'do' >> $add_external_layers_script
+        echo '     var=${var::${#var}-1}' >> $add_external_layers_script
+        echo '     var=${var:2}' >> $add_external_layers_script
+        echo '     echo "$var" >> layerlist.txt' >> $add_external_layers_script
+        echo 'done' >> $add_external_layers_script
+        echo '' >> $add_external_layers_script
+        echo 'lines=`cat layerlist.txt`' >> $add_external_layers_script
+        echo '' >> $add_external_layers_script
+        echo 'for var in ${lines}' >> $add_external_layers_script
+        echo 'do' >> $add_external_layers_script
+        echo '    grep -v "${var} " ${SDK_ROOT}/conf/bblayers.conf > ${SDK_ROOT}/conf/tmp-bblayers.conf' >> $add_external_layers_script
+        echo '    mv ${SDK_ROOT}/conf/tmp-bblayers.conf ${SDK_ROOT}/conf/bblayers.conf' >> $add_external_layers_script
+        echo 'done' >> $add_external_layers_script
+        echo '' >> $add_external_layers_script
+        echo 'echo "BBLAYERS += \" \ " >> ${SDK_ROOT}/conf/bblayers.conf' >> $add_external_layers_script
+        echo 'for var in ${lines}' >> $add_external_layers_script
+        echo 'do' >> $add_external_layers_script
+        echo '    if [[ -r ${workspace_root}/poky/${var}/conf/layer.conf ]] ;' >> $add_external_layers_script
+        echo '    then' >> $add_external_layers_script
+        echo '        echo "    ${workspace_root}/poky/${var} \ " >> ${SDK_ROOT}/conf/bblayers.conf' >> $add_external_layers_script
+        echo '        echo "`tput setaf 2`${workspace_root}/poky/${var} has been added as a layer to the eSDK`tput sgr0`"' >> $add_external_layers_script
+        echo '    else' >> $add_external_layers_script
+        echo '        echo "`tput setaf 3`Unable to read ${workspace_root}/poky/${var}/conf/layer.conf`tput sgr0`"' >> $add_external_layers_script
+        echo '    fi' >> $add_external_layers_script
+        echo 'done' >> $add_external_layers_script
+        echo 'echo "    \"" >> ${SDK_ROOT}/conf/bblayers.conf' >> $add_external_layers_script
+        echo 'rm layerlist.txt' >> $add_external_layers_script
+        echo '' >> $add_external_layers_script
+        echo 'cp -rf ${workspace_root}/src/* ${SDK_ROOT}/src' >> $add_external_layers_script
+        echo 'cd ${current_working_dir}' >> $add_external_layers_script
+}
