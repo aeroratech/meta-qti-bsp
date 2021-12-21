@@ -24,6 +24,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-audio \
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-bluetooth', "packagegroup-qti-bluetooth", "", d)} \
               packagegroup-qti-camera \
+              ${@bb.utils.contains('DISTRO_FEATURES', 'virtualization', 'packagegroup-qti-containers', '', d)} \
               packagegroup-qti-core \
               packagegroup-qti-data \
               packagegroup-qti-display \
