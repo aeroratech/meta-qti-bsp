@@ -32,6 +32,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-gfx \
               packagegroup-qti-gst \
               packagegroup-qti-ml \
+              packagegroup-qti-qmmf \
               packagegroup-qti-pulseaudio \
               packagegroup-qti-robotics \
               packagegroup-qti-ss-mgr \
