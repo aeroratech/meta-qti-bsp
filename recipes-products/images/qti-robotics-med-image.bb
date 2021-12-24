@@ -42,6 +42,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-test-sensors-see \
               packagegroup-qti-video \
               ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
+              ${@bb.utils.contains('DISTRO_FEATURES', 'ros2', 'packagegroup-ros2-foxy', '', d)} \
               packagegroup-startup-scripts \
               packagegroup-support-utils \
               systemd-machine-units \
