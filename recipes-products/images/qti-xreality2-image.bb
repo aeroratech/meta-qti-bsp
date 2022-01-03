@@ -11,7 +11,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
 # Remove unsupported package groups
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-audio"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-pulseaudio"
-CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-camera"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-fastcv"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-cvp"
 CORE_IMAGE_EXTRA_INSTALL_remove = "packagegroup-qti-securemsm"
