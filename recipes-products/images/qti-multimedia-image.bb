@@ -12,8 +12,12 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         e2fsprogs-mke2fs \
         glib-2.0 \
         kernel-modules \
+        libdrm-tests \
+        graphite-client \
+        audio-utils \
         packagegroup-android-utils \
         packagegroup-qti-audio \
+        packagegroup-qti-pulseaudio \
         packagegroup-qti-bluetooth \
         packagegroup-qti-camera \
         packagegroup-qti-core \
@@ -22,8 +26,8 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-dsp \
         packagegroup-qti-fastcv \
         packagegroup-qti-gst \
-        ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location', '', d)} \
         packagegroup-qti-ml \
+        packagegroup-qti-gfx \
         packagegroup-qti-qmmf \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-security', 'packagegroup-qti-securemsm', '', d)} \
         ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sensors', 'packagegroup-qti-sensors', '', d)} \
