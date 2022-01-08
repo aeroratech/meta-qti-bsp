@@ -31,6 +31,11 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+echo "mount sysfs"
+mount -t sysfs sysfs /sys
+echo "mount debugfs"
+mount -t debugfs debugfs /sys/kernel/debug
+echo "mount proc"
+mount proc /proc -t proc
 echo "Shell environment for ramdisk"
 /bin/mksh
-

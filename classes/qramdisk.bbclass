@@ -2,7 +2,8 @@ INIT_RAMDISK = "${@d.getVar('MACHINE_SUPPORTS_INIT_RAMDISK') or "False"}"
 RAMDISKDIR = "${WORKDIR}/ramdisk"
 
 TOYBOX_RAMDISK ?= "False"
-PACKAGE_INSTALL += "${@bb.utils.contains('TOYBOX_RAMDISK', 'True', 'toybox mksh', '', d)}"
+PACKAGE_INSTALL += "${@oe.utils.conditional('ENABLE_ADB', 'True', 'adbd usb-composition', '', d)}"
+PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils e2fsprogs dosfstools', '', d)}"
 
 do_ramdisk_create[depends] += "virtual/kernel:do_deploy"
 do_ramdisk_create[cleandirs] += "${RAMDISKDIR}"
@@ -31,13 +32,31 @@ fakeroot do_ramdisk_create() {
         ln -s bin sbin
         if [[ "${TOYBOX_RAMDISK}" == "True" ]]; then
             cp ${IMAGE_ROOTFS}/usr/lib/libcrypt.so.2 lib/libcrypt.so.2
+            cp ${IMAGE_ROOTFS}/usr/lib/libreadline.so.8 lib/libreadline.so.8 #awk support
+            cp ${IMAGE_ROOTFS}/lib/libtinfo.so.5 lib/libtinfo.so.5
+            cp ${IMAGE_ROOTFS}/lib/libext2fs.so.2 lib/libext2fs.so.2
+            cp ${IMAGE_ROOTFS}/lib/libcom_err.so.2 lib/libcom_err.so.2
+            cp ${IMAGE_ROOTFS}/lib/libblkid.so.1 lib/libblkid.so.1
+            cp ${IMAGE_ROOTFS}/lib/libuuid.so.1 lib/libuuid.so.1
+            cp ${IMAGE_ROOTFS}/lib/libe2p.so.2 lib/libe2p.so.2
+            cp ${IMAGE_ROOTFS}/usr/lib/libgmp.so.10 lib/libgmp.so.10
             cp ${IMAGE_ROOTFS}/bin/toybox bin/
             cp ${IMAGE_ROOTFS}/bin/mksh bin/
+            cp ${IMAGE_ROOTFS}/usr/bin/gawk bin/
+            cp ${IMAGE_ROOTFS}/usr/bin/expr.coreutils bin/
+            cp ${IMAGE_ROOTFS}/usr/sbin/mkfs.vfat.dosfstools bin/
+            cp ${IMAGE_ROOTFS}/sbin/mkfs.ext2.e2fsprogs bin/
+            cp ${IMAGE_ROOTFS}/sbin/mkfs.ext3 bin/
+            cp ${IMAGE_ROOTFS}/sbin/mkfs.ext4 bin/
             ln -s mksh bin/sh
+            ln -s gawk bin/awk
+            ln -s expr.coreutils bin/expr
+            ln -s mkfs.vfat.dosfstools bin/mkfs.vfat
+            ln -s mkfs.ext2.e2fsprogs bin/mkfs.ext2
             # install all the toybox commands
             if [ -r ${IMAGE_ROOTFS}/etc/toybox.links ]; then
                 while read -r LREAD; do
-                    ln -s toybox ${LREAD:1}
+                    ln -s /bin/toybox ${LREAD:1}
                 done < ${IMAGE_ROOTFS}/etc/toybox.links
             fi
         else
