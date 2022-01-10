@@ -5,6 +5,7 @@ require qti-xreality-image.bb
 
 # Add aurora supported package groups
 CORE_IMAGE_EXTRA_INSTALL += "\
+        gki-kernel-modules-second-stage \
         packagegroup-qti-camera-kernel \
 "
 

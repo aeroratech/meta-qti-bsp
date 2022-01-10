@@ -11,7 +11,7 @@ PACKAGE_INSTALL = "\
     usb-composition \
     busybox \
     ext4-utils \
-    first-stage-modules \
+    gki-kernel-modules-first-stage \
     fsmgr \
     glib-2.0 \
     glibc \
