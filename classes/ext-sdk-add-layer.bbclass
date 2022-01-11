@@ -53,7 +53,7 @@ ext_sdk_add_external_layers_script() {
         touch $add_external_layers_script
         echo '' >> $add_external_layers_script
         echo 'workspace_root=""' >> $add_external_layers_script
-        echo 'add_layers=""' >> $add_external_layers_script
+        echo 'modify_recipes=""' >> $add_external_layers_script
         echo 'while test $# -gt 0; do' >> $add_external_layers_script
         echo '  case "$1" in' >> $add_external_layers_script
         echo '    -h|--help)' >> $add_external_layers_script
@@ -84,19 +84,19 @@ ext_sdk_add_external_layers_script() {
         echo '    -m|--modify)' >> $add_external_layers_script
         echo '      shift' >> $add_external_layers_script
         echo '      if test $# -gt 0; then' >> $add_external_layers_script
-        echo '        add_layers=$1' >> $add_external_layers_script
-        echo '        if [ "$add_layers" == "y" ] || [ "$add_layers" == "Y" ] ;' >> $add_external_layers_script
+        echo '        modify_recipes=$1' >> $add_external_layers_script
+        echo '        if [ "$modify_recipes" == "y" ] || [ "$modify_recipes" == "Y" ] ;' >> $add_external_layers_script
         echo '        then' >> $add_external_layers_script
         echo '            echo "\"devtool modify\" operation will be performed for all new recipes"' >> $add_external_layers_script
-        echo '        elif [ "$add_layers" == "n" ] || [ "$add_layers" == "N" ] ;' >> $add_external_layers_script
+        echo '        elif [ "$modify_recipes" == "n" ] || [ "$modify_recipes" == "N" ] ;' >> $add_external_layers_script
         echo '        then' >> $add_external_layers_script
         echo '            echo "\"devtool modify\" operation will not be performed with this run"' >> $add_external_layers_script
         echo '        else' >> $add_external_layers_script
-        echo '            add_layers="N"' >> $add_external_layers_script
-        echo '            echo "`tput setaf 3`$add_layers : Invalid option for --modify passed. Taken \"N\" by deafult`tput sgr0`"' >> $add_external_layers_script
+        echo '            modify_recipes="N"' >> $add_external_layers_script
+        echo '            echo "`tput setaf 3`$modify_recipes : Invalid option for --modify passed. Taken \"N\" by deafult`tput sgr0`"' >> $add_external_layers_script
         echo '        fi' >> $add_external_layers_script
         echo '      else' >> $add_external_layers_script
-        echo '        add_layers=""' >> $add_external_layers_script
+        echo '        modify_recipes=""' >> $add_external_layers_script
         echo '      fi' >> $add_external_layers_script
         echo '      shift' >> $add_external_layers_script
         echo '      ;;' >> $add_external_layers_script
@@ -116,67 +116,80 @@ ext_sdk_add_external_layers_script() {
         echo '    rm -rf layerlist.txt' >> $add_external_layers_script
         echo '    touch layerlist.txt' >> $add_external_layers_script
         echo '    echo "`find -name layer.conf`" >> layerlist.txt' >> $add_external_layers_script
+        echo '' >> $add_external_layers_script
+        echo '    layer_list=`cat layerlist.txt`' >> $add_external_layers_script
+        echo '    : > layerlist.txt' >> $add_external_layers_script
+        echo '    for layer in $layer_list ; do' >> $add_external_layers_script
+        echo '        if [[ "`grep BBFILE_COLLECTIONS $layer`"  == *"qti-"* ]]; then' >> $add_external_layers_script
+        echo '             echo $layer' >> $add_external_layers_script
+        echo '        fi' >> $add_external_layers_script
+        echo '    done >> layerlist.txt' >> $add_external_layers_script
+        echo '' >> $add_external_layers_script
         echo "    sed -i 's+conf/layer.conf+ +g' layerlist.txt" >> $add_external_layers_script
-        echo '    lines=`cat layerlist.txt`' >> $add_external_layers_script
+        echo '    layer_list=`cat layerlist.txt`' >> $add_external_layers_script
         echo '    : > layerlist.txt' >> $add_external_layers_script
         echo '' >> $add_external_layers_script
-        echo '    for var in ${lines}' >> $add_external_layers_script
+        echo '    for layer in ${layer_list}' >> $add_external_layers_script
         echo '    do' >> $add_external_layers_script
-        echo '         var=${var::${#var}-1}' >> $add_external_layers_script
-        echo '         var=${var:2}' >> $add_external_layers_script
-        echo '         echo "$var" >> layerlist.txt' >> $add_external_layers_script
+        echo '         layer=${layer::${#layer}-1}' >> $add_external_layers_script
+        echo '         layer=${layer:2}' >> $add_external_layers_script
+        echo '         echo "$layer" >> layerlist.txt' >> $add_external_layers_script
         echo '    done' >> $add_external_layers_script
         echo '' >> $add_external_layers_script
-        echo '    lines=`cat layerlist.txt`' >> $add_external_layers_script
+        echo '    layer_list=`cat layerlist.txt`' >> $add_external_layers_script
         echo '' >> $add_external_layers_script
-        echo '    for var in ${lines}' >> $add_external_layers_script
+        echo '    for layer in ${layer_list}' >> $add_external_layers_script
         echo '    do' >> $add_external_layers_script
-        echo '        grep -v "${var} " ${SDK_ROOT}/conf/bblayers.conf > ${SDK_ROOT}/conf/tmp-bblayers.conf' >> $add_external_layers_script
+        echo '        grep -v "${layer} " ${SDK_ROOT}/conf/bblayers.conf > ${SDK_ROOT}/conf/tmp-bblayers.conf' >> $add_external_layers_script
         echo '        mv ${SDK_ROOT}/conf/tmp-bblayers.conf ${SDK_ROOT}/conf/bblayers.conf' >> $add_external_layers_script
         echo '    done' >> $add_external_layers_script
         echo '' >> $add_external_layers_script
         echo '    echo "BBLAYERS += \" \ " >> ${SDK_ROOT}/conf/bblayers.conf' >> $add_external_layers_script
-        echo '    for var in ${lines}' >> $add_external_layers_script
+        echo '    for layer in ${layer_list}' >> $add_external_layers_script
         echo '    do' >> $add_external_layers_script
-        echo '        if [ -r ${workspace_root}/poky/${var}/conf/layer.conf ] ;' >> $add_external_layers_script
+        echo '        if [ -r ${workspace_root}/poky/${layer}/conf/layer.conf ] ;' >> $add_external_layers_script
         echo '        then' >> $add_external_layers_script
-        echo '            echo "    ${workspace_root}/poky/${var} \ " >> ${SDK_ROOT}/conf/bblayers.conf' >> $add_external_layers_script
-        echo '            echo "`tput setaf 2`${workspace_root}/poky/${var} has been added as a layer to the eSDK`tput sgr0`"' >> $add_external_layers_script
+        echo '            echo "    ${workspace_root}/poky/${layer} \ " >> ${SDK_ROOT}/conf/bblayers.conf' >> $add_external_layers_script
+        echo '            echo "`tput setaf 2`${workspace_root}/poky/${layer} has been added as a layer to the eSDK`tput sgr0`"' >> $add_external_layers_script
         echo '        else' >> $add_external_layers_script
-        echo '            echo "`tput setaf 3`Unable to read ${workspace_root}/poky/${var}/conf/layer.conf`tput sgr0`"' >> $add_external_layers_script
+        echo '            echo "`tput setaf 3`Unable to read ${workspace_root}/poky/${layer}/conf/layer.conf`tput sgr0`"' >> $add_external_layers_script
         echo '        fi' >> $add_external_layers_script
         echo '    done' >> $add_external_layers_script
         echo '    echo "    \"" >> ${SDK_ROOT}/conf/bblayers.conf' >> $add_external_layers_script
-        echo '    rm layerlist.txt' >> $add_external_layers_script
         echo '' >> $add_external_layers_script
+        echo '    echo "Copying directories under ${workspace_root}/src to ${SDK_ROOT}/src"' >> $add_external_layers_script
         echo '    cp -rf ${workspace_root}/src/* ${SDK_ROOT}/src' >> $add_external_layers_script
         echo '' >> $add_external_layers_script
-        echo '    if [ "$add_layers" == "" ] ;' >> $add_external_layers_script
+        echo '    if [ "$modify_recipes" == "" ] ;' >> $add_external_layers_script
         echo '    then' >> $add_external_layers_script
-        echo '        read -p "Would you wish to perform devtool modify operation for all the recipes in the newly addd layers?(y/N)": add_layers' >> $add_external_layers_script
+        echo '        read -p "Would you wish to perform devtool modify operation for all the recipes in the newly addd layers?(y/N)": modify_recipes' >> $add_external_layers_script
         echo '    fi' >> $add_external_layers_script
         echo '' >> $add_external_layers_script
-        echo '    if [ "$add_layers" == "y" ] || [ "$add_layers" == "Y" ] ;' >> $add_external_layers_script
+        echo '    if [ "$modify_recipes" == "y" ] || [ "$modify_recipes" == "Y" ] ;' >> $add_external_layers_script
         echo '    then' >> $add_external_layers_script
-        echo '        echo $add_layers ' >> $add_external_layers_script
         echo '        cd ${workspace_root}/poky' >> $add_external_layers_script
         echo '        rm -rf recipelist.txt' >> $add_external_layers_script
         echo '        touch recipelist.txt' >> $add_external_layers_script
-        echo '        echo "`find -name *.bb`" >> recipelist.txt' >> $add_external_layers_script
-        echo '        echo "`find -name *.bbappend`" >> recipelist.txt' >> $add_external_layers_script
-        echo '        lines=`cat recipelist.txt`' >> $add_external_layers_script
+	echo '        for layer in ${layer_list}' >> $add_external_layers_script
+	echo '        do' >> $add_external_layers_script
+        echo '        echo "`find ${workspace_root}/poky/${layer} -name *.bb`" >> recipelist.txt' >> $add_external_layers_script
+        echo '        echo "`find ${workspace_root}/poky/${layer} -name *.bbappend`" >> recipelist.txt' >> $add_external_layers_script
+        echo '        done' >> $add_external_layers_script
+        echo '        grep -v "recipes-kernel" recipelist.txt > tmp-recipelist.txt' >> $add_external_layers_script
+        echo '        mv tmp-recipelist.txt recipelist.txt' >> $add_external_layers_script
+        echo '        recipe_list=`cat recipelist.txt`' >> $add_external_layers_script
         echo '        : > recipelist.txt' >> $add_external_layers_script
-        echo '        for var in ${lines}' >> $add_external_layers_script
+        echo '        for recipe in ${recipe_list}' >> $add_external_layers_script
         echo '        do' >> $add_external_layers_script
-        echo '            var=`rev<<<"$var"`' >> $add_external_layers_script
-        echo '            IFS="/" read -ra var_split <<< "${var}"' >> $add_external_layers_script
-        echo '            var=${var_split[0]}' >> $add_external_layers_script
-        echo '            var=`rev<<<"$var"`' >> $add_external_layers_script
-        echo '            IFS="." read -ra var_split <<< "${var}"' >> $add_external_layers_script
-        echo '            var=${var_split[0]}' >> $add_external_layers_script
-        echo '            IFS="_" read -ra var_split <<< "${var}"' >> $add_external_layers_script
-        echo '            var=${var_split[0]}' >> $add_external_layers_script
-        echo '            echo "$var" >> recipelist.txt' >> $add_external_layers_script
+        echo '            recipe=`rev<<<"$recipe"`' >> $add_external_layers_script
+        echo '            IFS="/" read -ra recipe_split <<< "${recipe}"' >> $add_external_layers_script
+        echo '            recipe=${recipe_split[0]}' >> $add_external_layers_script
+        echo '            recipe=`rev<<<"$recipe"`' >> $add_external_layers_script
+        echo '            IFS="." read -ra recipe_split <<< "${recipe}"' >> $add_external_layers_script
+        echo '            recipe=${recipe_split[0]}' >> $add_external_layers_script
+        echo '            IFS="_" read -ra recipe_split <<< "${recipe}"' >> $add_external_layers_script
+        echo '            recipe=${recipe_split[0]}' >> $add_external_layers_script
+        echo '            echo "$recipe" >> recipelist.txt' >> $add_external_layers_script
         echo '        done' >> $add_external_layers_script
         echo '' >> $add_external_layers_script
         echo '        unsupported_recipe_types="image packagegroup"' >> $add_external_layers_script
@@ -187,22 +200,22 @@ ext_sdk_add_external_layers_script() {
         echo '            mv tmp-recipelist.txt recipelist.txt' >> $add_external_layers_script
         echo '        done' >> $add_external_layers_script
         echo '' >> $add_external_layers_script
-        echo '        lines=`cat recipelist.txt`' >> $add_external_layers_script
-        echo '        for var in ${lines}' >> $add_external_layers_script
+        echo '        recipe_list=`cat recipelist.txt`' >> $add_external_layers_script
+        echo '        for recipe in ${recipe_list}' >> $add_external_layers_script
         echo '        do' >> $add_external_layers_script
-        echo '            echo "devtool modify $var"' >> $add_external_layers_script
-        echo '            devtool modify $var' >> $add_external_layers_script
+        echo '            echo "devtool modify $recipe"' >> $add_external_layers_script
+        echo '            devtool modify $recipe' >> $add_external_layers_script
         echo '        done' >> $add_external_layers_script
         echo '        rm recipelist.txt' >> $add_external_layers_script
-        echo '        cd ${current_working_dir}' >> $add_external_layers_script
         echo '    else' >> $add_external_layers_script
         echo '        tput setaf 3' >> $add_external_layers_script
         echo '        echo "\"devtool modify\" operation was not performed on any recipe in the newly added layers"' >> $add_external_layers_script
         echo '        echo "If the developer wishes to edit or build a recipe from the newly added layers using devtool utility,"' >> $add_external_layers_script
         echo '        echo "\"devtool modify\" operation will have to be manually performed on that recipe."' >> $add_external_layers_script
         echo '        tput sgr0' >> $add_external_layers_script
-        echo '        cd ${current_working_dir}' >> $add_external_layers_script
         echo '    fi' >> $add_external_layers_script
+        echo 'rm layerlist.txt' >> $add_external_layers_script
+        echo 'cd ${current_working_dir}' >> $add_external_layers_script
         echo 'else' >> $add_external_layers_script
         echo '    echo "`tput setaf 1`${workspace_root} is not a workspace`tput sgr0`"' >> $add_external_layers_script
         echo 'fi' >> $add_external_layers_script
