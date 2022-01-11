@@ -268,7 +268,7 @@ do_make_dtboimg[depends] += "virtual/kernel:do_deploy virtual/mkdtimg-native:do_
 SSTATETASKS += "do_make_dtboimg"
 SSTATE_SKIP_CREATION_task-make-dtboimg = '1'
 do_make_dtboimg[sstate-inputdirs] = "${DTBODEPLOYDIR}"
-do_make_dtboimg[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}/DTOverlays"
+do_make_dtboimg[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 do_make_dtboimg[stamp-extra-info] = "${MACHINE_ARCH}"
 
 python do_make_dtboimg_setscene () {
