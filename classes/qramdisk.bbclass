@@ -2,6 +2,8 @@ INIT_RAMDISK = "${@d.getVar('MACHINE_SUPPORTS_INIT_RAMDISK') or "False"}"
 RAMDISKDIR = "${WORKDIR}/ramdisk"
 
 TOYBOX_RAMDISK ?= "False"
+ENABLE_ADB ?= "True"
+ENABLE_ADB_qti-distro-base-user ?= "False"
 PACKAGE_INSTALL += "${@oe.utils.conditional('ENABLE_ADB', 'True', 'adbd usb-composition', '', d)}"
 PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils e2fsprogs dosfstools', '', d)}"
 
