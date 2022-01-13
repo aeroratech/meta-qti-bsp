@@ -16,6 +16,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         net-tools \
         pps-tools \
         spitools \
+        coreutils \
         packagegroup-android-utils \
         packagegroup-qti-core \
         packagegroup-qti-data \
