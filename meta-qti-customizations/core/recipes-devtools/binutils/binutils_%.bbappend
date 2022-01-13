@@ -1,2 +1,2 @@
-#Below Package is Fetch from the CAF
-BINUTILS_GIT_URI = "git://source.codeaurora.org/quic/le/binutils-gdb.git;protocol=https;branch=binutils-gdb/binutils-${BINUPV}-branch"
+#Below Package is Fetch from the Codelinaro
+BINUTILS_GIT_URI = "${CLO_LE_GIT}/binutils-gdb.git;protocol=https;branch=caf_migration/binutils-gdb/binutils-${BINUPV}-branch"

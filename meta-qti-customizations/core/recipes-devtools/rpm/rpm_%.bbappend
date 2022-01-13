@@ -3,8 +3,8 @@ RDEPENDS_${PN}_remove = "bash"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-#Below CAF is mirror from "github.com/rpm-software-management/rpm"
-SRC_URI  = "git://source.codeaurora.org/quic/le/rpm.git;protocol=https;branch=rpm/rpm-4.14.x"
+#Fetch from the codelinaro
+SRC_URI = "${CLO_LE_GIT}/rpm.git;protocol=https;branch=caf_migration/rpm/rpm-4.14.x"
 
 SRC_URI += " \
             file://0001-Do-not-add-an-unsatisfiable-dependency-when-building.patch \
