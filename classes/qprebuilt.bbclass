@@ -327,7 +327,7 @@ python () {
 
     elif d.getVar('DEPLOY_DIR_PREBUILT'):
         # Create prebuilt tarball(s)
-        bb.build.addtask('do_generate_prebuilt', 'do_build', 'do_install', d)
+        bb.build.addtask('do_generate_prebuilt', 'do_package', 'do_install', d)
         d.appendVarFlag('do_generate_prebuilt', 'depends', ' %s:do_populate_lic' % pn)
         bb.build.addtask('do_generate_prebuilt_setscene', None, None, d)
 }
