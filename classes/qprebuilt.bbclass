@@ -228,7 +228,8 @@ python do_generate_prebuilt() {
         for variant in pbvariants:
             files = d.getVar(variant + "_PREBUILT_FILES_" + ppackage)
             stripped = d.getVar("PREBUILT_STRIP_" + ppackage)
-            tarball = "%s/%s_%s_%s_%s.tar" % (prebuiltdatadir, variant, ppackage, pv, arch)
+            os.mkdir(os.path.join(prebuiltdatadir, variant))
+            tarball = "%s/%s/%s_%s_%s.tar" % (prebuiltdatadir, variant, ppackage, pv, arch)
             base = prebuiltdir
 
             # If no file specified quitely quit
