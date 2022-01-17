@@ -250,16 +250,21 @@ addtask do_make_bootimg before do_image_complete
 ############# Generate dtbo.img ################
 ################################################
 
+MKDTUTIL = '${@oe.utils.conditional("PREFERRED_PROVIDER_virtual/mkdtimg-native", "mkdtimg-gki-native", "mkdtboimg.py", "mkdtimg", d)}'
 DTBODEPLOYDIR = "${WORKDIR}/deploy-${PN}-dtboimage-complete"
 
 # Create dtbo.img if DTBO support is enabled
 python do_make_dtboimg () {
     import subprocess
-    dtbodeploydir = d.getVar("DTBODEPLOYDIR")
+
+    mkdtimg_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + "/" + d.getVar('MKDTUTIL')
+    dtbodeploydir = d.getVar('DEPLOY_DIR_IMAGE', True) + "/" + "DTOverlays"
     pagesize = d.getVar("PAGE_SIZE")
     output          = d.getVar('DTBOIMAGE_TARGET', True)
-    create_dtbo = "mkdtimg create "+output+" --page_size="+pagesize+" "+dtbodeploydir+"/*.dtbo"
-    ret = subprocess.call(create_dtbo, shell=True)
+    # cmd to make dtbo.img
+    cmd = mkdtimg_bin_path + " create "+ output +" --page_size="+ pagesize +" "+ dtbodeploydir + "/*.dtbo"
+    bb.debug(1, "do_make_dtboimg cmd: %s" % (cmd))
+    ret = subprocess.call(cmd, shell=True)
 }
 
 do_make_dtboimg[dirs]      = "${DTBODEPLOYDIR}/${IMAGE_BASENAME}"
