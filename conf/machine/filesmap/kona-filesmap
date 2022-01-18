@@ -30,6 +30,23 @@
 NON-HLOS.ubi            modem
 NON-HLOS.bin            /dev/block/bootdevice/by-name/modem
 
+aop.mbn                 /dev/block/bootdevice/by-name/aop
+apdp.mbn                /dev/block/bootdevice/by-name/apdp
+QcomCate.fv             /dev/block/bootdevice/by-name/catefv
+Core_NON-HLOS.bin       /dev/block/bootdevice/by-name/core_nhlos
+zeros_5sectors.bin      /dev/block/bootdevice/by-name/ddr
+featenabler.mbn         /dev/block/bootdevice/by-name/featenabler
+hyp.mbn                 /dev/block/bootdevice/by-name/hyp
+imagefv.elf             /dev/block/bootdevice/by-name/imagefv
+km4.mbn                 /dev/block/bootdevice/by-name/keymaster
+logfs_ufs_8mb.bin       /dev/block/bootdevice/by-name/logfs
+multi_image.mbn         /dev/block/bootdevice/by-name/multiimgoem
+persist.img             /dev/block/bootdevice/by-name/persist
+qupv3fw.elf             /dev/block/bootdevice/by-name/qupfw
+spunvm.bin              /dev/block/bootdevice/by-name/spunvm
+storsec.mbn             /dev/block/bootdevice/by-name/storesec
+tools.fv                /dev/block/bootdevice/by-name/toolsfv
+xbl_config.elf          /dev/block/bootdevice/by-name/xbl_config
 sbl1.mbn                /dev/block/bootdevice/by-name/sbl1
 tz.mbn                  /dev/block/bootdevice/by-name/tz
 rpm.mbn                 /dev/block/bootdevice/by-name/rpm
