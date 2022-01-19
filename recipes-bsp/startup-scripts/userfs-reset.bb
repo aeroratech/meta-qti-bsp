@@ -5,8 +5,6 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/${LICENSE};md5
 
 SRC_URI  = "file://userfs-reset"
 
-S = "${WORKDIR}/"
-
 PR = "r1"
 
 inherit systemd
