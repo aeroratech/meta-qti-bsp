@@ -16,7 +16,7 @@ SRC_URI_append_qrb5165 += "${@bb.utils.contains('DISTRO_FEATURES', 'virtualizati
 #XR specific
 SRC_URI_append_sxr2130 += " file://qca6490.cfg"
 
-DEPENDS += "dtc-native"
+DEPENDS += "virtual/dtc-native"
 
 EXTRA_OEMAKE += "INSTALL_MOD_STRIP=1"
 

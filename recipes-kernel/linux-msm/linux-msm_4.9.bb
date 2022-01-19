@@ -5,7 +5,7 @@ COMPATIBLE_MACHINE = "apq8009"
 S         =  "${WORKDIR}/kernel/msm-4.9"
 PR = "r5"
 
-DEPENDS += "dtc-native"
+DEPENDS += "virtual/dtc-native"
 
 SRC_URI_append = " \
       ${@bb.utils.contains_any('COMBINED_FEATURES', 'fbdev qti-camera qti-video mm-camera', 'file://graphics_fb.cfg', '', d)} \

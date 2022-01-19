@@ -9,7 +9,7 @@ HOMEPAGE = "http://developer.android.com/"
 PROVIDES = "virtual/mkdtimg-native"
 
 #DTC provide the libfdt.h
-DEPENDS += " dtc-native"
+DEPENDS += " virtual/dtc-native"
 
 PR = "r1"
 

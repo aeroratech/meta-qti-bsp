@@ -31,7 +31,7 @@ SRC_URI_append_qcs40x = " \
 
 S         =  "${WORKDIR}/kernel/msm-4.14"
 
-DEPENDS += "dtc-native"
+DEPENDS += "virtual/dtc-native"
 
 do_shared_workdir_append () {
         cp Makefile $kerneldir/
