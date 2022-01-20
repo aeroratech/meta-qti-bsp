@@ -24,8 +24,11 @@ RDEPENDS_packagegroup-startup-scripts = "\
     packagegroup-startup-scripts-base \
     "
 # Other essential utilites
+CHRONY ?= "chrony"
+CHRONY_sa410m = ""
+
 RDEPENDS_packagegroup-support-utils = "\
-    chrony \
+    ${CHRONY} \
     libinput \
     libinput-bin \
     libnl \
