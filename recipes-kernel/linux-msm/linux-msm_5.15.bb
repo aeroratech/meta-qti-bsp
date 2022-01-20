@@ -252,12 +252,13 @@ do_deploy() {
      install -d ${DEPLOYDIR}/build-artifacts
      install -d ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
      install -d ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
+     install -d ${DEPLOYDIR}/build-artifacts/dtb
 
      cp  ${S}/usr/gen_initramfs.sh ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
      cp -a ${B}/usr/gen_init_cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
      cp -a ${B}/usr/initramfs_data.cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
      cp -a ${B}/usr/initramfs_inc_data ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
-
+     cp -a ${KERNEL_PREBUILT_PATH}/*.dtb ${DEPLOYDIR}/build-artifacts/dtb
 }
 
 # Put the zImage in the kernel-dev pkg
