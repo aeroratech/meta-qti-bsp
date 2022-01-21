@@ -79,3 +79,6 @@ persist.qmmf.ubwcstream.enable=1
 
 #Make qmmf rescalar run on GPU by default
 persist.qmmf.rescaler.type=C2D
+
+#enable weston during boot
+persist.display.launch.weston.at.bootup=true
