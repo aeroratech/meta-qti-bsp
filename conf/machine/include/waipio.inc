@@ -6,6 +6,7 @@ require conf/machine/include/arm/arch-armv8a.inc
 # Set virtual providers
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
 PREFERRED_PROVIDER_virtual/mkbootimg-native = "mkbootimg-gki-native"
+PREFERRED_PROVIDER_virtual/dtc-native = "dtc-android-build-native"
 
 # Set preferred versions
 PREFERRED_VERSION_linux-msm = "5.10"
