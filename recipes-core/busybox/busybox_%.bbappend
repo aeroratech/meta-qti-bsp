@@ -5,7 +5,6 @@ INIT_RAMDISK = "${@d.getVar('MACHINE_SUPPORTS_INIT_RAMDISK') or "False"}"
 SRC_URI += "\
             file://find-touchscreen.sh \
             file://automountsdcard.sh \
-            file://automountsdcard.rules \
             file://usb.sh \
             file://mdev.conf \
             file://profile \
@@ -64,8 +63,6 @@ do_install_append() {
         install -d ${D}${sysconfdir}/udev/scripts/
         install -m 0744 ${WORKDIR}/automountsdcard.sh \
             ${D}${sysconfdir}/udev/scripts/automountsdcard.sh
-        install -d 0644 ${D}${sysconfdir}/udev/rules.d
-        install -m 0744 ${WORKDIR}/automountsdcard.rules ${D}${sysconfdir}/udev/rules.d/
         install -d ${D}${systemd_unitdir}/system/
         install -m 0644 ${WORKDIR}/busybox-syslog.service -D ${D}${systemd_unitdir}/system/busybox-syslog.service
         install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
