@@ -18,7 +18,7 @@ RDEPENDS_packagegroup-qti-recoveryfs = " \
             mtd-utils-ubifs \
             logd \
             recovery \
-            usb-composition \
+            usb-composition-recovery \
             ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', 'systemd-machine-units-recovery', '', d)} \
             ${@bb.utils.contains('DISTRO_FEATURES', 'ota-package-verification', 'openssl', '', d)} \
             ${@bb.utils.contains('DISTRO_FEATURES', 'ota-package-verification', 'openssl-bin', '', d)} \
