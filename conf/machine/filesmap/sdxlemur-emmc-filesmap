@@ -36,7 +36,7 @@ logfs_ufs_8mb.bin       /dev/block/bootdevice/by-name/logfs
 multi_image.mbn         /dev/block/bootdevice/by-name/multi_image
 multi_image_qti.mbn     /dev/block/bootdevice/by-name/multi_image_qti
 persist.img             /dev/block/bootdevice/by-name/persist
-hyp.mbn                 /dev/block/bootdevice/by-name/hyp
+hyp.mbn                 /dev/block/bootdevice/by-name/qhee
 Quantum.fv              /dev/block/bootdevice/by-name/quantumfv
 quantumsdk.fv           /dev/block/bootdevice/by-name/quantumsdk
 xbl_no_preamble.elf     /dev/block/bootdevice/by-name/sbl
