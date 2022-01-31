@@ -13,7 +13,7 @@ DEPENDS += " virtual/dtc-native"
 
 PR = "r1"
 
-SRC_URI = "git://source.codeaurora.org/quic/la/platform/system/libufdt.git;protocol=https;destsuffix=system/libufdt;branch=keystone/p-keystone-qcom-release \
+SRC_URI = "${CLO_LA_GIT}/platform/system/libufdt.git;protocol=https;destsuffix=system/libufdt;branch=caf_migration/keystone/p-keystone-qcom-release \
            file://0001-libufdt-support-autoconf-compile.patch"
 
 S = "${WORKDIR}/system/libufdt"

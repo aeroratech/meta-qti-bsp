@@ -32,7 +32,7 @@ DEPENDS_append_class-target = " udev "
 inherit pkgconfig
 
 SRCREV = "22234e6af33af1848e36d4d4bc63264087b97892"
-SRC_URI = "git://source.codeaurora.org/quic/le/abozhinov444.qdl.git;branch=abozhinov444/sparse_image_format;protocol=https \
+SRC_URI = "${CLO_LE_GIT}/abozhinov444.qdl.git;branch=caf_migration/abozhinov444/sparse_image_format;protocol=https \
            file://0001-Makefile-Use-pkg-config-for-libxml2-detection.patch \
 "
 
