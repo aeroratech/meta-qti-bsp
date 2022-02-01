@@ -51,6 +51,7 @@ xbl.elf                 sbl
 tools32.fv              toolsfv
 xbl_config.elf          xbl_config
 xbl_ramdump.elf         xbl_ramdump
+devcfg_low_ddr.mbn      tz_devcfg
 
 # filename + .bak       backup partition
 
