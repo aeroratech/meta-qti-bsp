@@ -4,7 +4,6 @@ INIT_RAMDISK = "${@d.getVar('MACHINE_SUPPORTS_INIT_RAMDISK') or "False"}"
 
 SRC_URI += "\
             file://find-touchscreen.sh \
-            file://automountsdcard.sh \
             file://usb.sh \
             file://mdev.conf \
             file://profile \
@@ -60,9 +59,6 @@ do_configure_append() {
 do_install_append() {
     # systemd is udev compatible.
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
-        install -d ${D}${sysconfdir}/udev/scripts/
-        install -m 0744 ${WORKDIR}/automountsdcard.sh \
-            ${D}${sysconfdir}/udev/scripts/automountsdcard.sh
         install -d ${D}${systemd_unitdir}/system/
         install -m 0644 ${WORKDIR}/busybox-syslog.service -D ${D}${systemd_unitdir}/system/busybox-syslog.service
         install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
@@ -75,7 +71,6 @@ do_install_append() {
         sed -i 's/init.d/initscripts/g'  ${D}${systemd_unitdir}/system/busybox-syslog.service
     else
         install -d ${D}${sysconfdir}/mdev
-        install -m 0755 ${WORKDIR}/automountsdcard.sh ${D}${sysconfdir}/mdev/
         install -m 0755 ${WORKDIR}/find-touchscreen.sh ${D}${sysconfdir}/mdev/
         install -m 0755 ${WORKDIR}/usb.sh ${D}${sysconfdir}/mdev/
         install -m 0755 ${WORKDIR}/iio.sh ${D}${sysconfdir}/mdev/
