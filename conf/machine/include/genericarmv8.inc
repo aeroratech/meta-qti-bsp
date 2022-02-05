@@ -19,3 +19,6 @@ EXTRA_IMAGECMD ?= "-N 2048"
 SYSTEM_SIZE_EXT4 ?= "225000000"
 USERDATA_SIZE_EXT4 ?= "25000000"
 VM_SIZE_EXT4 ?= "270000000"
+
+# On msm-5.4 or above ufs driver supports BSG Device.
+UFS_BSG_DEV_USAGE = "True"

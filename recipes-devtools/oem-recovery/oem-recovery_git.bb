@@ -12,24 +12,29 @@ SRC_URI = "file://OTA/device/qcom/common/recovery/oem-recovery/"
 
 S = "${WORKDIR}/OTA/device/qcom/common/recovery/oem-recovery/"
 
-DEPENDS += "virtual/kernel"
+DEPENDS += "virtual/kernel linux-msm-headers"
 
 # To get kernel headers for compilation
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 EXTRA_OECONF = " \
     --with-sanitized-headers=${STAGING_KERNEL_BUILDDIR}/usr/include \
+    --with-sanitized-headers=${STAGING_INCDIR}/linux-msm/usr/include \
     --with-core-headers=${STAGING_INCDIR} \
 "
 
-CPPFLAGS_append = "${@bb.utils.contains_any('PREFERRED_VERSION_linux-msm', '5.4', ' -D_BSG_FRAMEWORK_KERNEL_HEADERS ', '', d)}"
+UFSBSG = "${@d.getVar('UFS_BSG_DEV_USAGE') or "False"}"
+
+CPPFLAGS_append = "${@oe.utils.conditional('UFSBSG', 'True', ' -D_BSG_FRAMEWORK_KERNEL_HEADERS ', '', d)}"
 
 PACKAGECONFIG ?= " \
     glib \
     ion \
+    ${@oe.utils.conditional('UFSBSG', 'True', 'ufsbsg', '', d)} \
 "
 
 PACKAGECONFIG[glib] = "--with-glib, --without-glib, glib-2.0"
 PACKAGECONFIG[ion] = "--with-ion, --without-ion, libion"
+PACKAGECONFIG[ufsbsg] = "--with-ufsbsg, --without-ufsbsg"
 
 PARALLEL_MAKE = ""

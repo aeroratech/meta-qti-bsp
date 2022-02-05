@@ -45,3 +45,6 @@ USBCOMPOSITION = "901D"
 PREFERRED_VERSION_protobuf = "3.11.4"
 PREFERRED_VERSION_protobuf-native = "3.11.4"
 PREFERRED_VERSION_iproute2 = "5.5.0"
+
+# On msm-5.4 or above ufs driver supports BSG Device.
+UFS_BSG_DEV_USAGE = "True"

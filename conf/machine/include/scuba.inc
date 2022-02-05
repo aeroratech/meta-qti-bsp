@@ -27,3 +27,6 @@ PAGE_SIZE ?= '4096'
 
 #Disable some default features supported from upstream
 MACHINE_FEATURES_BACKFILL_CONSIDERED += "qemu-usermode rtc"
+
+# On msm-5.4 or above ufs driver supports BSG Device.
+UFS_BSG_DEV_USAGE = "True"

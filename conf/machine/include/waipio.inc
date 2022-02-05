@@ -16,3 +16,6 @@ PREFERRED_VERSION_dtc-android-build-native = "1.6.0"
 
 # Waipio abl expects boot image with header version set.
 BOOT_HEADER_VERSION = "2"
+
+# On msm-5.4 or above ufs driver supports BSG Device.
+UFS_BSG_DEV_USAGE = "True"
