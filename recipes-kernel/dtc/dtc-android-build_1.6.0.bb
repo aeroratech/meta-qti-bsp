@@ -19,10 +19,13 @@ do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
 do_install() {
-    # Copy libfdt.h
+    # Install fdt headers
     install -d ${D}/${includedir}/
+    cp -rf ${S}/include/fdt.h ${D}/${includedir}/
+    cp -rf ${S}/include/libfdt_env.h  ${D}/${includedir}/
     cp -rf ${S}/include/libfdt.h ${D}/${includedir}/
 
+    # Install dtc bin
     install -d ${D}/${bindir}/dtc/bin/
     cp -rf ${S}/bin/dtc ${D}/${bindir}/dtc/bin/
 }
