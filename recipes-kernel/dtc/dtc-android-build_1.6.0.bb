@@ -10,6 +10,7 @@ PROVIDES = "virtual/dtc-native"
 
 FILESPATH =+ "${KERNEL_PREBUILT_PATH}/../host/:"
 SRC_URI    = "file://bin"
+SRC_URI   += "file://lib"
 SRC_URI   += "file://include"
 
 S = "${WORKDIR}"
@@ -24,6 +25,10 @@ do_install() {
     cp -rf ${S}/include/fdt.h ${D}/${includedir}/
     cp -rf ${S}/include/libfdt_env.h  ${D}/${includedir}/
     cp -rf ${S}/include/libfdt.h ${D}/${includedir}/
+
+    # Install fdt lib
+    install -d ${D}/${libdir}/
+    cp -a ${S}/lib/libfdt* ${D}/${libdir}/
 
     # Install dtc bin
     install -d ${D}/${bindir}/dtc/bin/
