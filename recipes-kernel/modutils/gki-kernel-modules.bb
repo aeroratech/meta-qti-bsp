@@ -14,7 +14,7 @@ SRC_URI   =  "file://kernel-5.10/kernel_platform/msm-kernel"
 S  =  "${WORKDIR}/kernel-5.10/kernel_platform/msm-kernel"
 
 do_configure () {
-    cd ${KERNEL_PREBUILT_PATH}
+    cd ${KERNEL_PREBUILT_DISTDIR}
     install -d ${B}/include/generated
     install -m 0644 ../msm-kernel/include/generated/utsrelease.h ${B}/include/generated
 }
@@ -32,7 +32,7 @@ do_compile () {
         first_mods="${first_mods}${module} "
     done < "$mod_list"
 
-    for f in $(find ${KERNEL_PREBUILT_PATH} -type f -name '*.ko' -exec basename {} \;) ; do
+    for f in $(find ${KERNEL_PREBUILT_DISTDIR} -type f -name '*.ko' -exec basename {} \;) ; do
         found=0
         for m in ${first_mods} ; do
               [ "$f" = "$m" ] && found=1
@@ -42,8 +42,8 @@ do_compile () {
 
     # Copy first stage modules into ${B} and update modules-load.d conf
     for m in $first_mods; do
-        if [ -f ${KERNEL_PREBUILT_PATH}/$m ]; then
-            install -m 0644 ${KERNEL_PREBUILT_PATH}/$m ${B}
+        if [ -f ${KERNEL_PREBUILT_DISTDIR}/$m ]; then
+            install -m 0644 ${KERNEL_PREBUILT_DISTDIR}/$m ${B}
             mname=`basename ${m} .ko`
             echo "$mname"
         else
@@ -53,7 +53,7 @@ do_compile () {
 
     # Copy remaining modules into ${B} and update modules-load.d conf
     for m in ${second_mods}; do
-        install -m 0644 ${KERNEL_PREBUILT_PATH}/$m ${B}
+        install -m 0644 ${KERNEL_PREBUILT_DISTDIR}/$m ${B}
         mname=`basename ${m} .ko`
         echo "$mname"
     done > ${B}/secondmods.conf

@@ -8,12 +8,10 @@ BBCLASSEXTEND = "native"
 
 PROVIDES = "virtual/dtc-native"
 
-FILESPATH =+ "${KERNEL_PREBUILT_PATH}/../host/:"
-SRC_URI    = "file://bin"
-SRC_URI   += "file://lib"
-SRC_URI   += "file://include"
+FILESPATH =+ "${KERNEL_PREBUILT_PATH}/:"
+SRC_URI    = "file://host/"
 
-S = "${WORKDIR}"
+S = "${WORKDIR}/host"
 
 INHIBIT_SYSROOT_STRIP = "1"
 do_configure[noexec] = "1"
