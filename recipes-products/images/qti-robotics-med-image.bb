@@ -31,6 +31,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-display \
               packagegroup-qti-dsp \
               packagegroup-qti-fastcv \
+              packagegroup-qti-fastmmi \
               packagegroup-qti-gfx \
               packagegroup-qti-gst \
               packagegroup-qti-ml \
