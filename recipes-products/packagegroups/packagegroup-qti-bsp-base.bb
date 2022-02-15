@@ -31,4 +31,5 @@ RDEPENDS_packagegroup-startup-scripts-base = "\
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'ab-slot-util', '', d)} \
     ${@oe.utils.conditional('USB_SUPPORT', 'True', 'usb-composition', '', d)} \
     post-boot \
+    sdcard-scripts-automount \
     "
