@@ -27,7 +27,8 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # full_ota.sh      script to generate OTA upgrade pacakges.
-#
+# if sign is part of arguments, the testkey.pk8 located at OTA/build/target/product/security is taken as private key.
+# OEMs can replaces this file with their own private key.
 
 set -o xtrace
 
@@ -37,6 +38,7 @@ if [ "$#" -lt 4 ]; then
     echo "example: $0 target_files_ubi.zip  machine_image/1.0-r0/rootfs ubi --system_path <path>"
     echo "example: $0 target_files_ext4.zip machine_image/1.0-r0/rootfs ext4 --system_path <path>"
     echo "example: $0 target_files_ext4.zip machine_image/1.0-r0/rootfs ext4  -p system/ -c fsconfig.conf --block --system_path <path>"
+    echo "example: $0 target_files_ext4.zip machine_image/1.0-r0/rootfs ext4 --sign"
     exit 1
 fi
 
@@ -52,6 +54,7 @@ ubuntu=" "
 python_version="python3"
 system_path=" "
 cache_location=" "
+sign_ota_package=" "
 
 if [ "$#" -gt 4 ]; then
     IFS=' ' read -a allopts <<< "$@"
@@ -63,6 +66,8 @@ if [ "$#" -gt 4 ]; then
        elif [ "${allopts[${i}]}" = "--system_path" ]; then
            i=$((i+1))
            system_path="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--sign" ]; then
+           sign_ota_package="${allopts[${i}]}"
        else
            FSCONFIGFOPTS=$FSCONFIGFOPTS${allopts[${i}]}" "
        fi
@@ -109,7 +114,21 @@ cd $target_files && zip -q $1 META/*filesystem_config.txt SYSTEM/build.prop BOOT
 $python_version ./ota_from_target_files $block_based $ubuntu -n -v -d $device_type -p . -m linux_embedded --no_signing --system_mount_path $system_path $1 update_$3.zip > ota_debug.txt 2>&1
 
 if [[ $? = 0 ]]; then
-    echo "update_$3.zip generation was successful"
+    if [ "${sign_ota_package}" = "--sign" ]; then
+        # Pipe the contents of OTA zip to openssl to generate the signature of the OTA zip
+        unzip -p update_$3.zip | openssl dgst -sha256 -sign private.pem -out update.sig
+        if [[ $? = 0 ]]; then
+            zip -q -u update_$3.zip update.sig
+            echo "OTA zip signing is successful"
+        else
+            echo "OTA zip signing is failed"
+            # Add the python script errors back into the target-files zip
+            zip -q $1 ota_debug.txt
+            rm update_$3.zip # delete the half-baked update.zip if any;
+        fi
+    else
+        echo "update_$3.zip generation was successful"
+    fi
 else
     echo "update_$3.zip generation failed"
     # Add the python script errors back into the target-files zip
