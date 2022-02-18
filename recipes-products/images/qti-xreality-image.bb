@@ -35,6 +35,8 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-wifi', "packagegroup-qti-wifi", "", d)} \
         packagegroup-startup-scripts \
         packagegroup-support-utils \
+        powerapp \
+        powerapp-powerconfig \
         systemd-machine-units \
         ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
         ${@bb.utils.contains('MACHINE_FEATURES', 'qti-npu', "packagegroup-qti-npu", "", d)} \
