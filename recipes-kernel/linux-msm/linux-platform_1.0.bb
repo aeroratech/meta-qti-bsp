@@ -71,6 +71,8 @@ do_install () {
 	:
 }
 
+
+OEMVM_SUPPORT = "${@d.getVar('MACHINE_SUPPORTS_OEMVM') or "False"}"
 do_deploy () {
      # Copy vmlinux and zImage into deploydir for boot.img creation
      install -d ${DEPLOYDIR}/build-artifacts
@@ -83,10 +85,15 @@ do_deploy () {
      cp -a ${STAGING_KERNEL_BUILDDIR}/usr/initramfs_data.cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
      cp -a ${STAGING_KERNEL_BUILDDIR}/usr/initramfs_inc_data ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
 
-     cp -a ${STAGING_KERNEL_BUILDDIR}/arch/arm64/boot/dts/vendor/qcom/*.dtb ${DEPLOYDIR}/build-artifacts/dtb
+     if ${@oe.utils.conditional('OEMVM_SUPPORT', 'True', 'true', 'false', d)}; then
+         mkdir -p ${DEPLOYDIR}/build-artifacts/oemvm-dtb
+         cp -a ${KERNEL_PREBUILT_PATH}/${VM_TARGET}-vm-*.dtb ${DEPLOYDIR}/build-artifacts/dtb
+         cp -a ${KERNEL_PREBUILT_PATH}/${VM_TARGET}-oemvm-*.dtb ${DEPLOYDIR}/build-artifacts/oemvm-dtb
+     else
+         cp -a ${STAGING_KERNEL_BUILDDIR}/arch/arm64/boot/dts/vendor/qcom/*.dtb  ${DEPLOYDIR}/build-artifacts/dtb
+     fi
      cp -a ${STAGING_KERNEL_BUILDDIR}/vmlinux ${DEPLOYDIR}
      cp -a ${STAGING_KERNEL_BUILDDIR}/System.map ${DEPLOYDIR}
-
      install -m 0644 ${STAGING_KERNEL_BUILDDIR}/arch/arm64/boot/${KERNEL_IMAGETYPE} ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
 
      if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', 'true', 'false', d)}; then
