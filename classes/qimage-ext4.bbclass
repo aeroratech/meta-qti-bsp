@@ -93,7 +93,6 @@ create_symlink_systemd_ext4_mount_rootfs() {
    # Remove generator binaries and ensure that we don't rely on generators for mount or service files.
    rm -rf ${IMAGE_ROOTFS_EXT4}/lib/systemd/system-generators/systemd-debug-generator
    rm -rf ${IMAGE_ROOTFS_EXT4}/lib/systemd/system-generators/systemd-fstab-generator
-   rm -rf ${IMAGE_ROOTFS_EXT4}/lib/systemd/system-generators/systemd-getty-generator
    rm -rf ${IMAGE_ROOTFS_EXT4}/lib/systemd/system-generators/systemd-gpt-auto-generator
    rm -rf ${IMAGE_ROOTFS_EXT4}/lib/systemd/system-generators/systemd-hibernate-resume-generator
    rm -rf ${IMAGE_ROOTFS_EXT4}/lib/systemd/system-generators/systemd-rc-local-generator
