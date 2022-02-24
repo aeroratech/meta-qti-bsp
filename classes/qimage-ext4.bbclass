@@ -159,7 +159,7 @@ addtask do_makeuserdata after do_image before do_build
 ################################################
 ############ Generate persist image ############
 ################################################
-PERSIST_IMAGE_ROOTFS_SIZE ?= "6536668"
+PERSIST_IMAGE_ROOTFS_SIZE ?= "6383KB"
 do_makepersist[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makepersist() {
@@ -176,7 +176,7 @@ addtask do_makepersist after do_image before do_makesystem
 ################################################
 ############ Generate cache image ############
 ################################################
-CACHE_IMAGE_ROOTFS_SIZE ?= "8388608"
+CACHE_IMAGE_ROOTFS_SIZE ?= "8192KB"
 do_makecache[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makecache() {
@@ -189,7 +189,7 @@ addtask do_makecache after do_image before do_makesystem
 ################################################
 ############ Generate systemrw image ############
 ################################################
-SYSTEMRW_IMAGE_ROOTFS_SIZE ?= "8388608"
+SYSTEMRW_IMAGE_ROOTFS_SIZE ?= "8192KB"
 do_makesystemrw[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makesystemrw() {

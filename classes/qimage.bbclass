@@ -10,6 +10,8 @@ inherit ${QIMGCLASSES} ${QIMGEXTENSION}
 
 # Sanity check to ensure dm-verity related configurations are valid
 python () {
+    set_partition_size_in_bytes(d)
+
     if 'dm-verity' not in d.getVar('DISTRO_FEATURES'):
         return
     machine_features = set(d.getVar('MACHINE_FEATURES').split(' '))
