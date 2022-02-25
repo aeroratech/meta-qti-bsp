@@ -1,5 +1,5 @@
 #Below Package is fetch from Codelinaro
-SRC_URI = "${CLO_LE_GIT}/e2fsprogs.git;protocol=https;branch=caf_migration/ext2/master"
+SRC_URI = "${CLO_LE_GIT}/e2fsprogs.git;protocol=https;branch=ext2/master"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
