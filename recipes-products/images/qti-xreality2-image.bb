@@ -7,6 +7,7 @@ require qti-xreality-image.bb
 CORE_IMAGE_EXTRA_INSTALL += "\
         gki-kernel-modules-second-stage \
         packagegroup-qti-camera-kernel \
+        packagegroup-qti-mmframeworks \
 "
 
 # Remove unsupported package groups
