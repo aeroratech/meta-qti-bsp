@@ -5,9 +5,6 @@ LICENSE = "GPLv2.0-with-linux-syscall-note"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta-qti-bsp/files/common-licenses/\
 ${LICENSE};md5=8afb6abdac9a14cb18a0d6c9c151e9b4"
 
-MODULES_LIST = ""
-MODULES_LIST_sxrneo = "modules.list.neo"
-
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI   =  "file://kernel-5.10/kernel_platform/msm-kernel"
 
@@ -21,7 +18,7 @@ do_configure () {
 
 do_compile () {
     # Segregate modules into first and second stages.
-    mod_list=${B}/${MODULES_LIST}
+    mod_list=${B}/${KERNEL_MODULES_LIST}
 
     while IFS= read -r module;
     do
