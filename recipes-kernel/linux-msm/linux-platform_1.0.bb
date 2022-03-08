@@ -96,9 +96,6 @@ do_deploy () {
      cp -a ${STAGING_KERNEL_BUILDDIR}/System.map ${DEPLOYDIR}
      install -m 0644 ${STAGING_KERNEL_BUILDDIR}/arch/arm64/boot/${KERNEL_IMAGETYPE} ${DEPLOYDIR}/${KERNEL_IMAGETYPE}
 
-     if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', 'true', 'false', d)}; then
-             mkdtimg create ${DEPLOYDIR}/${DTB_TARGET} --page_size=${PAGE_SIZE} ${DEPLOYDIR}/build-artifacts/dtb/*.dtb
-     fi
 }
 
 addtask do_deploy after do_install before do_package
