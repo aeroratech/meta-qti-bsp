@@ -167,7 +167,7 @@ addtask do_makeuserdata after do_image before do_build
 ################################################
 ############ Generate persist image ############
 ################################################
-PERSIST_IMAGE_ROOTFS_SIZE ?= "6536668"
+PERSIST_IMAGE_ROOTFS_SIZE ?= "6383KB"
 do_makepersist[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makepersist() {
@@ -187,7 +187,7 @@ SYSTEMRW_IMG_ENABLE = "${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', '
 ################################################
 ############ Generate cache image ############
 ################################################
-CACHE_IMAGE_ROOTFS_SIZE ?= "8388608"
+CACHE_IMAGE_ROOTFS_SIZE ?= "8192KB"
 do_makecache[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makecache() {
@@ -198,7 +198,7 @@ do_makecache() {
 ################################################
 ############ Generate systemrw image ############
 ################################################
-SYSTEMRW_IMAGE_ROOTFS_SIZE ?= "8388608"
+SYSTEMRW_IMAGE_ROOTFS_SIZE ?= "8192KB"
 do_makesystemrw[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makesystemrw() {
