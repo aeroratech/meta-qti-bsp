@@ -32,4 +32,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-support-utils \
         subsystem-ramdump \
         systemd-machine-units \
+        qmi-shutdown-modem \
+        modem-shutdown \
 "
