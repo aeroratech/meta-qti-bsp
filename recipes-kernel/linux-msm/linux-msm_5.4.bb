@@ -7,6 +7,9 @@ SRC_URI_append_sdxlemur += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity',
 S         =  "${WORKDIR}/kernel/msm-5.4"
 PR        =  "r0"
 
+# QCS610 specific
+SRC_URI_append_qcs610 += "file://qcs610.cfg"
+
 DEPENDS += "llvm-arm-toolchain-native virtual/dtc-native rsync-native clang-native"
 TOOLCHAIN = "clang"
 RUNTIME = "llvm"
