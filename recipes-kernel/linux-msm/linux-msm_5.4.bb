@@ -10,6 +10,7 @@ PR        =  "r0"
 # QCS610 specific
 SRC_URI_append_qcs610 += "file://qcs610.cfg"
 SRC_URI_append_qcs610 += "file://android_binderfs.cfg"
+SRC_URI_append_qcs610 += "file://squashfs.cfg"
 
 DEPENDS += "llvm-arm-toolchain-native virtual/dtc-native rsync-native clang-native"
 TOOLCHAIN = "clang"
