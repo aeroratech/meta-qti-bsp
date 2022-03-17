@@ -3,6 +3,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI_append += " file://media-card.mount"
 SRC_URI_append += " file://media-ram.mount"
 SRC_URI_append += " file://var-volatile.mount"
+SRC_URI_append += "${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', '', 'file://var-cache.mount', d)}"
+SRC_URI_append += "${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', '', 'file://var-lib.mount', d)}"
+SRC_URI_append += "${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', '', 'file://var-spool.mount', d)}"
 SRC_URI_append += " file://proc-bus-usb.mount"
 SRC_URI_append += " file://dash.mount"
 
@@ -22,9 +25,25 @@ do_install_append () {
     install -d 0644 ${D}${systemd_unitdir}/system/local-fs.target.wants
     install -m 0644 ${WORKDIR}/var-volatile.mount \
             ${D}${systemd_unitdir}/system/var-volatile.mount
+    if ${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', 'false', 'true', d)}; then
+        install -m 0644 ${WORKDIR}/var-cache.mount \
+                ${D}${systemd_unitdir}/system/var-cache.mount
+        install -m 0644 ${WORKDIR}/var-lib.mount \
+                ${D}${systemd_unitdir}/system/var-lib.mount
+        install -m 0644 ${WORKDIR}/var-spool.mount \
+                ${D}${systemd_unitdir}/system/var-spool.mount
+    fi
 
     ln -sf ${systemd_unitdir}/system/var-volatile.mount \
            ${D}${systemd_unitdir}/system/local-fs.target.wants/var-volatile.mount
+    if ${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', 'false', 'true', d)}; then
+        ln -sf ${systemd_unitdir}/system/var-cache.mount \
+               ${D}${systemd_unitdir}/system/local-fs.target.wants/var-cache.mount
+        ln -sf ${systemd_unitdir}/system/var-lib.mount \
+               ${D}${systemd_unitdir}/system/local-fs.target.wants/var-lib.mount
+        ln -sf ${systemd_unitdir}/system/var-spool.mount \
+               ${D}${systemd_unitdir}/system/local-fs.target.wants/var-spool.mount
+    fi
 }
 
 # Scripts for pre and post hibernate functions
