@@ -23,41 +23,20 @@ PROVIDES =+ "${PN}-reboot ${PN}-shutdown ${PN}-powerconfig"
 
 PR = "r9"
 
+EXTRA_OECONF  = " ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '--with-systemd', '',d)} "
 EXTRA_OECONF += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', '--enable-vm-config', '', d)}"
 
-do_install() {
-        if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
-           install -m 0755 ${B}/powerapp -D ${D}/sbin/powerapp
-           install -m 0755 ${S}/reboot -D ${D}${sysconfdir}/initscripts/reboot
-           install -m 0755 ${S}/reboot-bootloader -D ${D}/sbin/reboot-bootloader
-           install -m 0755 ${S}/reboot-recovery -D ${D}/sbin/reboot-recovery
-           install -m 0755 ${S}/reboot-cookie -D ${D}${userfsdatadir}/reboot-cookie
-           install -m 0755 ${S}/reset_reboot_cookie -D ${D}${sysconfdir}/initscripts/reset_reboot_cookie
-           install -m 0755 ${S}/shutdown -D ${D}${sysconfdir}/initscripts/shutdown
-           install -m 0755 ${S}/start_power_config -D ${D}${sysconfdir}/initscripts/power_config
-           ln ${D}${base_sbindir}/powerapp ${D}${base_sbindir}/sys_reboot
-           ln ${D}${base_sbindir}/powerapp ${D}${base_sbindir}/sys_shutdown
-           install -m 0644 ${S}/reset_reboot_cookie.service -D ${D}${systemd_unitdir}/system/reset_reboot_cookie.service
-           install -m 0644 ${S}/power_config.service -D ${D}${systemd_unitdir}/system/power_config.service
+do_install_append() {
+        ln ${D}${base_sbindir}/powerapp ${D}${base_sbindir}/sys_reboot
+        ln ${D}${base_sbindir}/powerapp ${D}${base_sbindir}/sys_shutdown
+
+        if ${@bb.utils.contains('EXTRA_OECONF', '--with-systemd', 'true', 'false', d)}; then
            install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
            ln -sf ${systemd_unitdir}/system/reset_reboot_cookie.service ${D}${systemd_unitdir}/system/multi-user.target.wants/reset_reboot_cookie.service
            ln -sf ${systemd_unitdir}/system/power_config.service ${D}${systemd_unitdir}/system/multi-user.target.wants/power_config.service
-
            if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', 'true', 'false', d)}; then
-               install -m 0644 ${S}/powerapp.service -D ${D}${systemd_unitdir}/system/powerapp.service
                ln -sf ${systemd_unitdir}/system/powerapp.service ${D}${systemd_unitdir}/system/multi-user.target.wants/powerapp.service
            fi
-        else
-           install -m 0755 ${B}/powerapp -D ${D}/sbin/powerapp
-           install -m 0755 ${S}/reboot -D ${D}${sysconfdir}/init.d/reboot
-           install -m 0755 ${S}/reboot-bootloader -D ${D}/sbin/reboot-bootloader
-           install -m 0755 ${S}/reboot-recovery -D ${D}/sbin/reboot-recovery
-           install -m 0755 ${S}/reboot-cookie -D ${D}${userfsdatadir}/reboot-cookie
-           install -m 0755 ${S}/reset_reboot_cookie -D ${D}${sysconfdir}/init.d/reset_reboot_cookie
-           install -m 0755 ${S}/shutdown -D ${D}${sysconfdir}/init.d/shutdown
-           install -m 0755 ${S}/start_power_config -D ${D}${sysconfdir}/init.d/power_config
-           ln ${D}${base_sbindir}/powerapp ${D}${base_sbindir}/sys_reboot
-           ln ${D}${base_sbindir}/powerapp ${D}${base_sbindir}/sys_shutdown
         fi
 }
 
