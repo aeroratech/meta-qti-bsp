@@ -33,14 +33,6 @@ do_install_append() {
         ln ${D}${base_sbindir}/powerapp ${D}${base_sbindir}/sys_reboot
         ln ${D}${base_sbindir}/powerapp ${D}${base_sbindir}/sys_shutdown
 
-        if ${@bb.utils.contains('EXTRA_OECONF', '--with-systemd', 'true', 'false', d)}; then
-           install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
-           ln -sf ${systemd_unitdir}/system/reset_reboot_cookie.service ${D}${systemd_unitdir}/system/multi-user.target.wants/reset_reboot_cookie.service
-           ln -sf ${systemd_unitdir}/system/power_config.service ${D}${systemd_unitdir}/system/multi-user.target.wants/power_config.service
-           if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', 'true', 'false', d)}; then
-               ln -sf ${systemd_unitdir}/system/powerapp.service ${D}${systemd_unitdir}/system/multi-user.target.wants/powerapp.service
-           fi
-        fi
 }
 
 
@@ -75,3 +67,7 @@ pkg_postinst_${PN} () {
            update-rc.d $OPT reset_reboot_cookie start 55 2 3 4 5 .
         fi
 }
+
+SYSTEMD_SERVICE_${PN}  = " reset_reboot_cookie.service "
+SYSTEMD_SERVICE_${PN}  = " power_config.service "
+SYSTEMD_SERVICE_${PN} += "${@bb.utils.contains('MACHINE_FEATURES','qti-vm',' powerapp.service ','',d)}"
