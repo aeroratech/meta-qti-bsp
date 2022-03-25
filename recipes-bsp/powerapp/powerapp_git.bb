@@ -1,4 +1,4 @@
-inherit autotools-brokensep
+inherit autotools-brokensep pkgconfig
 
 DESCRIPTION = "Powerapp tools"
 HOMEPAGE = "http://codeaurora.org/"
@@ -10,6 +10,9 @@ FILESEXTRAPATHS_prepend := "${WORKSPACE}/system/core/:"
 SRC_URI = "file://powerapp"
 
 S = "${WORKDIR}/powerapp"
+
+PACKAGECONFIG ?= "glib"
+PACKAGECONFIG[glib] = "--with-glib, --without-glib, glib-2.0"
 
 PACKAGES =+ "${PN}-reboot ${PN}-shutdown ${PN}-powerconfig"
 FILES_${PN}-reboot = " ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', "${sysconfdir}/initscripts/reboot", "${sysconfdir}/init.d/reboot", d)} "
