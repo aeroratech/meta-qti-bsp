@@ -286,7 +286,7 @@ def get_verity_cmdline(d, img):
 # system image. This means final boot image can be created only after system image.
 # But many a times when only kernel need to be built waiting for full image is
 # time consuming. To over come this make_veritybootimg task is added to build boot
-# img with verity. Normal do_make_bootimg continue to build boot.img without verity.
+# img with verity. Normal do_makeboot continue to build boot.img without verity.
 VBOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-veritybootimg-complete"
 
 def do_make_one_veritybootimg(d, img):

@@ -199,7 +199,7 @@ RAMDISK_PATH = "${@get_ramdisk_path(d)}"
 
 MKBOOTUTIL = '${@oe.utils.conditional("PREFERRED_PROVIDER_virtual/mkbootimg-native", "mkbootimg-gki-native", "scripts/mkbootimg.py", "mkbootimg", d)}'
 
-python do_make_bootimg () {
+python do_makeboot () {
     import subprocess
 
     xtra_parms=""
@@ -221,29 +221,28 @@ python do_make_bootimg () {
     # cmd to make boot.img
     cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s --ramdisk %s --ramdisk_offset 0x0 %s --output %s" \
            % (zimg_path, cmdline, pagesize, base, ramdisk_path, xtra_parms, output )
-
-    bb.debug(1, "do_make_bootimg cmd: %s" % (cmd))
-
-    ret = subprocess.call(cmd, shell=True)
-    if ret != 0:
-        bb.error("Running: %s failed." % cmd)
+    bb.debug(1, "do_makeboot cmd: %s" % (cmd))
+    try:
+        ret = subprocess.check_output(cmd, shell=True)
+    except RuntimeError as e:
+        bb.error("cmd: %s failed with error %s" % (cmd, str(e)))
 
 }
-do_make_bootimg[dirs]      = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"
+do_makeboot[dirs]      = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"
 # Make sure native tools and vmlinux ready to create boot.img
-do_make_bootimg[depends] += "virtual/kernel:do_deploy virtual/mkbootimg-native:do_populate_sysroot"
-SSTATETASKS += "do_make_bootimg"
+do_makeboot[depends] += "virtual/kernel:do_deploy virtual/mkbootimg-native:do_populate_sysroot"
+SSTATETASKS += "do_makeboot"
 SSTATE_SKIP_CREATION_task-make-bootimg = '1'
-do_make_bootimg[sstate-inputdirs] = "${BOOTIMGDEPLOYDIR}"
-do_make_bootimg[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
-do_make_bootimg[stamp-extra-info] = "${MACHINE_ARCH}"
+do_makeboot[sstate-inputdirs] = "${BOOTIMGDEPLOYDIR}"
+do_makeboot[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
+do_makeboot[stamp-extra-info] = "${MACHINE_ARCH}"
 
-python do_make_bootimg_setscene () {
+python do_makeboot_setscene () {
     sstate_setscene(d)
 }
-addtask do_make_bootimg_setscene
+addtask do_makeboot_setscene
 
-addtask do_make_bootimg before do_image_complete
+addtask do_makeboot before do_image_complete
 ################################################
 ############# Generate dtbo.img ################
 ################################################
@@ -252,7 +251,7 @@ MKDTUTIL = '${@oe.utils.conditional("PREFERRED_PROVIDER_virtual/mkdtimg-native",
 DTBODEPLOYDIR = "${WORKDIR}/deploy-${PN}-dtboimage-complete"
 
 # Create dtbo.img if DTBO support is enabled
-python do_make_dtboimg () {
+python do_makedtbo () {
     import subprocess
 
     mkdtimg_bin_path = d.getVar('STAGING_BINDIR_NATIVE', True) + "/" + d.getVar('MKDTUTIL')
@@ -261,24 +260,27 @@ python do_make_dtboimg () {
     output          = d.getVar('DTBOIMAGE_TARGET', True)
     # cmd to make dtbo.img
     cmd = mkdtimg_bin_path + " create "+ output +" --page_size="+ pagesize +" "+ dtbodeploydir + "/*.dtbo"
-    bb.debug(1, "do_make_dtboimg cmd: %s" % (cmd))
-    ret = subprocess.call(cmd, shell=True)
+    bb.debug(1, "do_makedtbo cmd: %s" % (cmd))
+    try:
+        ret = subprocess.check_output(cmd, shell=True)
+    except RuntimeError as e:
+        bb.error("cmd: %s failed with error %s" % (cmd, str(e)))
 }
 
-do_make_dtboimg[dirs]      = "${DTBODEPLOYDIR}/${IMAGE_BASENAME}"
+do_makedtbo[dirs]      = "${DTBODEPLOYDIR}/${IMAGE_BASENAME}"
 # Make sure dtb files ready to create dtbo.img
-do_make_dtboimg[depends] += "virtual/kernel:do_deploy virtual/mkdtimg-native:do_populate_sysroot"
-SSTATETASKS += "do_make_dtboimg"
+do_makedtbo[depends] += "virtual/kernel:do_deploy virtual/mkdtimg-native:do_populate_sysroot"
+SSTATETASKS += "do_makedtbo"
 SSTATE_SKIP_CREATION_task-make-dtboimg = '1'
-do_make_dtboimg[sstate-inputdirs] = "${DTBODEPLOYDIR}"
-do_make_dtboimg[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
-do_make_dtboimg[stamp-extra-info] = "${MACHINE_ARCH}"
+do_makedtbo[sstate-inputdirs] = "${DTBODEPLOYDIR}"
+do_makedtbo[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
+do_makedtbo[stamp-extra-info] = "${MACHINE_ARCH}"
 
-python do_make_dtboimg_setscene () {
+python do_makedtbo_setscene () {
     sstate_setscene(d)
 }
 
 python () {
     if d.getVar('MACHINE_SUPPORTS_DTBO'):
-       bb.build.addtask('do_make_dtboimg', 'do_image', 'do_rootfs', d)
+       bb.build.addtask('do_makedtbo', 'do_image', 'do_rootfs', d)
 }
