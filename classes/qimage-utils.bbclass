@@ -42,7 +42,7 @@ def machine_search(f, search_path):
         if searched:
             return searched
 
-def get_bytes (size):
+def get_size_in_bytes (size):
     import re
     split_size = re.split("[aA-zZ]", size)
     partition_size = split_size[0].strip()
@@ -51,45 +51,29 @@ def get_bytes (size):
     split_len = len(split_unit)
     partition_unit = split_unit[split_len-1].strip()
 
-    bb.debug(1, "partition unit %s" %partition_unit)
-    bb.debug(1, "partition_size %s" %partition_size)
+    bb.debug(1, "get_size_in_bytes: unit: %s" %partition_unit)
+    bb.debug(1, "get_size_in_bytes: size: %s" %partition_size)
 
     if (partition_unit.lower() == "KB".lower()):
+        size = int(partition_size)*1000
+    elif (partition_unit.lower() == "KiB".lower()):
         size = int(partition_size)*1024
     elif (partition_unit.lower() == "MB".lower()):
+        size = int(partition_size)*1000*1000
+    elif (partition_unit.lower() == "MiB".lower()):
         size = int(partition_size)*1024*1024
     elif (partition_unit.lower() == "GB".lower()):
+        size = int(partition_size)*1000*1000*1000
+    elif (partition_unit.lower() == "GiB".lower()):
         size = int(partition_size)*1024*1024*1024
+    elif (partition_unit.lower() == "TB".lower()):
+        size = int(partition_size)*1000*1000*1000*1000
+    elif (partition_unit.lower() == "TiB".lower()):
+        size = int(partition_size)*1024*1024*1024*1024
     elif (not (partition_unit and partition_unit.strip())):
         size = int(partition_size)
     else:
-        bb.note("unhandled unit")
+        bb.note("get_size_in_bytes: unhandled unit")
         size = int(partition_size)
-    bb.debug(1, "final size = %s" %size)
+    bb.debug(1, "get_size_in_bytes: final size in bytes: %s" %size)
     return size
-
-def set_partition_size_in_bytes (d):
-    system_size = d.getVar("SYSTEM_SIZE_EXT4",True)
-    sys_partition_size = get_bytes(system_size)
-    bb.debug(1, "sys_image_size %s" %sys_partition_size)
-    d.setVar('SYSTEM_SIZE_EXT4', str(sys_partition_size))
-
-    userdata_size = d.getVar("USERDATA_SIZE_EXT4",True)
-    userdata_partition_size = get_bytes(userdata_size)
-    bb.debug(1, "userdata_image_size %s" %userdata_partition_size)
-    d.setVar('USERDATA_SIZE_EXT4', str(userdata_partition_size))
-
-    persist_size = d.getVar("PERSIST_IMAGE_ROOTFS_SIZE",True)
-    persist_partition_size = get_bytes(persist_size)
-    bb.debug(1, "persist_image_size %s" %persist_partition_size)
-    d.setVar('PERSIST_IMAGE_ROOTFS_SIZE', str(persist_partition_size))
-
-    cache_size = d.getVar("CACHE_IMAGE_ROOTFS_SIZE",True)
-    cache_partition_size = get_bytes(cache_size)
-    bb.debug(1, "cache_image_size %s" %cache_partition_size)
-    d.setVar('CACHE_IMAGE_ROOTFS_SIZE', str(cache_partition_size))
-
-    systemrw_size = d.getVar("SYSTEMRW_IMAGE_ROOTFS_SIZE",True)
-    systemrw_partition_size = get_bytes(systemrw_size)
-    bb.debug(1, "systemrw_image_size %s" %systemrw_partition_size)
-    d.setVar('SYSTEMRW_IMAGE_ROOTFS_SIZE', str(systemrw_partition_size))

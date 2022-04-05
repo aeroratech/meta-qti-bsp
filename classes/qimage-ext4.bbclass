@@ -1,3 +1,10 @@
+# Convert human readable partition sizes into bytes
+CACHE_IMAGE_ROOTFS_SIZE    = "${@get_size_in_bytes(d.getVar('CACHE_SIZE_EXT4') or '8000KiB')}"
+SYSTEM_IMAGE_ROOTFS_SIZE   = "${@get_size_in_bytes(d.getVar('SYSTEM_SIZE_EXT4') or '256MB')}"
+SYSTEMRW_IMAGE_ROOTFS_SIZE = "${@get_size_in_bytes(d.getVar('SYSTEMRW_SIZE_EXT4') or '8000KiB')}"
+PERSIST_IMAGE_ROOTFS_SIZE  = "${@get_size_in_bytes(d.getVar('PERSIST_SIZE_EXT4') or '6MiB')}"
+USERDATA_IMAGE_ROOTFS_SIZE = "${@get_size_in_bytes(d.getVar('USERDATA_SIZE_EXT4') or '1GB')}"
+
 # if A/B support is supported, generate OTA pkg by default.
 GENERATE_AB_OTA_PACKAGE ?= "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', '1', '', d)}"
 
@@ -31,7 +38,6 @@ IMAGE_EXT4_SELINUX_OPTIONS = "${@bb.utils.contains('DISTRO_FEATURES', 'selinux',
 
 ROOTFS_POSTPROCESS_COMMAND += "gen_buildprop;do_fsconfig;"
 ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('MACHINE_MNT_POINTS', 'overlay', 'gen_overlayfs;', '', d)}"
-USERDATA_DIR = "${@bb.utils.contains('MACHINE_MNT_POINTS', 'overlay', 'overlay', 'data', d)}"
 
 gen_buildprop() {
    mkdir -p ${IMAGE_ROOTFS}/cache
@@ -131,7 +137,7 @@ do_makesystem() {
         make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
                 -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_MAP_TARGET} \
                 -a / -b 4096 ${SPARSE_SYSTEMIMAGE_FLAG} \
-                -l ${SYSTEM_SIZE_EXT4} \
+                -l ${SYSTEM_IMAGE_ROOTFS_SIZE} \
                 ${IMAGE_EXT4_SELINUX_OPTIONS} \
                 ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS_EXT4}
 
@@ -149,7 +155,10 @@ do_makesystem() {
 }
 addtask do_makesystem after do_image before do_image_complete
 
+################################################
 ### Generate userdata.img ###
+################################################
+USERDATA_DIR = "${@bb.utils.contains('MACHINE_MNT_POINTS', 'overlay', 'overlay', 'data', d)}"
 do_makeuserdata[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makeuserdata() {
@@ -157,7 +166,7 @@ do_makeuserdata() {
     make_ext4fs -C ${WORKDIR}/rootfs-fsconfig.conf \
                 -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_MAP_TARGET} \
                 -a /data ${IMAGE_EXT4_SELINUX_OPTIONS} \
-                ${SPARSE_SYSTEMIMAGE_FLAG} -b 4096 -l ${USERDATA_SIZE_EXT4} \
+                ${SPARSE_SYSTEMIMAGE_FLAG} -b 4096 -l ${USERDATA_IMAGE_ROOTFS_SIZE} \
                 ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_TARGET} \
                 ${IMAGE_ROOTFS}/${USERDATA_DIR}
 }
@@ -167,7 +176,6 @@ addtask do_makeuserdata after do_image before do_build
 ################################################
 ############ Generate persist image ############
 ################################################
-PERSIST_IMAGE_ROOTFS_SIZE ?= "6383KB"
 do_makepersist[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makepersist() {
@@ -176,7 +184,6 @@ do_makepersist() {
                 -s -l ${PERSIST_IMAGE_ROOTFS_SIZE} \
                 ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${PERSISTIMAGE_TARGET} \
                 ${IMAGE_ROOTFS}/persist
-
 }
 # It must be before do_makesystem to remove /persist
 addtask do_makepersist after do_image before do_makesystem
@@ -187,7 +194,6 @@ SYSTEMRW_IMG_ENABLE = "${@bb.utils.contains('MACHINE_MNT_POINTS', '/systemrw', '
 ################################################
 ############ Generate cache image ############
 ################################################
-CACHE_IMAGE_ROOTFS_SIZE ?= "8192KB"
 do_makecache[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makecache() {
@@ -198,7 +204,6 @@ do_makecache() {
 ################################################
 ############ Generate systemrw image ############
 ################################################
-SYSTEMRW_IMAGE_ROOTFS_SIZE ?= "8192KB"
 do_makesystemrw[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makesystemrw() {

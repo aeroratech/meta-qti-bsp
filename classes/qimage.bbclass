@@ -9,10 +9,6 @@ QIMGEXTENSION ?= ""
 
 inherit ${QIMGCLASSES} ${QIMGEXTENSION}
 
-python () {
-    set_partition_size_in_bytes(d)
-}
-
 # The work directory for image recipes is retained as the 'rootfs' directory
 # can be used as sysroot during remote gdb debgging
 RM_WORK_EXCLUDE += "${PN}"
