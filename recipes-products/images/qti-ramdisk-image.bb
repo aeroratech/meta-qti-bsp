@@ -9,6 +9,7 @@ EXTRA_IMAGEDEPENDS_remove = "edk2"
 PACKAGE_INSTALL = "\
     adbd \
     usb-composition \
+    usb-composition-usbd \
     busybox \
     ext4-utils \
     gki-kernel-modules-first-stage \

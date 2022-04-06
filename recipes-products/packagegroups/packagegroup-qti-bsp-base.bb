@@ -6,6 +6,7 @@ inherit packagegroup
 
 PROVIDES = "${PACKAGES}"
 USB_SUPPORT = "${@d.getVar('MACHINE_SUPPORTS_USB') or "True"}"
+USB_AUTOSUSPEND_SUPPORT = "${@d.getVar('MACHINE_SUPPORTS_USB_AUTOSUSPEND') or "True"}"
 PROPERTIES_SUPPORT = "${@d.getVar('MACHINE_SUPPORTS_ANDROID_PROPERTIES') or "True"}"
 
 PACKAGES = ' \
@@ -30,6 +31,7 @@ RDEPENDS_packagegroup-android-utils-base = "\
 RDEPENDS_packagegroup-startup-scripts-base = "\
     ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'ab-slot-util', '', d)} \
     ${@oe.utils.conditional('USB_SUPPORT', 'True', 'usb-composition', '', d)} \
+    ${@oe.utils.conditional('USB_AUTOSUSPEND_SUPPORT', 'True', 'usb-composition-usbd', '', d)} \
     post-boot \
     sdcard-scripts-automount \
     "

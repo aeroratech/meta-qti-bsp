@@ -4,7 +4,7 @@ RAMDISKDIR = "${WORKDIR}/ramdisk"
 TOYBOX_RAMDISK ?= "False"
 ENABLE_ADB ?= "True"
 ENABLE_ADB_qti-distro-base-user ?= "False"
-PACKAGE_INSTALL += "${@oe.utils.conditional('ENABLE_ADB', 'True', 'adbd usb-composition', '', d)}"
+PACKAGE_INSTALL += "${@oe.utils.conditional('ENABLE_ADB', 'True', 'adbd usb-composition usb-composition-usbd', '', d)}"
 PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils e2fsprogs dosfstools', '', d)}"
 
 do_ramdisk_create[depends] += "virtual/kernel:do_deploy"

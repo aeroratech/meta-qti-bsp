@@ -38,5 +38,14 @@ do_install_append() {
    install -m 0644 ${S}/usbd.service -D ${D}${systemd_unitdir}/system/usbd.service
 }
 
-SYSTEMD_SERVICE_${PN} = "usb.service usbd.service"
-FILES_${PN} += "${systemd_unitdir}/system/"
+SYSTEMD_PACKAGES = "${PN} ${PN}-usbd"
+SYSTEMD_SERVICE_${PN} = "usb.service"
+SYSTEMD_SERVICE_${PN}-usbd = "usbd.service"
+
+FILES_${PN} += "${systemd_system_unitdir}/"
+
+PACKAGES =+ "${PN}-usbd"
+FILES_${PN}-usbd = " \
+    ${systemd_system_unitdir}/usbd.service \
+    ${bindir}/usbd \
+"
