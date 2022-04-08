@@ -29,6 +29,9 @@ PR = "r9"
 EXTRA_OECONF  = " ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '--with-systemd', '',d)} "
 EXTRA_OECONF += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', '--enable-vm-config', '', d)}"
 
+DEPENDS += "glib-2.0"
+EXTRA_OECONF += "--with-glib"
+
 do_install_append() {
         ln ${D}${base_sbindir}/powerapp ${D}${base_sbindir}/sys_reboot
         ln ${D}${base_sbindir}/powerapp ${D}${base_sbindir}/sys_shutdown
