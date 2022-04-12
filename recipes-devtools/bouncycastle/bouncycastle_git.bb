@@ -37,7 +37,7 @@ S_VERITY="${WORKDIR}/verity"
 #######################################
 #  keys/certificates git repo
 #######################################
-SRC_URI +=  "git://source.codeaurora.org/quic/la/platform/build;protocol=https;nobranch=1;rev=26bfd792b59eb163dfbc8602a931868fbb35bad4;destsuffix=security;subpath=target/product/security;name=security"
+SRC_URI +=  "${CLO_LA_GIT}/platform/build_repo;protocol=https;nobranch=1;rev=26bfd792b59eb163dfbc8602a931868fbb35bad4;destsuffix=security;subpath=target/product/security;name=security"
 
 
 SRC_URI[security.md5sum] = "1ba8f1041c6f81834450aefc80e78ba8"
