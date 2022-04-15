@@ -8,6 +8,7 @@ ${LICENSE};md5=550794465ba0ec5312d6919e203a55f9"
 
 FILESEXTRAPATHS_prepend := "${WORKSPACE}/system/core/:"
 SRC_URI  = "file://rootdir"
+SRC_URI += "file://init_post_boot.conf"
 
 S = "${WORKDIR}/rootdir"
 
@@ -32,6 +33,10 @@ do_install_append() {
         install -d ${D}${systemd_unitdir}/system/ffbm.target.wants/
         ln -sf ${systemd_unitdir}/system/init_post_boot.service \
                ${D}${systemd_unitdir}/system/ffbm.target.wants/init_post_boot.service
+        if ${@bb.utils.contains('BASEMACHINE', 'trustedvm', 'true', 'false', d)}; then
+            install -m 0744 ${WORKDIR}/init_post_boot.conf -D \
+                ${D}${systemd_unitdir}/system/init_post_boot.service.d/init_post_boot.service.conf
+        fi
     fi
 }
 
