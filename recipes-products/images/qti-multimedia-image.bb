@@ -14,7 +14,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         kernel-modules \
         libdrm-tests \
         graphite-client \
-        audio-utils \
+        alsa-utils \
         packagegroup-android-utils \
         packagegroup-qti-audio \
         packagegroup-qti-pulseaudio \
