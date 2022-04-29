@@ -81,4 +81,4 @@ persist.qmmf.ubwcstream.enable=1
 persist.qmmf.rescaler.type=C2D
 
 #enable weston during boot
-persist.display.launch.weston.at.bootup=true
+persist.display.launch.weston.at.bootup=false
