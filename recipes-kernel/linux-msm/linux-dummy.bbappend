@@ -1,2 +1,2 @@
-do_configure[depends] += "linux-platform:do_deploy" 
+do_configure[depends] += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm', 'linux-platform:do_deploy', '', d)}"
 
