@@ -3,6 +3,8 @@
 
 DEPENDS += " verity-utils-native"
 
+CONFLICT_MACHINE_FEATURES += " dm-verity-none dm-verity-initramfs"
+
 FIXED_SALT = "aee087a5be3b982978c923f566a94613496b417f2af592639bc80d141e34dfe7"
 BLOCK_SIZE = "4096"
 BLOCK_DEVICE_SYSTEM = "/dev/block/bootdevice/by-name/system"
@@ -284,10 +286,10 @@ def get_verity_cmdline(d, img):
 
 # With dm-verity, kernel cmdline has to be updated with correct hash value of
 # system image. This means final boot image can be created only after system image.
-# But many a times when only kernel need to be built waiting for full image is
-# time consuming. To over come this make_veritybootimg task is added to build boot
-# img with verity. Normal do_makeboot continue to build boot.img without verity.
-VBOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-veritybootimg-complete"
+# do_makeboot task from this class builds boot.img with verity after system image is
+# generated. do_makeboot in dm-verity-none.bbclass can build boot.img without verity
+# Include appropraite dm-verity bbclass.
+BOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-bootimage-complete"
 
 def do_make_one_veritybootimg(d, img):
     import subprocess
@@ -310,13 +312,13 @@ def do_make_one_veritybootimg(d, img):
     cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s %s --ramdisk /dev/null --ramdisk_offset 0x0 --output %s" \
            % (zimg_path, cmdline, pagesize, base, xtra_parms, output )
 
-    bb.debug(1, "do_make_veritybootimg cmd: %s" % (cmd))
+    bb.debug(1, "do_makeboot cmd: %s" % (cmd))
 
     ret = subprocess.call(cmd, shell=True)
     if ret != 0:
         bb.error("Running: %s failed." % cmd)
 
-python do_make_veritybootimg () {
+python do_makeboot () {
     import shutil
     images = d.getVar('VERITY_IMAGES', True).split()
     for img in images:
@@ -327,24 +329,24 @@ python do_make_veritybootimg () {
             do_make_one_veritybootimg(d, img)
             # Copy boot image for default system image to original location
             if img == d.getVar('SYSTEMIMAGE_TARGET', d):
-                shutil.copy(verity_path, os.path.join(d.getVar('VBOOTIMGDEPLOYDIR'), d.getVar('IMAGE_BASENAME'), d.getVar('BOOTIMAGE_TARGET')))
+                shutil.copy(verity_path, os.path.join(d.getVar('BOOTIMGDEPLOYDIR'), d.getVar('IMAGE_BASENAME'), d.getVar('BOOTIMAGE_TARGET')))
         else:
             bb.warn(img_path + " does not exist")
 }
-do_make_veritybootimg[dirs]      = "${VBOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"
+do_makeboot[dirs]      = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"
 # Make sure native tools and vmlinux ready to create boot.img
-do_make_veritybootimg[depends] += "virtual/kernel:do_deploy mkbootimg-native:do_populate_sysroot"
-do_make_veritybootimg[depends]  += "${PN}:do_make_verity_enabled_system_image"
-do_make_veritybootimg[depends]  += "${PN}:do_makeuserdata"
-SSTATETASKS += "do_make_veritybootimg"
+do_makeboot[depends] += "virtual/kernel:do_deploy mkbootimg-native:do_populate_sysroot"
+do_makeboot[depends]  += "${PN}:do_make_verity_enabled_system_image"
+do_makeboot[depends]  += "${PN}:do_makeuserdata"
+SSTATETASKS += "do_makeboot"
 SSTATE_SKIP_CREATION_task-make-veritybootimg = '1'
-do_make_veritybootimg[sstate-inputdirs] = "${VBOOTIMGDEPLOYDIR}"
-do_make_veritybootimg[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
-do_make_veritybootimg[stamp-extra-info] = "${MACHINE_ARCH}"
+do_makeboot[sstate-inputdirs] = "${BOOTIMGDEPLOYDIR}"
+do_makeboot[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
+do_makeboot[stamp-extra-info] = "${MACHINE_ARCH}"
 
-python do_make_veritybootimg_setscene () {
+python do_makeboot_setscene () {
     sstate_setscene(d)
 }
-addtask do_make_veritybootimg_setscene
+addtask do_makeboot_setscene
 
-addtask do_make_veritybootimg before do_image_complete
+addtask do_makeboot before do_image_complete
