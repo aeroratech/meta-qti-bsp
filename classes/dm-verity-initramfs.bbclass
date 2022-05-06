@@ -13,7 +13,7 @@ VERITY_FEC_DEVICE = "${WORKDIR}/${IMAGE_NAME}.verityfec"
 UNSPARSED_SYSTEMIMAGE = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET}"
 
 python adjust_system_size_for_verity () {
-    system_size = int(d.getVar('SYSTEM_SIZE_EXT4'))
+    system_size = int(d.getVar('SYSTEM_IMAGE_ROOTFS_SIZE'))
     block_size = int(d.getVar('BLOCK_SIZE'))
     data_blocks = int(system_size / block_size)
     d.setVar('DATA_BLOCKS', str(data_blocks))

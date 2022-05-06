@@ -8,7 +8,7 @@ CONFLICT_MACHINE_FEATURES += " dm-verity-none dm-verity-initramfs"
 FIXED_SALT = "aee087a5be3b982978c923f566a94613496b417f2af592639bc80d141e34dfe7"
 BLOCK_SIZE = "4096"
 BLOCK_DEVICE_SYSTEM = "/dev/block/bootdevice/by-name/system"
-ORG_SYSTEM_SIZE_EXT4 = "0"
+ORG_SYSTEM_SIZE = "0"
 VERITY_SIZE = "0"
 ROOT_HASH = ""
 HASH_ALGO = "sha256"
@@ -36,7 +36,7 @@ VERITY_FEC_IMG       = "verity-fec.img"
 VERITY_CMDLINE       = "cmdline"
 
 python adjust_system_size_for_verity () {
-    partition_size = int(d.getVar("SYSTEM_SIZE_EXT4",True))
+    partition_size = int(d.getVar("SYSTEM_IMAGE_ROOTFS_SIZE"))
     block_size = int(d.getVar("BLOCK_SIZE",True))
     fec_support = d.getVar("FEC_SUPPORT",True)
     hi = partition_size
@@ -65,16 +65,16 @@ python adjust_system_size_for_verity () {
 
     d.setVar('SIZE_IN_SECTORS', str(size_in_sectors))
     d.setVar('DATA_BLOCKS_NUMBER', str(data_blocks_number))
-    d.setVar('SYSTEM_SIZE_EXT4', str(result))
+    d.setVar('SYSTEM_IMAGE_ROOTFS_SIZE', str(result))
     d.setVar('VERITY_SIZE', str(verity_size))
-    d.setVar('ORG_SYSTEM_SIZE_EXT4', str(partition_size))
+    d.setVar('ORG_SYSTEM_SIZE', str(partition_size))
     d.setVar('FEC_OFFSET', str(fec_off))
 
     bb.debug(1, "Data Blocks Number: %s" % d.getVar('DATA_BLOCKS_NUMBER', True))
     bb.debug(1, "FEC Offset: %s" % d.getVar("FEC_OFFSET",True))
-    bb.debug(1, "system image size without verity: %s" % d.getVar("ORG_SYSTEM_SIZE_EXT4",True))
+    bb.debug(1, "system image size without verity: %s" % d.getVar("ORG_SYSTEM_SIZE"))
     bb.debug(1, "verity size: %s" % d.getVar("VERITY_SIZE",True))
-    bb.debug(1, "system image size with verity: %s" % d.getVar("SYSTEM_SIZE_EXT4",True))
+    bb.debug(1, "system image size with verity: %s" % d.getVar("SYSTEM_IMAGE_ROOTFS_SIZE"))
     bb.note("System image size is adjusted with verity")
 }
 
@@ -149,7 +149,7 @@ def make_one_verity_enabled_system_image(d, img):
 
     # Build verity metadata
     blk_dev = d.getVar("BLOCK_DEVICE_SYSTEM", True)
-    image_size = d.getVar("SYSTEM_SIZE_EXT4", True)
+    image_size = int(d.getVar('SYSTEM_IMAGE_ROOTFS_SIZE'))
     bvmd_script_path = d.getVar('STAGING_BINDIR_NATIVE', True) + '/build_verity_metadata.py'
     cmd = bvmd_script_path + " build %s %s %s %s %s %s %s " % (image_size, verity_md_img, str(d.getVar('ROOT_HASH', True)), str(d.getVar('FIXED_SALT_STR', True)), blk_dev, signer_path, signer_key)
     ret = subprocess.call(cmd, shell=True)
@@ -171,8 +171,8 @@ def make_one_verity_enabled_system_image(d, img):
                     out_file.write(line)
 
     # Calculate padding.
-    partition_size = int(d.getVar("ORG_SYSTEM_SIZE_EXT4",True))
-    img_size = int(d.getVar("SYSTEM_SIZE_EXT4", True))
+    partition_size = int(d.getVar("ORG_SYSTEM_SIZE",True))
+    img_size = int(d.getVar('SYSTEM_IMAGE_ROOTFS_SIZE'))
     verity_size = int(d.getVar("VERITY_SIZE",True))
     padding_size = partition_size - img_size - verity_size
     bb.debug(1, "padding_size(%s) = %s - %s - %s" %(padding_size, partition_size, img_size, verity_size))
