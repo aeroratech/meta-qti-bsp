@@ -99,11 +99,11 @@ python do_makeboot () {
     # cmd to make boot.img
     cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s --ramdisk %s --ramdisk_offset 0x0 %s --output %s" \
            % (zimg_path, cmdline, pagesize, base, ramdisk_path, xtra_parms, output )
-    bb.debug(1, "dm-verity-none do_makeboot cmd: %s" % (cmd))
+    bb.debug(1, "dm-verity-initramfs do_makeboot cmd: %s" % (cmd))
     try:
         ret = subprocess.check_output(cmd, shell=True)
     except RuntimeError as e:
-        bb.error("dm-verity-none cmd: %s failed with error %s" % (cmd, str(e)))
+        bb.error("dm-verity-initramfs cmd: %s failed with error %s" % (cmd, str(e)))
 
 }
 do_makeboot[dirs]      = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"

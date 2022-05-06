@@ -312,11 +312,11 @@ def do_make_one_veritybootimg(d, img):
     cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s %s --ramdisk /dev/null --ramdisk_offset 0x0 --output %s" \
            % (zimg_path, cmdline, pagesize, base, xtra_parms, output )
 
-    bb.debug(1, "do_makeboot cmd: %s" % (cmd))
-
-    ret = subprocess.call(cmd, shell=True)
-    if ret != 0:
-        bb.error("Running: %s failed." % cmd)
+    bb.debug(1, "dm-verity-bootloader do_makeboot cmd: %s" % (cmd))
+    try:
+        ret = subprocess.check_output(cmd, shell=True)
+    except RuntimeError as e:
+        bb.error("dm-verity-bootloader cmd: %s failed with error %s" % (cmd, str(e)))
 
 python do_makeboot () {
     import shutil
