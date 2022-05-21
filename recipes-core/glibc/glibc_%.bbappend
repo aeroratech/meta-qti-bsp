@@ -20,3 +20,4 @@ EXTRA_OECONF += "\
             ${@bb.utils.contains('DEBUG_OPTIMIZATION', '-fstack-protector-all', '--enable-stack-protector=all', '', d)} \
             ${@bb.utils.contains('DEBUG_OPTIMIZATION', '-fstack-protector-strong', '--enable-stack-protector=strong', '', d)} \
 "
+NOAUTOPACKAGEDEBUG = "1"
