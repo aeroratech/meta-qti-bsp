@@ -141,9 +141,10 @@ do_makesystem() {
                 ${IMAGE_EXT4_SELINUX_OPTIONS} \
                 ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET} ${IMAGE_ROOTFS_EXT4}
 
+        invalid_image=0
         simg2img ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET} /dev/null || invalid_image=1
 
-        if [ ${invalid_image:-0} -eq 1 ]; then
+        if [ ${invalid_image} -eq 1 ]; then
             echo "Unsparse image failed.. Recreating image"
             continue
         else
