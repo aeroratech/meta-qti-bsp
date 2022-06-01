@@ -1,4 +1,4 @@
-inherit autotools-brokensep pkgconfig
+inherit autotools-brokensep pkgconfig systemd
 
 DESCRIPTION = "Powerapp tools"
 HOMEPAGE = "http://codeaurora.org/"
