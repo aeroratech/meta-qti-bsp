@@ -1,0 +1,65 @@
+BASEMACHINE ?= "sa410m"
+require conf/machine/include/basemachine.inc
+
+SOC_FAMILY ?= "bengal"
+include conf/machine/include/soc-family.inc
+
+DEFAULTTUNE ?= "aarch64"
+include conf/machine/include/arm/arch-armv8a.inc
+
+PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
+PREFERRED_VERSION_linux-msm = "5.4"
+PREFERRED_VERSION_linux-msm-headers = "5.4"
+SERIAL_CONSOLES ?= "115200;ttyMSM0"
+KERNEL_IMAGETYPE = "Image.gz"
+KERNEL_BASE = "0x40000000"
+KERNEL_TAGS_OFFSET = "0x1e00000"
+KERNEL_DYNAMIC_DEFCONFIG = "True"
+KERNEL_CONFIG ?= "vendor/sa410m_auto-qgki_defconfig"
+KERNEL_CONFIG_qti-distro-debug ?= "vendor/sa410m_auto-qgki-debug_defconfig"
+KERNEL_CMD_PARAMS = "noinitrd ro rootwait console=ttyMSM0,115200,n8 no_console_suspend=1 androidboot.hardware=qcom androidboot.console=ttyMSM0 lpm_levels.sleep_disabled=1 service_locator.enable=1 firmware_class.path=/lib/firmware/updates msm_rtb.filter=0x237"
+
+KERNEL_DTB_NAMES    = "vendor/qcom/sa410m-idp.dtb \
+                       vendor/qcom/sa410m-qrd.dtb"
+
+# Bootloader configuration
+EXTRA_IMAGEDEPENDS += "edk2"
+
+# MACHINE_FEATURES ##
+# qti-adsp:               Machine supports QTI adsp solution
+# qti-cdsp:               Machine supports QTI cdsp solution
+# qti-ab-boot:            Machine supports a/b boot
+# qti-security:           Machine supports QTI security solution
+# qti-wifi:               Machine supports QTI WiFi solution
+# qti-audio:              Machine supports QTI audio solution
+# qti-bluetooth:          Machine supports QTI bluetooth solution
+# qti-sensors:            Machine supports sensors qti solution
+# qti-location:           Machine supports Location solution
+# qti-data-modem:         Machine supports QTI data modem solution
+
+MACHINE_FEATURES += "qti-adsp qti-ab-boot qti-security qti-sdx qti-audio qti-location nossd_listener dm-verity-none qwesd le_qseecom qti-softsku"
+
+MACHINE_MNT_POINTS = " \
+    /dsp \
+    /firmware \
+    /systemrw \
+    /persist \
+    /data \
+    /cache \
+"
+
+PAGE_SIZE ?= '4096'
+EXTRA_IMAGECMD ?= "-N 2048"
+
+MACHINE_SUPPORTS_INIT_RAMDISK = "False"
+MACHINE_SUPPORTS_ANDROID_PROPERTIES = "False"
+MACHINE_SUPPORTS_USB_AUTOSUSPEND = "False"
+
+USBCOMPOSITION = "90DB"
+
+# On msm-5.4 or above ufs driver supports BSG Device.
+UFS_BSG_DEV_USAGE = "True"
+
+PREFERRED_VERSION_protobuf = "3.11.4"
+PREFERRED_VERSION_protobuf-native = "3.11.4"
+PREFERRED_VERSION_iproute2 = "5.5.0"
