@@ -11,6 +11,8 @@ PR        =  "r0"
 SRC_URI_append_qcs610 += "file://qcs610.cfg"
 SRC_URI_append_qcs610 += "file://android_binderfs.cfg"
 
+SRC_URI_append_qrb5165 += " file://qca6390.cfg"
+
 DEPENDS += "llvm-arm-toolchain-native virtual/dtc-native rsync-native clang-native"
 TOOLCHAIN = "clang"
 RUNTIME = "llvm"
