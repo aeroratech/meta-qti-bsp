@@ -77,6 +77,9 @@ fi
 # Specify MMC or MTD type device. MTD by default
 [[ $3 = "ext4" ]] && device_type="MMC" || device_type="MTD"
 
+# To support MMC device with Squash file system
+[[ $3 = "emmc_sqsh" ]] && device_type="MMC" || device_type="MTD"
+
 # Setup temp folder to unzip target files
 target_files=target_files_full_ota_$3
 rm -rf $target_files
