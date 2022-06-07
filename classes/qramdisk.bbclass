@@ -36,34 +36,40 @@ fakeroot do_ramdisk_create() {
         ln -s bin sbin
         if [[ "${TOYBOX_RAMDISK}" == "True" ]]; then
             cp ${IMAGE_ROOTFS}/usr/lib/libcrypt.so.2 lib/libcrypt.so.2
-            cp ${IMAGE_ROOTFS}/usr/lib/libreadline.so.8 lib/libreadline.so.8 #awk support
-            cp ${IMAGE_ROOTFS}/lib/libtinfo.so.5 lib/libtinfo.so.5
-            cp ${IMAGE_ROOTFS}/lib/libext2fs.so.2 lib/libext2fs.so.2
-            cp ${IMAGE_ROOTFS}/lib/libcom_err.so.2 lib/libcom_err.so.2
-            cp ${IMAGE_ROOTFS}/lib/libblkid.so.1 lib/libblkid.so.1
-            cp ${IMAGE_ROOTFS}/lib/libuuid.so.1 lib/libuuid.so.1
-            cp ${IMAGE_ROOTFS}/lib/libe2p.so.2 lib/libe2p.so.2
-            cp ${IMAGE_ROOTFS}/usr/lib/libgmp.so.10 lib/libgmp.so.10
-            cp ${IMAGE_ROOTFS}/usr/lib/libmnl.so.0 lib/libmnl.so.0
-            cp ${IMAGE_ROOTFS}/usr/lib/libelf.so.1 lib/libelf.so.1
-            cp ${IMAGE_ROOTFS}/lib/libcap.so.2 lib/libcap.so.2
             cp ${IMAGE_ROOTFS}/bin/toybox bin/
             cp ${IMAGE_ROOTFS}/bin/mksh bin/
-            cp ${IMAGE_ROOTFS}/usr/bin/gawk bin/
-            cp ${IMAGE_ROOTFS}/usr/bin/expr.coreutils bin/
-            cp ${IMAGE_ROOTFS}/usr/bin/tr.coreutils bin/
-            cp ${IMAGE_ROOTFS}/usr/sbin/mkfs.vfat.dosfstools bin/
-            cp ${IMAGE_ROOTFS}/sbin/mkfs.ext2.e2fsprogs bin/
-            cp ${IMAGE_ROOTFS}/sbin/mkfs.ext3 bin/
-            cp ${IMAGE_ROOTFS}/sbin/mkfs.ext4 bin/
-            cp ${IMAGE_ROOTFS}/sbin/ip.iproute2 bin/
             ln -s mksh bin/sh
-            ln -s gawk bin/awk
-            ln -s expr.coreutils bin/expr
-            ln -s tr.coreutils bin/tr
-            ln -s mkfs.vfat.dosfstools bin/mkfs.vfat
-            ln -s mkfs.ext2.e2fsprogs bin/mkfs.ext2
-            ln -s ip.iproute2 bin/ip
+
+            # Don't install redundant packages for VM image
+            if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'false', 'true', d)}; then
+                cp ${IMAGE_ROOTFS}/usr/lib/libreadline.so.8 lib/libreadline.so.8 #awk support
+                cp ${IMAGE_ROOTFS}/lib/libtinfo.so.5 lib/libtinfo.so.5
+                cp ${IMAGE_ROOTFS}/lib/libext2fs.so.2 lib/libext2fs.so.2
+                cp ${IMAGE_ROOTFS}/lib/libcom_err.so.2 lib/libcom_err.so.2
+                cp ${IMAGE_ROOTFS}/lib/libblkid.so.1 lib/libblkid.so.1
+                cp ${IMAGE_ROOTFS}/lib/libuuid.so.1 lib/libuuid.so.1
+                cp ${IMAGE_ROOTFS}/lib/libe2p.so.2 lib/libe2p.so.2
+                cp ${IMAGE_ROOTFS}/usr/lib/libgmp.so.10 lib/libgmp.so.10
+                cp ${IMAGE_ROOTFS}/usr/lib/libmnl.so.0 lib/libmnl.so.0
+                cp ${IMAGE_ROOTFS}/usr/lib/libelf.so.1 lib/libelf.so.1
+                cp ${IMAGE_ROOTFS}/lib/libcap.so.2 lib/libcap.so.2
+                cp ${IMAGE_ROOTFS}/bin/toybox bin/
+                cp ${IMAGE_ROOTFS}/bin/mksh bin/
+                cp ${IMAGE_ROOTFS}/usr/bin/gawk bin/
+                cp ${IMAGE_ROOTFS}/usr/bin/expr.coreutils bin/
+                cp ${IMAGE_ROOTFS}/usr/bin/tr.coreutils bin/
+                cp ${IMAGE_ROOTFS}/usr/sbin/mkfs.vfat.dosfstools bin/
+                cp ${IMAGE_ROOTFS}/sbin/mkfs.ext2.e2fsprogs bin/
+                cp ${IMAGE_ROOTFS}/sbin/mkfs.ext3 bin/
+                cp ${IMAGE_ROOTFS}/sbin/mkfs.ext4 bin/
+                cp ${IMAGE_ROOTFS}/sbin/ip.iproute2 bin/
+                ln -s gawk bin/awk
+                ln -s expr.coreutils bin/expr
+                ln -s tr.coreutils bin/tr
+                ln -s mkfs.vfat.dosfstools bin/mkfs.vfat
+                ln -s mkfs.ext2.e2fsprogs bin/mkfs.ext2
+                ln -s ip.iproute2 bin/ip
+            fi
             # install all the toybox commands
             if [ -r ${IMAGE_ROOTFS}/etc/toybox.links ]; then
                 while read -r LREAD; do
@@ -99,7 +105,11 @@ fakeroot do_ramdisk_create() {
 
         if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'true', 'false', d)}; then
             cp ${IMAGE_ROOTFS}/lib/ld-linux-aarch64.so.1 lib/ld-linux-aarch64.so.1
-            cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/vmrd-init .
+            if [[ "${TOYBOX_RAMDISK}" == "True" ]]; then
+                cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/vmrd-init-toybox vmrd-init
+            else
+                cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/vmrd-init .
+            fi
             chmod 744 vmrd-init
             ln -s vmrd-init init
         else
