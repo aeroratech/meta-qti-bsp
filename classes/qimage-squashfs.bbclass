@@ -12,8 +12,10 @@ CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ext4"
 
 do_image_squashfs[noexec] = "1"
 
+FS_TYPE_SQSH = "squashfs"
+
 # Default Image names
-SYSTEMIMAGE_SQSH_TARGET ?= "system-sqsh.img"
+SYSTEMIMAGE_TARGET ?= "system.img"
 SYSTEMIMAGE_MAP_TARGET ?= "system.map"
 USERDATAIMAGE_TARGET ?= "userdata.img"
 USERDATAIMAGE_MAP_TARGET ?= "userdata.map"
@@ -83,7 +85,7 @@ do_fsconfig_append_qti-distro-user() {
 }
 
 ################################################
-### Generate system-sqsh.img #####
+### Generate system.img #####
 ################################################
 SPARSE_SYSTEMIMAGE_FLAG = "${@bb.utils.contains('IMAGE_FEATURES', 'vm', '', '-s', d)}"
 IMAGE_ROOTFS_SQSH = "${WORKDIR}/rootfs-sqsh"
@@ -137,24 +139,22 @@ fakeroot do_makesystem_sqsh() {
     # Empty the /persist folder so that it doesn't end up
     # in system image as well
     rm -rf ${IMAGE_ROOTFS_SQSH}/persist/*
-    mkdir -p ${IMGDEPLOYDIR}/${IMAGE_BASENAME}
-    mksquashfs ${IMAGE_ROOTFS_SQSH} ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_SQSH_TARGET} \
+    mkdir -p ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}
+    mksquashfs ${IMAGE_ROOTFS_SQSH} ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}/${SYSTEMIMAGE_TARGET} \
                 -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1
 }
 addtask do_makesystem_sqsh after do_image before do_image_complete
 
 ### Generate userdata.img ###
-do_makeuserdata_sqsh[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+do_makeuserdata_sqsh[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}"
 
 do_makeuserdata_sqsh() {
-    if [ "${@bb.utils.contains('IMAGE_FSTYPES', 'ext4', '1', '0', d)}" != "1" ] ; then
-       cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig.conf
-       make_ext4fs -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_MAP_TARGET} \
-                   -a /data ${IMAGE_EXT4_SELINUX_OPTIONS} \
-                   -s -b 4096 -l ${USERDATA_SIZE_EXT4} \
-                    ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_TARGET} \
-                    ${IMAGE_ROOTFS}/${USERDATA_DIR}
-    fi
+    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig.conf
+    make_ext4fs -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}/${USERDATAIMAGE_MAP_TARGET} \
+                -a /data ${IMAGE_EXT4_SELINUX_OPTIONS} \
+                -s -b 4096 -l ${USERDATA_SIZE_EXT4} \
+                ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}/${USERDATAIMAGE_TARGET} \
+                ${IMAGE_ROOTFS}/${USERDATA_DIR}
 }
 
 addtask do_makeuserdata_sqsh after do_image before do_build
@@ -163,17 +163,27 @@ addtask do_makeuserdata_sqsh after do_image before do_build
 ############ Generate persist image ############
 ################################################
 PERSIST_IMAGE_ROOTFS_SIZE ?= "6536668"
-do_makepersist_sqsh[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+do_makepersist_sqsh[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}"
 
 do_makepersist_sqsh() {
-    if [ "${@bb.utils.contains('IMAGE_FSTYPES', 'ext4', '1', '0', d)}" != "1" ] ; then
-       make_ext4fs ${PERSISTFS_CONFIG} ${MAKEEXT4_MOUNT_OPT} \
-                   -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${PERSISTIMAGE_MAP_TARGET} \
-                   -s -l ${PERSIST_IMAGE_ROOTFS_SIZE} \
-                    ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${PERSISTIMAGE_TARGET} \
-                    ${IMAGE_ROOTFS}/persist
-    fi
+    make_ext4fs ${PERSISTFS_CONFIG} ${MAKEEXT4_MOUNT_OPT} \
+                -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}/${PERSISTIMAGE_MAP_TARGET} \
+                -s -l ${PERSIST_IMAGE_ROOTFS_SIZE} \
+                ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}/${PERSISTIMAGE_TARGET} \
+                ${IMAGE_ROOTFS}/persist
 }
 
 # It must be before do_makesystem_sqsh to remove /persist
 addtask do_makepersist_sqsh after do_image before do_makesystem_sqsh
+
+################################################
+############### Copy boot image ################
+################################################
+
+do_copy_image() {
+    mkdir -p ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}
+    cp ${DEPLOY_DIR_IMAGE}/abl.elf ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}/abl.elf
+    cp ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${DTBOIMAGE_TARGET} ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}/${DTBOIMAGE_TARGET}
+}
+
+addtask do_copy_image after do_image before do_build
