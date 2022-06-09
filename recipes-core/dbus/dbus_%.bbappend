@@ -4,6 +4,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI += "file://extra-users.conf"
 SRC_URI += "file://dbus.conf"
+SRC_URI += "file://extra-users-reboot.conf"
 
 INITSCRIPT_NAME = "dbus-1"
 INITSCRIPT_PARAMS = "start 98 5 3 2 . stop 02 0 1 6 ."
@@ -18,6 +19,7 @@ do_install_append() {
 
       install -d ${D}/lib/systemd/system/dbus.service.d
       install -m 0666 ${WORKDIR}/dbus.conf ${D}/lib/systemd/system/dbus.service.d/dbus.conf
+      install -m 0644 ${WORKDIR}/extra-users-reboot.conf -D ${D}${datadir}/dbus-1/system.d/extra-users-reboot.conf
    fi
 }
 
