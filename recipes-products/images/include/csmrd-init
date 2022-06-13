@@ -71,7 +71,9 @@ start_adbd()
 
 	# find serialno from cmdline
 	serialno="$(extract_config "androidboot.serialno")"
-	if [ -z "$serialno" ]; then
+	echo "$serialno" | grep -qv "[^A-Za-z0-9]"
+	valid_serial=$?
+	if [ -z "$serialno" -o $valid_serial -ne 0 ]; then
 		echo "start_adbd: serialno not found with cmdline or bootconfig, using default value"
 		serialno="12345678"
 	fi
@@ -160,33 +162,89 @@ start_adbd()
 	fi
 }
 
-echo "mount -a"
-/bin/mount -a
+start_rdshell()
+{
+    echo "mdev -s"
+    /usr/bin/mdev -s
 
-echo "mount sysfs"
-mount -t sysfs sysfs /sys
-echo "mount debugfs"
-mount -t debugfs debugfs /sys/kernel/debug
+    echo /usr/bin/mdev > /proc/sys/kernel/hotplug
 
-echo "mdev -s"
-/usr/bin/mdev -s
+    # This is necessary to emulate the android environment expected by adbd
+    echo "Configuring the Kdev environment to support 'adb shell' ..."
+    mkdir /dev/pts
+    mount -t devpts devpts /dev/pts
+    chmod 0666 /dev/ptmx
+    mkdir -p /system/bin
+    ln -s /bin/sh /system/bin/sh
+    chmod 4755 /bin/su
 
-echo "mount proc"
-mount proc /proc -t proc
-echo /usr/bin/mdev > /proc/sys/kernel/hotplug
-echo "mount devtmpfs"
-mount -t devtmpfs devtmpfs /dev
+    # Set adb root cookie
+    mkdir /tmp
+    echo "#ROOT###" > /tmp/.adb.root
+    start_adbd
 
-# This is necessary to emulate the android environment expected by adbd
-echo "Configuring the Kdev environment to support 'adb shell' ..."
-mkdir /dev/pts
-mount -t devpts devpts /dev/pts
-chmod 0666 /dev/ptmx
-mkdir -p /system/bin
-ln -s /bin/sh /system/bin/sh
-chmod 4755 /bin/su
+    echo "Shell environment for ramdisk"
+    exec /bin/mksh
+}
 
-start_adbd
+do_mounts()
+{
+    if [ -f /etc/fstab ]; then
+        echo "mount -a"
+        /bin/mount -a
+    fi
 
-echo "Shell environment for ramdisk"
-/bin/mksh
+    echo "mount sysfs"
+    mount -t sysfs sysfs /sys
+
+    echo "mount debugfs"
+    mount -t debugfs debugfs /sys/kernel/debug
+
+    echo "mount proc"
+    mount proc /proc -t proc
+
+    echo "mount devtmpfs"
+    mount -t devtmpfs devtmpfs /dev
+}
+
+do_mounts
+
+fstab_suffix="$(extract_config androidboot.fstab_suffix)"
+echo "Detected boot from: $fstab_suffix"
+
+countdown=5
+while [ $countdown -gt 0 ]; do
+    echo -e -n "Press any key to remain in ramdisk... $countdown\r"
+    read -t 1 -n 1
+    if [ $? -eq 0 ]; then
+        fstab_suffix="rdshell"
+        break
+    fi
+    (( countdown -= 1 ))
+done
+echo -e -n '\n'
+
+case $fstab_suffix in
+    emmc)
+        partition="$(extract_config root)"
+        if [ -e "$partition" ]; then
+            mnt_dir="/mnt/system"
+            mkdir -p $mnt_dir
+            mount -o ro $partition $mnt_dir
+
+            umount /sys/kernel/debug /sys /proc /dev
+            echo "Switching to system partition on $partition"
+            exec /bin/switch_root -c /dev/console $mnt_dir /sbin/init
+        fi
+        ;;
+    rdshell)
+        echo "Starting ramdisk shell"
+        start_rdshell
+        ;;
+    *)
+        echo "Unknown boot: $fstab_suffix"
+        ;;
+esac
+
+echo "Defaulting to ramdisk shell"
+start_rdshell
