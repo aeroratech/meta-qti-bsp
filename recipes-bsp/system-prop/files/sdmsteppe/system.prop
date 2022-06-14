@@ -22,6 +22,7 @@ persist.vendor.audio.fluence.voicecall=false
 persist.vendor.audio.fluence.voicerec=false
 persist.vendor.audio.fluence.speaker=false
 persist.vendor.audio.fluence.audiorec=true
+persist.vendor.audio.apptype.multirec.enabled=true
 
 vendor.audio.tunnel.encode = false
 #Buffer size in kbytes for compress offload playback
