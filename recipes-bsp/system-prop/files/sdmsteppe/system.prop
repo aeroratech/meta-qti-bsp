@@ -13,6 +13,7 @@ vendor.audio.hw.aac.encoder=true
 vendor.voice.playback.conc.disabled=true
 vendor.voice.record.conc.disabled=false
 vendor.voice.voip.conc.disabled=true
+vendor.audio.feature.deepbuffer_as_primary.enable=true
 
 ro.vendor.audio.sdk.ssr=false
 
