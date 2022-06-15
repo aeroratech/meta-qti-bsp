@@ -50,6 +50,7 @@ if [ -f /etc/verity.env ]; then
     busybox.suid mount -t ext4 -o ro /dev/mapper/system /mnt/vfs
 else
     busybox.suid mount -t ext4 -o ro /dev/vda /mnt/vfs
+    busybox.suid mount -t ext4 -o rw /dev/vdb /mnt/vfs/persist
 fi
 
 if [ $? -ne 0]; then
