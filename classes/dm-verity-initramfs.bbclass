@@ -67,7 +67,7 @@ do_ramdisk_create[depends] += "${PN}:do_makesystem"
 BOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-bootimage-complete"
 
 INITRAMFS_IMAGE ?= ''
-RAMDISK = "${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.${INITRAMFS_FSTYPES}"
+RAMDISK ?= "${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.${INITRAMFS_FSTYPES}"
 def get_ramdisk_path(d):
     if os.path.exists(d.getVar('RAMDISK')):
         return '%s' %(d.getVar('RAMDISK'))
