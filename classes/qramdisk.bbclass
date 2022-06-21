@@ -44,6 +44,9 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/lib/libuuid.so.1 lib/libuuid.so.1
             cp ${IMAGE_ROOTFS}/lib/libe2p.so.2 lib/libe2p.so.2
             cp ${IMAGE_ROOTFS}/usr/lib/libgmp.so.10 lib/libgmp.so.10
+            cp ${IMAGE_ROOTFS}/usr/lib/libmnl.so.0 lib/libmnl.so.0
+            cp ${IMAGE_ROOTFS}/usr/lib/libelf.so.1 lib/libelf.so.1
+            cp ${IMAGE_ROOTFS}/lib/libcap.so.2 lib/libcap.so.2
             cp ${IMAGE_ROOTFS}/bin/toybox bin/
             cp ${IMAGE_ROOTFS}/bin/mksh bin/
             cp ${IMAGE_ROOTFS}/usr/bin/gawk bin/
@@ -53,12 +56,14 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/sbin/mkfs.ext2.e2fsprogs bin/
             cp ${IMAGE_ROOTFS}/sbin/mkfs.ext3 bin/
             cp ${IMAGE_ROOTFS}/sbin/mkfs.ext4 bin/
+            cp ${IMAGE_ROOTFS}/sbin/ip.iproute2 bin/
             ln -s mksh bin/sh
             ln -s gawk bin/awk
             ln -s expr.coreutils bin/expr
             ln -s tr.coreutils bin/tr
             ln -s mkfs.vfat.dosfstools bin/mkfs.vfat
             ln -s mkfs.ext2.e2fsprogs bin/mkfs.ext2
+            ln -s ip.iproute2 bin/ip
             # install all the toybox commands
             if [ -r ${IMAGE_ROOTFS}/etc/toybox.links ]; then
                 while read -r LREAD; do
