@@ -26,3 +26,6 @@ do_gen_partition_bin[noexec] = "1"
 
 IMAGE_FEATURES[validitems] += "vm"
 IMAGE_FEATURES += "vm"
+
+do_compose_vmimage[recrdeptask] = "do_ramdisk_create"
+do_compose_vmimage[recrdeptask] += "do_merge_dtbs"
