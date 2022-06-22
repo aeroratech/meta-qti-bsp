@@ -2,7 +2,7 @@
 # Provides packages required to build an image with
 # boot to console and wifi support.
 
-inherit qimage
+inherit qimage populate_sdk_qti
 
 # use DISTRO_EXTRA_RDEPENDS = "list of packages"
 # in distro conf file. These listed packages are specific to distro
@@ -50,3 +50,9 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               systemd-machine-units \
               ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
 "
+
+# To include header files in SDK for sample code
+TOOLCHAIN_TARGET_TASK_append = " camera-metadata-dev glm-dev opencv-staticdev"
+
+# Remove docker-distribution-dev from SDK
+PACKAGE_EXCLUDE = "docker-distribution-dev"
