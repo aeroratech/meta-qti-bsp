@@ -187,6 +187,35 @@ start_rdshell()
     exec /bin/mksh
 }
 
+config_interface()
+{
+    LOCAL_INTERFACE="$1"
+    LOCAL_ADDR="$2"
+    REMOTE_ADDR="$3"
+
+    INTERFACE_TIMEOUT=60
+    ifconfig -a $LOCAL_INTERFACE >/dev/null 2>&1
+    while [ "$?" -ne 0 ]; do
+        echo "Waiting for $LOCAL_INTERFACE..."
+        sleep 1
+        if [ "$INTERFACE_TIMEOUT" -le 0 ]; then
+            return 1
+        fi
+        (( INTERFACE_TIMEOUT -= 1 ))
+        ifconfig -a $LOCAL_INTERFACE >/dev/null 2>&1
+    done
+
+    # Bringup interface
+    ifconfig $LOCAL_INTERFACE $LOCAL_ADDR up
+
+    # Configure route
+    ip route add $REMOTE_ADDR via $LOCAL_ADDR
+
+    sleep 2
+
+    return 0
+}
+
 do_mounts()
 {
     if [ -f /etc/fstab ]; then
@@ -205,12 +234,57 @@ do_mounts()
 
     echo "mount devtmpfs"
     mount -t devtmpfs devtmpfs /dev
+
+    echo "mount tmpfs"
+    mkdir -p /tmp
+    mount -t tmpfs tmpfs /tmp
 }
 
 do_mounts
 
+do_nbdtab()
+{
+# Create nbd-server config
+echo "nbd0 $1 system.img.raw persist" > /etc/nbdtab
+echo "nbd1 $1 systemrw.img.raw  persist" >> /etc/nbdtab
+echo "nbd2 $1 persist.img.raw  persist" >> /etc/nbdtab
+echo "nbd3 $1 userdata.img.raw  persist" >> /etc/nbdtab
+echo "nbd4 $1 cache.img.raw  persist" >> /etc/nbdtab
+echo "nbd5 $1 NON-HLOS.bin persist" >> /etc/nbdtab
+
+    /usr/sbin/nbd nbd0 # connect remote system.img
+    /usr/sbin/nbd nbd1 # connect remote systemrw.img
+    /usr/sbin/nbd nbd2 # connect remote persist.img
+    /usr/sbin/nbd nbd3 # connect remote userdata.img
+    /usr/sbin/nbd nbd4 # connect remote cache.img
+    /usr/sbin/nbd nbd5 # connect NON-HLOS
+
+    # mount system.img
+    mnt_dir="/mnt/system"
+    mkdir -p $mnt_dir
+    mount -o rw /dev/nbd0 $mnt_dir
+    #umount /sys/kernel/debug /sys /proc /dev
+
+    # update systemd mount files to mount it from nbd devices
+    cd /mnt/system/lib/systemd/system/
+    sed -i 's+/dev/disk/by-partlabel/systemrw+/dev/nbd1+g' systemrw.mount
+    sed -i 's+/dev/disk/by-partlabel/persist+/dev/nbd2+g' persist.mount
+    sed -i 's+/dev/disk/by-partlabel/userdata+/dev/nbd3+g' data.mount
+    sed -i 's+/dev/disk/by-partlabel/cache+/dev/nbd4+g' cache.mount
+    sed -i 's+/dev/disk/by-partlabel/modem+/dev/nbd5+g' firmware.mount
+
+    # Switch root to remote sysfs
+    echo "Switching to system partition on $partition"
+    exec /bin/switch_root -c /dev/console $mnt_dir /sbin/init
+}
+
 fstab_suffix="$(extract_config androidboot.fstab_suffix)"
-echo "Detected boot from: $fstab_suffix"
+if [ -z "$fstab_suffix" ]; then
+    echo "No boot suffix detected, using default"
+    fstab_suffix="default"
+else
+    echo "Detected boot from: $fstab_suffix"
+fi
 
 countdown=5
 while [ $countdown -gt 0 ]; do
@@ -236,6 +310,21 @@ case $fstab_suffix in
             echo "Switching to system partition on $partition"
             exec /bin/switch_root -c /dev/console $mnt_dir /sbin/init
         fi
+        ;;
+    default)
+        # default --> flashless
+        # change log level
+        echo 2 > /proc/sys/kernel/printk
+        HOST_ADDR="192.168.1.172"
+        LOCAL_ADDR="192.168.1.173"
+        LOCAL_INTERFACE="mhi_swip0"
+        config_interface "$LOCAL_INTERFACE" "$LOCAL_ADDR" "$HOST_ADDR"
+        if [ "$?" -ne 0 ]; then
+            echo "Failed to config interface: $LOCAL_INTERFACE"
+            start_rdshell
+        fi
+        # Create /etc/nbdtab and nbd-client connect remote nbdkit
+        do_nbdtab "$HOST_ADDR"
         ;;
     rdshell)
         echo "Starting ramdisk shell"
