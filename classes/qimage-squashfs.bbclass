@@ -2,7 +2,7 @@
 GENERATE_AB_OTA_PACKAGE ?= "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', '1', '', d)}"
 
 QIMGSQSHCLASSES  = ""
-#QIMGSQSHCLASSES += "${@bb.utils.contains('GENERATE_AB_OTA_PACKAGE', '1', 'ab-ota-squashfs', '', d)}"
+QIMGSQSHCLASSES += "${@bb.utils.contains('GENERATE_AB_OTA_PACKAGE', '1', 'ab-ota-squashfs', '', d)}"
 
 inherit ${QIMGSQSHCLASSES}
 
