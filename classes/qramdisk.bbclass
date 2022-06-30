@@ -1,4 +1,5 @@
 INIT_RAMDISK = "${@d.getVar('MACHINE_SUPPORTS_INIT_RAMDISK') or "False"}"
+FLASHLESS_MCU = "${@d.getVar('MACHINE_SUPPORTS_FLASHLESS_MEMORY') or "False"}"
 RAMDISKDIR = "${WORKDIR}/ramdisk"
 
 TOYBOX_RAMDISK ?= "False"
@@ -6,6 +7,7 @@ ENABLE_ADB ?= "True"
 ENABLE_ADB_qti-distro-base-user ?= "False"
 PACKAGE_INSTALL += "${@oe.utils.conditional('ENABLE_ADB', 'True', 'adbd usb-composition usb-composition-usbd', '', d)}"
 PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils e2fsprogs dosfstools', '', d)}"
+PACKAGE_INSTALL += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'nbd-client', '', d)}"
 
 do_ramdisk_create[depends] += "virtual/kernel:do_deploy"
 do_ramdisk_create[cleandirs] += "${RAMDISKDIR}"
@@ -83,6 +85,13 @@ fakeroot do_ramdisk_create() {
                 ln -s busybox bin/mdev
             fi
         fi
+
+        if [[ "${FLASHLESS_MCU}" == "True" ]]; then
+            cp ${IMAGE_ROOTFS}/usr/sbin/nbd-client.nbd usr/sbin/nbd
+            cp ${IMAGE_ROOTFS}/usr/sbin/setup_nbdclient usr/sbin/
+            cp ${IMAGE_ROOTFS}/etc/nbdtab etc/
+        fi
+
         if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'true', 'false', d)}; then
             cp ${IMAGE_ROOTFS}/lib/ld-linux-aarch64.so.1 lib/ld-linux-aarch64.so.1
             cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/vmrd-init .

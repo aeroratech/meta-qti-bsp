@@ -79,3 +79,6 @@ persist.vendor.audio.avs.afe_api_version=2
 
 #enable weston during boot
 persist.display.launch.weston.at.bootup=true
+
+#perf client libname to communicate with perf
+ro.vendor.extension_library=libqti-perfd-client.so

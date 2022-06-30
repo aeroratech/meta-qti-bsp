@@ -12,6 +12,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         e2fsprogs-mke2fs \
         glib-2.0 \
         kernel-modules \
+        alsa-utils \
         packagegroup-android-utils \
         packagegroup-qti-audio \
         packagegroup-qti-bluetooth \
@@ -24,6 +25,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-gst \
         packagegroup-qti-iotedge \
         packagegroup-qti-ml \
+        packagegroup-qti-gfx \
         packagegroup-qti-qmmf \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-security', 'packagegroup-qti-securemsm', '', d)} \
         ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sensors', 'packagegroup-qti-sensors', '', d)} \

@@ -13,7 +13,7 @@ VERITY_FEC_DEVICE = "${WORKDIR}/${IMAGE_NAME}.verityfec"
 UNSPARSED_SYSTEMIMAGE = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET}"
 
 python adjust_system_size_for_verity () {
-    system_size = int(d.getVar('SYSTEM_SIZE_EXT4'))
+    system_size = int(d.getVar('SYSTEM_IMAGE_ROOTFS_SIZE'))
     block_size = int(d.getVar('BLOCK_SIZE'))
     data_blocks = int(system_size / block_size)
     d.setVar('DATA_BLOCKS', str(data_blocks))
@@ -67,7 +67,7 @@ do_ramdisk_create[depends] += "${PN}:do_makesystem"
 BOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-bootimage-complete"
 
 INITRAMFS_IMAGE ?= ''
-RAMDISK = "${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.${INITRAMFS_FSTYPES}"
+RAMDISK ?= "${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.${INITRAMFS_FSTYPES}"
 def get_ramdisk_path(d):
     if os.path.exists(d.getVar('RAMDISK')):
         return '%s' %(d.getVar('RAMDISK'))
@@ -99,11 +99,11 @@ python do_makeboot () {
     # cmd to make boot.img
     cmd =  mkboot_bin_path + " --kernel %s --cmdline %s --pagesize %s --base %s --ramdisk %s --ramdisk_offset 0x0 %s --output %s" \
            % (zimg_path, cmdline, pagesize, base, ramdisk_path, xtra_parms, output )
-    bb.debug(1, "dm-verity-none do_makeboot cmd: %s" % (cmd))
+    bb.debug(1, "dm-verity-initramfs do_makeboot cmd: %s" % (cmd))
     try:
         ret = subprocess.check_output(cmd, shell=True)
     except RuntimeError as e:
-        bb.error("dm-verity-none cmd: %s failed with error %s" % (cmd, str(e)))
+        bb.error("dm-verity-initramfs cmd: %s failed with error %s" % (cmd, str(e)))
 
 }
 do_makeboot[dirs]      = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"

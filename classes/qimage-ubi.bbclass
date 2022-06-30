@@ -209,7 +209,7 @@ do_makesystem_gluebi() {
     make_ext4fs -C ${WORKDIR}/rootfs-fsconfig-gluebi.conf \
             -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_GLUEBI_MAP_TARGET} \
             -a / -b 4096 \
-            -l ${SYSTEM_SIZE_EXT4} \
+            -l ${SYSTEM_IMAGE_ROOTFS_SIZE} \
             ${IMAGE_EXT4_SELINUX_OPTIONS} \
             ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_GLUEBI_TARGET} ${IMAGE_ROOTFS_UBI}
 
