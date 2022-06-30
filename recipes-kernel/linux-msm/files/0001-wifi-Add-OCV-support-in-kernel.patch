@@ -1,0 +1,80 @@
+From af94f0dee111e032e316640f8291abfe89462b0c Mon Sep 17 00:00:00 2001
+From: Chenming Huang <quic_chenhuan@quicinc.com>
+Date: Tue, 30 Nov 2021 19:34:29 +0800
+Subject: [PATCH] wifi: Add OCV support in kernel
+
+Add Operating Channel Validation (OCV) support in kernel.
+
+CRs-Fixed: 3094191
+Change-Id: I6e4e07d898b9d6eb27e5288abc68191a58aafec0
+Signed-off-by: Chenming Huang <quic_chenhuan@quicinc.com>
+---
+ include/net/cfg80211.h       |  3 +++
+ include/uapi/linux/nl80211.h | 30 ++++++++++++++++++++++++++++++
+ 2 files changed, 33 insertions(+)
+
+diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
+index efc29982e420..a37d70d9b336 100644
+--- a/include/net/cfg80211.h
++++ b/include/net/cfg80211.h
+@@ -40,6 +40,9 @@
+ /* Indicate backport support for key configuration for Beacon protection*/
+ #define CFG80211_BIGTK_CONFIGURATION_SUPPORT 1
+ 
++/* Indicate backport support for Operation Channel validation*/
++#define CFG80211_OCV_CONFIGURATION_SUPPORT 1
++
+ /* Indicate backport support for supported AKM advertisement per interface*/
+ #define CFG80211_IFTYPE_AKM_SUITES_SUPPORT 1
+ 
+diff --git a/include/uapi/linux/nl80211.h b/include/uapi/linux/nl80211.h
+index 05e7a411cfa0..04c69d634f2c 100644
+--- a/include/uapi/linux/nl80211.h
++++ b/include/uapi/linux/nl80211.h
+@@ -5650,6 +5650,29 @@ enum nl80211_feature_flags {
+  *	forwarding of preauth frames over the control port. They are then
+  *	handled as ordinary data frames.
+  *
++ * @NL80211_EXT_FEATURE_CONTROL_PORT_NO_PREAUTH: The driver can disable the
++ *	forwarding of preauth frames over the control port. They are then
++ *	handled as ordinary data frames.
++ *
++ * @NL80211_EXT_FEATURE_PROTECTED_TWT: Driver supports protected TWT frames
++ *
++ * @NL80211_EXT_FEATURE_DEL_IBSS_STA: The driver supports removing stations
++ *      in IBSS mode, essentially by dropping their state.
++ *
++ * @NL80211_EXT_FEATURE_MULTICAST_REGISTRATIONS: management frame registrations
++ *	are possible for multicast frames and those will be reported properly.
++ *
++ * @NL80211_EXT_FEATURE_SCAN_FREQ_KHZ: This driver supports receiving and
++ *	reporting scan request with %NL80211_ATTR_SCAN_FREQ_KHZ. In order to
++ *	report %NL80211_ATTR_SCAN_FREQ_KHZ, %NL80211_SCAN_FLAG_FREQ_KHZ must be
++ *	included in the scan request.
++ *
++ * @NL80211_EXT_FEATURE_CONTROL_PORT_OVER_NL80211_TX_STATUS: The driver
++ *	can report tx status for control port over nl80211 tx operations.
++ *
++ * @NL80211_EXT_FEATURE_OPERATING_CHANNEL_VALIDATION: Driver supports Operating
++ *	Channel Validation (OCV) when using driver's SME for RSNA handshakes.
++ *
+  * @NUM_NL80211_EXT_FEATURES: number of extended features.
+  * @MAX_NL80211_EXT_FEATURES: highest extended feature index.
+  */
+@@ -5699,6 +5722,13 @@ enum nl80211_ext_feature_index {
+ 	NL80211_EXT_FEATURE_AQL,
+ 	NL80211_EXT_FEATURE_BEACON_PROTECTION,
+ 	NL80211_EXT_FEATURE_CONTROL_PORT_NO_PREAUTH,
++	NL80211_EXT_FEATURE_PROTECTED_TWT,
++	NL80211_EXT_FEATURE_DEL_IBSS_STA,
++	NL80211_EXT_FEATURE_MULTICAST_REGISTRATIONS,
++	NL80211_EXT_FEATURE_BEACON_PROTECTION_CLIENT,
++	NL80211_EXT_FEATURE_SCAN_FREQ_KHZ,
++	NL80211_EXT_FEATURE_CONTROL_PORT_OVER_NL80211_TX_STATUS,
++	NL80211_EXT_FEATURE_OPERATING_CHANNEL_VALIDATION,
+ 
+ 	/* add new features before the definition below */
+ 	NUM_NL80211_EXT_FEATURES,
+-- 
+2.17.1
+
