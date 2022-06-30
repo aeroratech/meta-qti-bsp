@@ -119,7 +119,6 @@ fakeroot do_ramdisk_create() {
         fi
 
         if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'true', 'false', d)}; then
-            cp ${IMAGE_ROOTFS}/lib/ld-linux-aarch64.so.1 lib/ld-linux-aarch64.so.1
             if [[ "${TOYBOX_RAMDISK}" == "True" ]]; then
                 cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/vmrd-init-toybox vmrd-init
             else
@@ -146,16 +145,22 @@ fakeroot do_ramdisk_create() {
                 cp -r ${IMAGE_ROOTFS}/sbin/usb/ sbin/
                 cp ${IMAGE_ROOTFS}/usr/lib/libstdc++.so.6 lib/libstdc++.so.6
             fi
+
             if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-csm', 'true', 'false', d)}; then
-                cp ${IMAGE_ROOTFS}/lib/ld-linux-aarch64.so.1 lib/ld-linux-aarch64.so.1
                 cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/csmrd-init .
                 chmod 744 csmrd-init
                 ln -s csmrd-init init
             else
-                cp ${IMAGE_ROOTFS}/lib/ld-linux-armhf.so.3 lib/ld-linux-armhf.so.3
                 ln -s bin/busybox init
             fi
         fi
+
+        if [ "${TARGET_ARCH}" = "arm" ]; then
+            cp ${IMAGE_ROOTFS}/lib/ld-linux-armhf.so.3 lib/ld-linux-armhf.so.3
+        else
+            cp ${IMAGE_ROOTFS}/lib/ld-linux-aarch64.so.1 lib/ld-linux-aarch64.so.1
+        fi
+
         cp ${IMAGE_ROOTFS}/lib/libz.so.1 lib/libz.so.1
         cp ${IMAGE_ROOTFS}/lib/libc.so.6 lib/libc.so.6
         cp ${IMAGE_ROOTFS}/lib/libm.so.6 lib/libm.so.6
@@ -205,8 +210,12 @@ fakeroot do_ramdisk_create() {
         # remove the initrd.gz file if exist
         rm -rf ${IMGDEPLOYDIR}/${PN}-initrd.gz
         if ${@bb.utils.contains_any('PREFERRED_VERSION_linux-msm', '5.10 5.15', 'true', 'false', d)}; then
-            bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd.gz -u 0 -g 0 ${RAMDISKDIR}
+            # gen_initramfs.sh uses gen_init_cpio to generate the cpio archive.
+            bash ./scripts/gen_initramfs.sh -o ${IMGDEPLOYDIR}/${PN}-initrd -u 0 -g 0 ${RAMDISKDIR}
+            gzip -n -9 -f ${IMGDEPLOYDIR}/${PN}-initrd
         else
+            # gen_initramfs_list creates compressed initramfs file using gen_init_cpio
+            # and compressor depending on the extension
             bash ./scripts/gen_initramfs_list.sh -o ${IMGDEPLOYDIR}/${PN}-initrd.gz -u 0 -g 0 ${RAMDISKDIR}
         fi
 
