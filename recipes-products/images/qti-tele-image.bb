@@ -4,7 +4,7 @@
 
 inherit qimage
 
-IMAGE_FEATURES += "read-only-rootfs"
+IMAGE_FEATURES += "read-only-rootfs ${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'persist-volume', '', d)}"
 
 CORE_IMAGE_EXTRA_INSTALL += "\
         e2fsprogs \
