@@ -50,3 +50,8 @@ do_install_append() {
     fi
 
 }
+
+do_install_prepend_trustedvm (){
+   sed -e '/-z "\$PS1"/d' -i ${WORKDIR}/profile
+   sed -i "/# Set the prompt for bash/a [ -z \"\$PS1\" ] || PS1='~ # '" ${WORKDIR}/profile
+}
