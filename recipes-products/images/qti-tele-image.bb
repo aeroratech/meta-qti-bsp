@@ -36,3 +36,10 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         modem-shutdown \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
 "
+
+# Following packages will be enabled later
+CORE_IMAGE_EXTRA_INSTALL_remove_sa410m = "\
+       packagegroup-qti-ss-mgr \
+       qmi-shutdown-modem \
+       packagegroup-qti-telsdk \
+"
