@@ -23,6 +23,8 @@ PACKAGECONFIG[debug] = "--enable-debug,--disable-debug"
 EXTRA_OECONF_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '--with-systemd', '',d)} \
                         --with-basemachine=${BASEMACHINE} "
 
+EXTRA_OECONF_append_sdmsteppe = " --with-basemachine=${BASEMACHINE}-2.0 "
+
 do_compile[noexec]="1"
 
 do_install_append() {
