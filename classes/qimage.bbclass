@@ -53,7 +53,8 @@ IMAGE_LINGUAS = ""
 PACKAGE_EXCLUDE += "readline"
 
 # Use busybox as login manager
-IMAGE_LOGIN_MANAGER = "busybox-static"
+TOYBOX_RAMDISK ?= "False"
+IMAGE_LOGIN_MANAGER = "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', "", "busybox-static", d)}"
 
 DEPENDS += "\
              ext4-utils-native \

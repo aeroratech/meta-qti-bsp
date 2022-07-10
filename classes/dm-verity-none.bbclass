@@ -36,6 +36,8 @@ CONFLICT_MACHINE_FEATURES += " dm-verity-bootloader dm-verity-initramfs"
 
 BOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-bootimage-complete"
 
+SQSH_FS = "${@bb.utils.contains('IMAGE_FSTYPES', 'squashfs', '1', '0', d)}"
+
 INITRAMFS_IMAGE ?= ''
 RAMDISK ?= "${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.${INITRAMFS_FSTYPES}"
 def get_ramdisk_path(d):
@@ -74,9 +76,9 @@ python do_makeboot () {
         ret = subprocess.check_output(cmd, shell=True)
     except RuntimeError as e:
         bb.error("dm-verity-none cmd: %s failed with error %s" % (cmd, str(e)))
-
 }
 do_makeboot[dirs]      = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}"
+
 # Make sure native tools and vmlinux ready to create boot.img
 do_makeboot[depends] += "virtual/kernel:do_deploy virtual/mkbootimg-native:do_populate_sysroot"
 SSTATETASKS += "do_makeboot"
@@ -91,3 +93,34 @@ python do_makeboot_setscene () {
 addtask do_makeboot_setscene
 
 addtask do_makeboot before do_image_complete
+
+python() {
+    if d.getVar("SQSH_FS") == "1":
+       bb.build.addtask('do_copy_squashfs_boot', 'do_image_complete', 'do_makeboot', d)
+}
+
+# copy boot.img from default build path to squashfs build path
+python do_copy_squashfs_boot() {
+    import os
+    import shutil
+    try:
+        img_src_path = os.path.join(d.getVar('BOOTIMGDEPLOYDIR'), d.getVar('IMAGE_BASENAME'), d.getVar('BOOTIMAGE_TARGET'))
+        img_dst_path = os.path.join(d.getVar('BOOTIMGDEPLOYDIR'), d.getVar('IMAGE_BASENAME'), d.getVar('FS_TYPE_SQSH', True), d.getVar('BOOTIMAGE_TARGET'))
+
+        os.makedirs(os.path.join(d.getVar('BOOTIMGDEPLOYDIR'), d.getVar('IMAGE_BASENAME'), d.getVar('FS_TYPE_SQSH', True)), exist_ok=True)
+        shutil.copy(img_src_path, img_dst_path)
+    except Exception as e:
+        bb.error("dm-verity-none boot.img copy for squashfs failed with error %s" % (str(e)))
+}
+do_copy_squashfs_boot[dirs]     = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}"
+do_copy_squashfs_boot[depends] += "virtual/kernel:do_deploy virtual/mkbootimg-native:do_populate_sysroot"
+SSTATETASKS += "do_copy_squashfs_boot"
+SSTATE_SKIP_CREATION_task-copy-squashfs-boot = '1'
+do_copy_squashfs_boot[sstate-inputdirs] = "${BOOTIMGDEPLOYDIR}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}"
+do_copy_squashfs_boot[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${FS_TYPE_SQSH}"
+do_copy_squashfs_boot[stamp-extra-info] = "${MACHINE_ARCH}"
+
+python do_copy_squashfs_boot_setscene () {
+    sstate_setscene(d)
+}
+addtask do_copy_squashfs_boot_setscene
