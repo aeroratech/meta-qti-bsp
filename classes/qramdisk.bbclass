@@ -6,7 +6,7 @@ TOYBOX_RAMDISK ?= "False"
 ENABLE_ADB ?= "True"
 ENABLE_ADB_qti-distro-base-user ?= "False"
 PACKAGE_INSTALL += "${@oe.utils.conditional('ENABLE_ADB', 'True', 'adbd usb-composition usb-composition-usbd', '', d)}"
-PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils e2fsprogs dosfstools', '', d)}"
+PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils e2fsprogs dosfstools ethtool iputils iperf2 iperf3 devmem2 tcpdump', '', d)}"
 PACKAGE_INSTALL += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'nbd-client', '', d)}"
 
 do_ramdisk_create[depends] += "virtual/kernel:do_deploy"
@@ -38,7 +38,22 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/usr/lib/libcrypt.so.2 lib/libcrypt.so.2
             cp ${IMAGE_ROOTFS}/bin/toybox bin/
             cp ${IMAGE_ROOTFS}/bin/mksh bin/
+            cp ${IMAGE_ROOTFS}/lib/libcap.so.2 lib/libcap.so.2
+            cp ${IMAGE_ROOTFS}/usr/lib/libgcrypt.so.20 lib/libgcrypt.so.20
+            cp ${IMAGE_ROOTFS}/usr/sbin/ethtool bin/
+            cp ${IMAGE_ROOTFS}/bin/ping.iputils bin/
+            cp ${IMAGE_ROOTFS}/bin/arping bin/
+            cp ${IMAGE_ROOTFS}/usr/lib/libgpg-error.so.0 lib/libgpg-error.so.0
+            cp ${IMAGE_ROOTFS}/usr/bin/devmem2 bin/
+            cp ${IMAGE_ROOTFS}/usr/bin/iperf bin/
+            cp ${IMAGE_ROOTFS}/usr/bin/iperf3 bin/
+            cp ${IMAGE_ROOTFS}/usr/lib/libiperf.so.0 lib/libiperf.so.0
+            cp ${IMAGE_ROOTFS}/usr/sbin/tcpdump bin/
+            cp ${IMAGE_ROOTFS}/usr/lib/libpcap.so.1 lib/libpcap.so.1
+            cp ${IMAGE_ROOTFS}/usr/lib/libcrypto.so.1.1 lib/
             ln -s mksh bin/sh
+            ln -s ping.iputils bin/ping
+            ln -s devmem2 bin/devmem
 
             # Don't install redundant packages for VM image
             if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'false', 'true', d)}; then
