@@ -1,71 +1,59 @@
-#@TYPE: Machine
-#@NAME: SA515M
-#@DESCRIPTION: Machine configuration for QTI SA515M
-
-BASEMACHINE ?= "sdxprairie"
+BASEMACHINE ?= "sa410m"
 require conf/machine/include/basemachine.inc
 
-SOC_FAMILY ?= "mdm9x50"
+SOC_FAMILY ?= "bengal"
 include conf/machine/include/soc-family.inc
 
-DEFAULTTUNE ?= "armv7athf-neon"
-include conf/machine/include/arm/arch-armv7a.inc
+DEFAULTTUNE ?= "aarch64"
+include conf/machine/include/arm/arch-armv8a.inc
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
 PREFERRED_VERSION_linux-msm = "5.4"
 PREFERRED_VERSION_linux-msm-headers = "5.4"
 SERIAL_CONSOLES ?= "115200;ttyMSM0"
-KERNEL_IMAGETYPE = "zImage-dtb"
-KERNEL_BASE = "0x80000000"
-KERNEL_TAGS_OFFSET = "0x82000000"
-
+KERNEL_IMAGETYPE = "Image.gz"
+KERNEL_BASE = "0x40000000"
+KERNEL_TAGS_OFFSET = "0x1e00000"
 KERNEL_DYNAMIC_DEFCONFIG = "True"
-KERNEL_CONFIG ?= "vendor/sa515m_auto_defconfig"
-KERNEL_CONFIG_qti-distro-debug ?= "vendor/sa515m_auto-debug_defconfig"
+KERNEL_CONFIG ?= "vendor/sa410m_auto-qgki_defconfig"
+KERNEL_CONFIG_qti-distro-debug ?= "vendor/sa410m_auto-qgki-debug_defconfig"
 KERNEL_CMD_PARAMS = "noinitrd ro rootwait console=ttyMSM0,115200,n8 no_console_suspend=1 androidboot.hardware=qcom androidboot.console=ttyMSM0 lpm_levels.sleep_disabled=1 service_locator.enable=1 firmware_class.path=/lib/firmware/updates msm_rtb.filter=0x237"
 
-KERNEL_DTB_NAMES    = "vendor/qcom/sa515m-ccard.dtb"
+KERNEL_DTB_NAMES    = "vendor/qcom/sa410m-idp.dtb \
+                       vendor/qcom/sa410m-qrd.dtb"
 
 # Bootloader configuration
 EXTRA_IMAGEDEPENDS += "edk2"
 
 # MACHINE_FEATURES ##
+# qti-adsp:               Machine supports QTI adsp solution
+# qti-cdsp:               Machine supports QTI cdsp solution
+# qti-ab-boot:            Machine supports a/b boot
 # qti-security:           Machine supports QTI security solution
 # qti-wifi:               Machine supports QTI WiFi solution
 # qti-audio:              Machine supports QTI audio solution
 # qti-bluetooth:          Machine supports QTI bluetooth solution
+# qti-sensors:            Machine supports sensors qti solution
 # qti-location:           Machine supports Location solution
 # qti-data-modem:         Machine supports QTI data modem solution
 
-MACHINE_FEATURES += "qti-security qti-sdx dm-verity-none qti-location qti-recovery qwesd qwes_legacy qti-bluetooth"
+MACHINE_FEATURES += "qti-adsp qti-ab-boot qti-security qti-sdx qti-audio qti-location nossd_listener dm-verity-none qwesd le_qseecom qti-softsku"
 
 MACHINE_MNT_POINTS = " \
+    /dsp \
     /firmware \
-    /persist \
-    /cache \
-    /data \
     /systemrw \
+    /persist \
+    /data \
+    /cache \
 "
 
-# Formats of root filesystem images
-IMAGE_FSTYPES += "ubi"
-
-# Sizes for UBI volumes
-SYSTEM_VOLUME_SIZE ?= "110MiB"
-CACHE_VOLUME_SIZE ?= "15MiB"
-SYSTEMRW_VOLUME_SIZE ?= "6MiB"
-PERSIST_VOLUME_SIZE ?= "6MiB"
-
 PAGE_SIZE ?= '4096'
-UBINIZE_ARGS ?= "-m 4096 -p 256KiB -s 4096"
-MKUBIFS_ARGS ?= "-m 4096 -e 253952 -c 2146 -F"
+EXTRA_IMAGECMD ?= "-N 2048"
 
-MACHINE_SUPPORTS_PDMAPPER = "False"
 MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 MACHINE_SUPPORTS_ANDROID_PROPERTIES = "False"
-
-# File indicating firmware residing places on device.
-MACHINE_FILESMAP_CONF = "sa515m-filesmap"
+MACHINE_SUPPORTS_USB_AUTOSUSPEND = "False"
 
 USBCOMPOSITION = "90DB"
 
