@@ -4,7 +4,8 @@
 
 inherit qimage qramdisk
 
-IMAGE_FEATURES += "read-only-rootfs"
+IMAGE_FEATURES[validitems] += "csm"
+IMAGE_FEATURES += "read-only-rootfs csm"
 
 CORE_IMAGE_EXTRA_INSTALL += "\
               glib-2.0 \
