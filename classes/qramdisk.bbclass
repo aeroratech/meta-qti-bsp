@@ -7,7 +7,7 @@ ENABLE_ADB ?= "True"
 ENABLE_ADB_qti-distro-base-user ?= "False"
 PACKAGE_INSTALL += "${@oe.utils.conditional('ENABLE_ADB', 'True', 'adbd usb-composition usb-composition-usbd', '', d)}"
 PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils e2fsprogs dosfstools ethtool iputils iperf2 iperf3 devmem2 tcpdump', '', d)}"
-PACKAGE_INSTALL += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'nbd-client', '', d)}"
+PACKAGE_INSTALL += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'nbd-client techpack-ecpri', '', d)}"
 
 do_ramdisk_create[depends] += "virtual/kernel:do_deploy"
 do_ramdisk_create[cleandirs] += "${RAMDISKDIR}"
@@ -16,6 +16,7 @@ fakeroot do_ramdisk_create() {
         mkdir -p ${RAMDISKDIR}/etc
         mkdir -p ${RAMDISKDIR}/etc/init.d
         mkdir -p ${RAMDISKDIR}/lib
+        mkdir -p ${RAMDISKDIR}/lib/modules
         mkdir -p ${RAMDISKDIR}/usr
         mkdir -p ${RAMDISKDIR}/usr/bin
         mkdir -p ${RAMDISKDIR}/usr/sbin
@@ -116,6 +117,10 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/usr/sbin/nbd-client.nbd usr/sbin/nbd
             cp ${IMAGE_ROOTFS}/usr/sbin/setup_nbdclient usr/sbin/
             cp ${IMAGE_ROOTFS}/etc/nbdtab etc/
+
+            # DMA kos
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/ecpri_dmam.ko lib/modules/
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/gsim.ko lib/modules/
         fi
 
         if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'true', 'false', d)}; then
