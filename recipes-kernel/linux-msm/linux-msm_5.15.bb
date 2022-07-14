@@ -91,6 +91,7 @@ do_prebuilt_configure() {
     install -d ${B}/include/config
     install -d ${B}/include/generated
     install -d ${B}/scripts
+    install -d ${B}/certs
     # Some of the artifacts needed for module compilation are present under
     # msm-kernel path, for now copy them for this path to avoid build failures.
     # Ask prebuilt providers to make these available in KERNEL_PREBUILT_PATH.
@@ -98,6 +99,9 @@ do_prebuilt_configure() {
     install -m 0644 ../msm-kernel/Module.symvers ${B}
     install -m 0644 ../msm-kernel/include/config/kernel.release ${B}/include/config/kernel.release
     install -m 0644 ../msm-kernel/scripts/module.lds ${B}/scripts/module.lds
+    install -m 0644 ../msm-kernel/scripts/sign-file ${B}/scripts/sign-file
+    install -m 0644 ../msm-kernel/certs/signing_key.x509 ${B}/certs/signing_key.x509
+    install -m 0644 ../msm-kernel/certs/signing_key.pem ${B}/certs/signing_key.pem
     install -m 0644 ../msm-kernel/include/generated/utsrelease.h ${B}/include/generated
 
     install -d ${B}/${KERNEL_OUTPUT_DIR}
@@ -132,6 +136,10 @@ do_prebuilt_shared_workdir() {
     install -m 0644 .config $kerneldir/
     mkdir -p $kerneldir/include/config
     mkdir -p $kerneldir/scripts
+    mkdir -p $kerneldir/certs
+    install -m 0755 ${B}/scripts/sign-file ${STAGING_KERNEL_BUILDDIR}/scripts/sign-file
+    install -m 0755 ${B}/certs/signing_key.x509 ${STAGING_KERNEL_BUILDDIR}/certs/signing_key.x509
+    install -m 0755 ${B}/certs/signing_key.pem ${STAGING_KERNEL_BUILDDIR}/certs/signing_key.pem
     install -m 0644 include/config/kernel.release $kerneldir/include/config/kernel.release
     if [ -e "${B}/scripts/module.lds" ]; then
         install -m 0644 ${B}/scripts/module.lds ${STAGING_KERNEL_BUILDDIR}/scripts/module.lds
