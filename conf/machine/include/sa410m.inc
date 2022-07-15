@@ -37,7 +37,7 @@ EXTRA_IMAGEDEPENDS += "edk2"
 # qti-location:           Machine supports Location solution
 # qti-data-modem:         Machine supports QTI data modem solution
 
-MACHINE_FEATURES += "qti-adsp qti-ab-boot qti-security qti-sdx qti-audio qti-location nossd_listener dm-verity-none qwesd le_qseecom qti-softsku"
+MACHINE_FEATURES += "qti-adsp qti-ab-boot qti-security qti-sdx qti-audio qti-location nossd_listener dm-verity-none qwesd le_qseecom qti-softsku qti-data-modem"
 
 MACHINE_MNT_POINTS = " \
     /dsp \
