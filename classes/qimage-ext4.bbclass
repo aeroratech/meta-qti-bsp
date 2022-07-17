@@ -225,3 +225,20 @@ python() {
     if cache_img == "true":
        bb.build.addtask('do_makecache', 'do_makesystem', 'do_image', d)
 }
+
+#############################################################
+############ Generate Unsparsed images if needed ############
+#############################################################
+do_unsparse_images[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+
+do_unsparse_images() {
+    simg2img ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET} ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_TARGET}.raw
+    simg2img ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_TARGET} ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${USERDATAIMAGE_TARGET}.raw
+    simg2img ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${PERSISTIMAGE_TARGET} ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${PERSISTIMAGE_TARGET}.raw
+    if [ ${CACHE_IMG_ENABLE} == "true" ]; then
+        simg2img ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${CACHEIMAGE_TARGET} ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${CACHEIMAGE_TARGET}.raw
+    fi
+    if [ ${SYSTEMRW_IMG_ENABLE} == "true" ]; then
+        simg2img ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMRWIMAGE_TARGET} ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMRWIMAGE_TARGET}.raw
+    fi
+}
