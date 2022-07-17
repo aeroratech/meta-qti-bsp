@@ -286,18 +286,6 @@ else
     echo "Detected boot from: $fstab_suffix"
 fi
 
-countdown=5
-while [ $countdown -gt 0 ]; do
-    echo -e -n "Press any key to remain in ramdisk... $countdown\r"
-    read -t 1 -n 1
-    if [ $? -eq 0 ]; then
-        fstab_suffix="rdshell"
-        break
-    fi
-    (( countdown -= 1 ))
-done
-echo -e -n '\n'
-
 case $fstab_suffix in
     emmc)
         partition="$(extract_config root)"
