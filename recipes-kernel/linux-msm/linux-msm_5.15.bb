@@ -85,6 +85,7 @@ do_configure_prepend() {
     fi
 }
 
+do_prebuilt_configure[nostamp] = "1"
 do_prebuilt_configure() {
     cd ${KERNEL_PREBUILT_PATH}
 
@@ -115,8 +116,11 @@ do_prebuilt_configure() {
     cp -R ../msm-kernel/usr/gen_init_cpio ${B}/usr
     cp -R ../msm-kernel/usr/initramfs_data.cpio ${B}/usr
     cp -R ../msm-kernel/usr/initramfs_inc_data ${B}/usr
+    # gen_initramfs.sh is present in kernel source
+    cp -R ../../../kernel_platform/msm-kernel/usr/gen_initramfs.sh ${B}/usr
 }
 
+do_prebuilt_shared_workdir[nostamp] = "1"
 do_prebuilt_shared_workdir[cleandirs] += " ${STAGING_KERNEL_BUILDDIR}"
 do_prebuilt_shared_workdir() {
     cd ${B}
@@ -270,7 +274,7 @@ do_deploy() {
      install -d ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
      install -d ${DEPLOYDIR}/build-artifacts/dtb
 
-     cp  ${S}/usr/gen_initramfs.sh ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
+     cp -a ${B}/usr/gen_initramfs.sh ${DEPLOYDIR}/build-artifacts/kernel_scripts/scripts
      cp -a ${B}/usr/gen_init_cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
      cp -a ${B}/usr/initramfs_data.cpio ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
      cp -a ${B}/usr/initramfs_inc_data ${DEPLOYDIR}/build-artifacts/kernel_scripts/usr/
