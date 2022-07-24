@@ -85,6 +85,16 @@ do_configure_prepend() {
     fi
 }
 
+# Set up hosttools for techpack module compilation
+do_setup_module_compilation() {
+    cd ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform  && \
+          BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \
+          OUT_DIR=${KERNEL_OUT_PATH}/ \
+          KERNEL_UAPI_HEADERS_DIR=${STAGING_KERNEL_BUILDDIR} \
+          INSTALL_MODULE_HEADERS=1 \
+          ./build/build_module.sh
+}
+
 do_prebuilt_configure[nostamp] = "1"
 do_prebuilt_configure() {
     cd ${KERNEL_PREBUILT_PATH}
@@ -120,6 +130,7 @@ do_prebuilt_configure() {
     cp -R ../../../kernel_platform/msm-kernel/usr/gen_initramfs.sh ${B}/usr
 }
 
+do_prebuilt_shared_workdir[postfuncs] += "do_setup_module_compilation"
 do_prebuilt_shared_workdir[nostamp] = "1"
 do_prebuilt_shared_workdir[cleandirs] += " ${STAGING_KERNEL_BUILDDIR}"
 do_prebuilt_shared_workdir() {
@@ -214,6 +225,7 @@ do_compile_append() {
 # when using our own module signing key kernel.bbclass will fail to copy the public part of the key
 # since it checks if the .pem file exists which is not the case, so we need to explicitely copy
 # the x509 (public key) file
+do_shared_workdir[postfuncs] += "do_setup_module_compilation"
 do_shared_workdir_append () {
         mkdir -p $kerneldir/certs
         cp certs/signing_key.x509 $kerneldir/certs/
@@ -235,14 +247,6 @@ do_shared_workdir_append () {
 
         # Generate kernel headers
         oe_runmake_call -C ${STAGING_KERNEL_DIR} ARCH=${ARCH} CC="${KERNEL_CC}" LD="${KERNEL_LD}" headers_install O=${STAGING_KERNEL_BUILDDIR}
-
-        # Set up hosttools for module compilation
-        cd ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform  && \
-              BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \
-              OUT_DIR=${KERNEL_OUT_PATH}/ \
-              KERNEL_UAPI_HEADERS_DIR=${STAGING_KERNEL_BUILDDIR} \
-              INSTALL_MODULE_HEADERS=1 \
-              ./build/build_module.sh
 }
 
 # Path for dtbo generation is kernel version dependent.
