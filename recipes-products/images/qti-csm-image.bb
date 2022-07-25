@@ -24,6 +24,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               powerapp-shutdown \
               packagegroup-qti-data \
               systemd-machine-units \
+              packagegroup-qti-securemsm \
               packagegroup-android-utils \
               packagegroup-startup-scripts \
               packagegroup-qti-ss-mgr \
