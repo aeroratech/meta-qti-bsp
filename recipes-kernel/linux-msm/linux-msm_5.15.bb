@@ -8,8 +8,8 @@ COMPATIBLE_MACHINE = "cinder"
 FILESPATH =+ "${WORKSPACE}:"
 
 SRC_URI   =  "file://kernel-${PV}/kernel_platform/msm-kernel \
+             ${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', '', 'file://kernel-${PV}/kernel_platform/msm-kernel/arch/${ARCH}/configs/${KERNEL_CONFIG}',d)} \
              "
-SRC_URI_append_cinder  +=  "${@oe.utils.conditional('KERNEL_USE_PREBUILTS', 'True', '', 'file://kernel-${PV}/kernel_platform/msm-kernel/arch/${ARCH}/configs/vendor/cinder_debug.config',d)}"
 
 S = "${WORKDIR}/kernel-${PV}/kernel_platform/msm-kernel"
 PR = "r0"
