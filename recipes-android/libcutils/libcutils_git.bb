@@ -1,4 +1,4 @@
-inherit autotools pkgconfig
+inherit autotools pkgconfig useradd
 
 DESCRIPTION = "Build Android libcutils"
 HOMEPAGE = "http://developer.android.com/"
