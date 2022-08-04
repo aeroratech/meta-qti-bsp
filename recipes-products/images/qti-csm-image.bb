@@ -4,6 +4,10 @@
 
 inherit qimage qramdisk
 
+# specify IMAGE_FEATURES += "ssh-server-openssh" to bring in
+#    packagegroup-core-ssh-openssh -> openssh
+IMAGE_FEATURES += "ssh-server-openssh"
+
 IMAGE_FEATURES[validitems] += "csm"
 IMAGE_FEATURES += "read-only-rootfs csm"
 
