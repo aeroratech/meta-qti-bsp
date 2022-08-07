@@ -10,6 +10,10 @@ IMAGE_FEATURES += "read-only-rootfs csm"
 CORE_IMAGE_EXTRA_INSTALL += "\
               glib-2.0 \
               coreutils \
+              e2fsprogs \
+              e2fsprogs-e2fsck \
+              e2fsprogs-mke2fs \
+              e2fsprogs-tune2fs \
               powerapp \
               powerapp-powerconfig \
               powerapp-reboot \
