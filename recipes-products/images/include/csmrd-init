@@ -303,6 +303,12 @@ case $fstab_suffix in
         # default --> flashless
         # change log level
         echo 2 > /proc/sys/kernel/printk
+
+        # ECPRI module load
+        insmod /lib/modules/gsim.ko
+        insmod /lib/modules/ecpri_dmam.ko
+
+        # Static IP
         HOST_ADDR="192.168.1.172"
         LOCAL_ADDR="192.168.1.173"
         LOCAL_INTERFACE="mhi_swip0"
@@ -311,6 +317,7 @@ case $fstab_suffix in
             echo "Failed to config interface: $LOCAL_INTERFACE"
             start_rdshell
         fi
+
         # Create /etc/nbdtab and nbd-client connect remote nbdkit
         do_nbdtab "$HOST_ADDR"
         ;;
