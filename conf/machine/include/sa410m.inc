@@ -8,10 +8,12 @@ DEFAULTTUNE ?= "aarch64"
 include conf/machine/include/arm/arch-armv8a.inc
 
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
+PREFERRED_PROVIDER_virtual/mkbootimg-native = "mkbootimg-gki-native"
 PREFERRED_VERSION_linux-msm = "5.15"
 PREFERRED_VERSION_linux-msm-headers = "5.15"
 PREFERRED_VERSION_kernel-toolchain = "5.15"
 PREFERRED_VERSION_dtc-android-build = "5.15"
+PREFERRED_VERSION_mkbootimg-gki-native ?= "5.15"
 SERIAL_CONSOLES ?= "115200;ttyMSM0"
 KERNEL_IMAGETYPE = "Image"
 KERNEL_BASE = "0x40000000"
@@ -25,8 +27,7 @@ KERNEL_VARIANT = ""
 KERNEL_VARIANT_qti-distro-debug = "debug_"
 KERNEL_VARIANT_qti-distro-perf = "perf_"
 
-KERNEL_DTB_NAMES    = "vendor/qcom/sa410m-idp.dtb \
-                       vendor/qcom/sa410m-qrd.dtb"
+KERNEL_DTB_NAMES = "dtbs/dtb.img"
 
 MACHINE_USES_KERNEL_PREBUILTS = "True"
 KERNEL_PREBUILT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-scuba_auto-${KERNEL_VARIANT}defconfig/dist"
@@ -74,3 +75,6 @@ UFS_BSG_DEV_USAGE = "True"
 PREFERRED_VERSION_protobuf = "3.11.4"
 PREFERRED_VERSION_protobuf-native = "3.11.4"
 PREFERRED_VERSION_iproute2 = "5.5.0"
+
+# Fixes for boot image dtb appending
+BOOT_HEADER_VERSION = "2"

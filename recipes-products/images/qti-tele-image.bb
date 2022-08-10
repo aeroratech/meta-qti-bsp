@@ -43,3 +43,27 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa410m = "\
        qmi-shutdown-modem \
        packagegroup-qti-telsdk \
 "
+
+python () {
+    if d.getVar('PREFERRED_VERSION_linux-msm') == "5.15":
+        bb.build.addtask('do_merge_dtbs', 'do_makeboot', 'do_makesystem', d)
+        bb.build.addtask('do_copy_abl', 'do_image_complete', 'do_makeboot', d)
+}
+
+do_merge_dtbs() {
+    install -d ${DEPLOY_DIR_IMAGE}/build-artifacts/techpack-dtbos
+    cd ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform && \
+    LD_LIBRARY_PATH=../out/msm-kernel-${MACHINE}-${KERNEL_VARIANT}defconfig/host/lib/:LD_LIBRARY_PATH \
+    OUT_DIR=${KERNEL_OUT_PATH}/ \
+    BUILD_CONFIG=${KERNEL_BUILD_CONFIG}  \
+    ./build/android/merge_dtbs.sh \
+    ${DEPLOY_DIR_IMAGE}/build-artifacts/dtb \
+    ${DEPLOY_DIR_IMAGE}/build-artifacts/techpack-dtbos ${DEPLOY_DIR_IMAGE}/dtbs
+}
+
+do_copy_abl[dirs] = "${DEPLOY_DIR_IMAGE}"
+do_copy_abl() {
+    if [ -f ${KERNEL_PREBUILT_PATH}/abl_userdebug.elf ]; then
+        install -m 0644 ${KERNEL_PREBUILT_PATH}/abl_userdebug.elf ${DEPLOY_DIR_IMAGE}/${PN}/abl_userdebug.elf
+    fi
+}
