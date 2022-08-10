@@ -32,134 +32,134 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 err() {
-	echo "<3>$*" > /dev/kmsg
+    echo "<3>$*" > /dev/kmsg
 }
 warn() {
-	echo "<4>$*" > /dev/kmsg
+    echo "<4>$*" > /dev/kmsg
 }
 notice() {
-	echo "<5>$*" > /dev/kmsg
+    echo "<5>$*" > /dev/kmsg
 }
 info() {
-	echo "<6>$*" > /dev/kmsg
+    echo "<6>$*" > /dev/kmsg
 }
 
 extract_bootconfig() {
-	sed -n 's/^'"$1"' = "\(.*\)"$/\1/p' /proc/bootconfig
+    sed -n 's/^'"$1"' = "\(.*\)"$/\1/p' /proc/bootconfig
 }
 extract_cmdline() {
-	sed -e 's/ /\n/g' /proc/cmdline | sed -n 's/^'"$1"'=\(.*\)$/\1/p'
+    sed -e 's/ /\n/g' /proc/cmdline | sed -n 's/^'"$1"'=\(.*\)$/\1/p'
 }
 extract_config() {
-	local res="$(extract_cmdline $1)"
-	[ -z "$res" ] && res="$(extract_bootconfig $1)"
-	echo $res
+    local res="$(extract_cmdline $1)"
+    [ -z "$res" ] && res="$(extract_bootconfig $1)"
+    echo $res
 }
 
 start_adbd()
 {
-	echo "start_adbd: setting up device for adbd"
-	# get soc platform
-	if [ -f /sys/devices/soc0/machine ]; then
-		socplatform=`cat /sys/devices/soc0/machine` 2> /dev/null
-	elif [ -f /sys/devices/system/soc/soc0/machine ]; then
-		socplatform=`cat /sys/devices/system/soc/soc0/machine` 2> /dev/null
-	else
-		socplatform=$(uname -r | cut -d "-" -f1-4)
-	fi
-	echo "start_adbd: soc: $socplatform"
+    echo "start_adbd: setting up device for adbd"
+    # get soc platform
+    if [ -f /sys/devices/soc0/machine ]; then
+        socplatform=`cat /sys/devices/soc0/machine` 2> /dev/null
+    elif [ -f /sys/devices/system/soc/soc0/machine ]; then
+        socplatform=`cat /sys/devices/system/soc/soc0/machine` 2> /dev/null
+    else
+        socplatform=$(uname -r | cut -d "-" -f1-4)
+    fi
+    echo "start_adbd: soc: $socplatform"
 
-	# find serialno from cmdline
-	serialno="$(extract_config "androidboot.serialno")"
-	echo "$serialno" | grep -qv "[^A-Za-z0-9]"
-	valid_serial=$?
-	if [ -z "$serialno" -o $valid_serial -ne 0 ]; then
-		echo "start_adbd: serialno not found with cmdline or bootconfig, using default value"
-		serialno="12345678"
-	fi
+    # find serialno from cmdline
+    serialno="$(extract_config "androidboot.serialno")"
+    echo "$serialno" | grep -qv "[^A-Za-z0-9]"
+    valid_serial=$?
+    if [ -z "$serialno" -o $valid_serial -ne 0 ]; then
+        echo "start_adbd: serialno not found with cmdline or bootconfig, using default value"
+        serialno="12345678"
+    fi
 
-	echo "start_adbd: serialno: $serialno"
-	mount -t configfs configfs /sys/kernel/config
-	if [ -d /sys/kernel/config/usb_gadget ]; then
-		notice "start_adbd: Configuring the USB gadget using ConfigFS"
-		cd /sys/kernel/config/usb_gadget
-		mkdir g1
-		cd g1
-		mkdir strings/0x409
-		mkdir configs/c.1
-		mkdir configs/c.1/strings/0x409
-		mkdir functions/ffs.adb
+    echo "start_adbd: serialno: $serialno"
+    mount -t configfs configfs /sys/kernel/config
+    if [ -d /sys/kernel/config/usb_gadget ]; then
+        notice "start_adbd: Configuring the USB gadget using ConfigFS"
+        cd /sys/kernel/config/usb_gadget
+        mkdir g1
+        cd g1
+        mkdir strings/0x409
+        mkdir configs/c.1
+        mkdir configs/c.1/strings/0x409
+        mkdir functions/ffs.adb
 
-		echo "$serialno" > strings/0x409/serialnumber
-		echo "QCOM" > strings/0x409/manufacturer
-		echo "$socplatform" > strings/0x409/product
-		echo 0x18d1 > /sys/kernel/config/usb_gadget/g1/idVendor
-		echo 0x4EE7 > /sys/kernel/config/usb_gadget/g1/idProduct
-		echo "ADB" > configs/c.1/strings/0x409/configuration
-	else
-		notice "start_adbd: Configuring the USB gadget using legacy method"
-		cd /sys/class/android_usb/android0/
-		echo 0 > enable
-		echo 05C6 > idVendor
-		echo 901D > idProduct
-		echo "$serialno" > iSerial
-		echo "QCOM" > iManufacturer
-		echo "$socplatform" > iProduct
-		echo diag > f_diag/clients
-		echo diag,ffs > functions
-		echo 1 > enable
-	fi
-	cd /
+        echo "$serialno" > strings/0x409/serialnumber
+        echo "QCOM" > strings/0x409/manufacturer
+        echo "$socplatform" > strings/0x409/product
+        echo 0x18d1 > /sys/kernel/config/usb_gadget/g1/idVendor
+        echo 0x4EE7 > /sys/kernel/config/usb_gadget/g1/idProduct
+        echo "ADB" > configs/c.1/strings/0x409/configuration
+    else
+        notice "start_adbd: Configuring the USB gadget using legacy method"
+        cd /sys/class/android_usb/android0/
+        echo 0 > enable
+        echo 05C6 > idVendor
+        echo 901D > idProduct
+        echo "$serialno" > iSerial
+        echo "QCOM" > iManufacturer
+        echo "$socplatform" > iProduct
+        echo diag > f_diag/clients
+        echo diag,ffs > functions
+        echo 1 > enable
+    fi
+    cd /
 
-	echo "start_adbd: Configuring FunctionFS endpoints for adbd"
-	if [ ! -d /dev/usb-ffs/adb ]; then
-	mkdir -p /dev/usb-ffs/adb
-	fi
-	if [ ! -e /dev/usb-ffs/adb/ep0 ]; then
-	mount -o uid=2000,gid=2000 -t functionfs adb /dev/usb-ffs/adb
-	fi
+    echo "start_adbd: Configuring FunctionFS endpoints for adbd"
+    if [ ! -d /dev/usb-ffs/adb ]; then
+    mkdir -p /dev/usb-ffs/adb
+    fi
+    if [ ! -e /dev/usb-ffs/adb/ep0 ]; then
+    mount -o uid=2000,gid=2000 -t functionfs adb /dev/usb-ffs/adb
+    fi
 
-	echo "start_adbd: Launching adbd"
-	/sbin/adbd &
+    echo "start_adbd: Launching adbd"
+    /sbin/adbd &
 
-	if [ -d /sys/kernel/config/usb_gadget/g1 ]; then
-		cd /sys/kernel/config/usb_gadget/g1
-		sleep 1
-		ln -s functions/ffs.adb configs/c.1/f1
-		echo 0x80 > configs/c.1/bmAttributes
+    if [ -d /sys/kernel/config/usb_gadget/g1 ]; then
+        cd /sys/kernel/config/usb_gadget/g1
+        sleep 1
+        ln -s functions/ffs.adb configs/c.1/f1
+        echo 0x80 > configs/c.1/bmAttributes
 
-		udcname=`ls -1 /sys/bus/platform/devices/ | grep ssusb | head -n 1`
+        udcname=`ls -1 /sys/bus/platform/devices/ | grep ssusb | head -n 1`
 
-		# Force USB to be in peripheral mode in case cable plug detection
-		# is not working or not enabled.
-		# This assumes we are using "dwc3/ssusb" based USB devices.
-		#    e.g. a600000.dwc3 -> a600000.ssusb
-		echo peripheral > /sys/bus/platform/devices/${udcname}/mode
+        # Force USB to be in peripheral mode in case cable plug detection
+        # is not working or not enabled.
+        # This assumes we are using "dwc3/ssusb" based USB devices.
+        #    e.g. a600000.dwc3 -> a600000.ssusb
+        echo peripheral > /sys/bus/platform/devices/${udcname}/mode
 
-		echo "start_adbd: waiting for USB device..."
-		i=1
-		while [ $i -lt 60 ]
-		do
-			udcname=`ls -1 /sys/class/udc | grep -v dummy_udc | head -n 1`
-			if [ -n "$udcname" ]; then
-				break
-			fi
-			sleep 1
-			((i=i+1))
-		done
+        echo "start_adbd: waiting for USB device..."
+        i=1
+        while [ $i -lt 60 ]
+        do
+            udcname=`ls -1 /sys/class/udc | grep -v dummy_udc | head -n 1`
+            if [ -n "$udcname" ]; then
+                break
+            fi
+            sleep 1
+            ((i=i+1))
+        done
 
-		if [ -z "$udcname" ]; then
-			echo "start_adbd: UDC didn't come up, won't be able to connect to adbd"
-		fi
+        if [ -z "$udcname" ]; then
+            echo "start_adbd: UDC didn't come up, won't be able to connect to adbd"
+        fi
 
-		echo "start_adbd: binding $udcname with gadget"
-		echo $udcname > UDC
-		cd /
+        echo "start_adbd: binding $udcname with gadget"
+        echo $udcname > UDC
+        cd /
 
-		echo "start_adbd: adbd successfully launched"
-	else
-		echo "start_adbd: USB gadget didn't get created /sys/kernel/config/usb_gadget/g1"
-	fi
+        echo "start_adbd: adbd successfully launched"
+    else
+        echo "start_adbd: USB gadget didn't get created /sys/kernel/config/usb_gadget/g1"
+    fi
 }
 
 start_rdshell()
@@ -244,13 +244,13 @@ do_mounts
 
 do_nbdtab()
 {
-# Create nbd-server config
-echo "nbd0 $1 system.img.raw persist" > /etc/nbdtab
-echo "nbd1 $1 systemrw.img.raw  persist" >> /etc/nbdtab
-echo "nbd2 $1 persist.img.raw  persist" >> /etc/nbdtab
-echo "nbd3 $1 userdata.img.raw  persist" >> /etc/nbdtab
-echo "nbd4 $1 cache.img.raw  persist" >> /etc/nbdtab
-echo "nbd5 $1 NON-HLOS.bin persist" >> /etc/nbdtab
+    # Create nbd-server config
+    echo "nbd0 $1 system.img.raw persist" > /etc/nbdtab
+    echo "nbd1 $1 systemrw.img.raw  persist" >> /etc/nbdtab
+    echo "nbd2 $1 persist.img.raw  persist" >> /etc/nbdtab
+    echo "nbd3 $1 userdata.img.raw  persist" >> /etc/nbdtab
+    echo "nbd4 $1 cache.img.raw  persist" >> /etc/nbdtab
+    echo "nbd5 $1 NON-HLOS.bin persist" >> /etc/nbdtab
 
     /usr/sbin/nbd nbd0 # connect remote system.img
     /usr/sbin/nbd nbd1 # connect remote systemrw.img
@@ -280,7 +280,7 @@ echo "nbd5 $1 NON-HLOS.bin persist" >> /etc/nbdtab
 
 fstab_suffix="$(extract_config androidboot.fstab_suffix)"
 if [ -z "$fstab_suffix" ]; then
-    echo "No boot suffix detected, using default"
+    echo "No boot suffix detected, using default for flashless"
     fstab_suffix="default"
 else
     echo "Detected boot from: $fstab_suffix"
@@ -289,15 +289,25 @@ fi
 case $fstab_suffix in
     emmc)
         partition="$(extract_config root)"
-        if [ -e "$partition" ]; then
-            mnt_dir="/mnt/system"
-            mkdir -p $mnt_dir
-            mount -o ro $partition $mnt_dir
+        ## wait for system partition for 60sec
+        timeout=60
+        while [ ! -e "$partition" ]; do
+            echo "Waiting for $partition."
+            sleep 1
+            ((timeout -= 1))
+            if [ "$timeout" -le 0 ]; then
+                echo "$partition not available"
+                start_rdshell
+            fi
+        done
+        #mount system partition
+        mnt_dir="/mnt/system"
+        mkdir -p $mnt_dir
+        mount -o ro $partition $mnt_dir
 
-            umount /sys/kernel/debug /sys /proc /dev
-            echo "Switching to system partition on $partition"
-            exec /bin/switch_root -c /dev/console $mnt_dir /sbin/init
-        fi
+        umount /sys/kernel/debug /sys /proc /dev
+        echo "Switching to system partition on $partition"
+        exec /bin/switch_root -c /dev/console $mnt_dir /sbin/init
         ;;
     default)
         # default --> flashless
