@@ -27,7 +27,7 @@ do_install_append() {
     install -d ${D}${systemd_unitdir}/system/
     install -m 0644 ${S}/adbd.service -D ${D}${systemd_unitdir}/system/adbd.service
 
-    if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx qti-csm', 'true', 'false', d)}; then
+    if ${@bb.utils.contains_any('MACHINE_FEATURES', 'qti-sdx qti-csm', 'true', 'false', d)}; then
         install -m 0755 ${S}/start_pcie -D ${D}${sysconfdir}/start_pcie
         install -m 0644 ${S}/pcie.service -D ${D}${systemd_unitdir}/system/pcie.service
         # Run adb as part of local-fs.target
@@ -38,6 +38,6 @@ do_install_append() {
 }
 
 SYSTEMD_SERVICE_${PN}  = " adbd.service "
-SYSTEMD_SERVICE_${PN} += "${@bb.utils.contains('MACHINE_FEATURES','qti-sdx qti-csm',' pcie.service','',d)}"
+SYSTEMD_SERVICE_${PN} += "${@bb.utils.contains_any('MACHINE_FEATURES','qti-sdx qti-csm',' pcie.service','',d)}"
 
 FILES_${PN} += "${systemd_unitdir}/system/"
