@@ -462,12 +462,18 @@ do_nbdtab()
     echo "nbd4 $1 cache.img.raw  persist" >> /etc/nbdtab
     echo "nbd5 $1 NON-HLOS.bin persist" >> /etc/nbdtab
 
-    /usr/sbin/nbd nbd0 $portno # connect remote system.img
-    /usr/sbin/nbd nbd1 $portno # connect remote systemrw.img
-    /usr/sbin/nbd nbd2 $portno # connect remote persist.img
-    /usr/sbin/nbd nbd3 $portno # connect remote userdata.img
-    /usr/sbin/nbd nbd4 $portno # connect remote cache.img
-    /usr/sbin/nbd nbd5 $portno # connect NON-HLOS
+    nbdclient nbd0 $portno # connect remote system.img
+    nbdclient nbd1 $portno # connect remote systemrw.img
+    nbdclient nbd2 $portno # connect remote persist.img
+    nbdclient nbd3 $portno # connect remote userdata.img
+    nbdclient nbd4 $portno # connect remote cache.img
+    nbdclient nbd5 $portno # connect NON-HLOS
+
+    # if nbd negotiation fails, drop to ramdsik
+    if [ "$?" -ne 0 ]; then
+        echo "NBD connection failed. Fall back to ramdisk shell for debugging"
+        start_rdshell
+    fi
 
     # mount system.img
     mnt_dir="/mnt/system"
