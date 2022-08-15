@@ -50,7 +50,7 @@ PACKAGECONFIG = " \
     hibernate \
     ima \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', '', 'kmod', d)} \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx', '', 'logind', d)} \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-sdx qti-csm', '', 'logind', d)} \
     randomseed \
     timedated \
     xz \

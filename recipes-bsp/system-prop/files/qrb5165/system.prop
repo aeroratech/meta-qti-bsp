@@ -26,6 +26,9 @@ audio.offload.video=true
 vendor.voice.path.for.pcm.voip=true
 #enable dsp gapless mode by default
 vendor.audio.offload.gapless.enabled=true
+#enable display port support
+vendor.audio.feature.display_port.enable=true
+vendor.audio.feature.hdmi_edid.enable=true
 
 #Audio voice concurrency related flags
 vendor.voice.playback.conc.disabled=true

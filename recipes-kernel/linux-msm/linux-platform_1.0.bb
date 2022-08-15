@@ -68,7 +68,13 @@ do_compile () {
 }
 
 do_install () {
-	:
+    cd ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform  && \
+
+    BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \
+    OUT_DIR=${KERNEL_OUT_PATH}/ \
+    KERNEL_UAPI_HEADERS_DIR=${STAGING_KERNEL_BUILDDIR} \
+    INSTALL_MODULE_HEADERS=1 \
+    ./build/build_module.sh
 }
 
 
