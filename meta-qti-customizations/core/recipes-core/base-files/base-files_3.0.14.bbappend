@@ -23,8 +23,15 @@ fix_sepolicies () {
     # For /var/volatile
     sed -i "s#,rootcontext=system_u:object_r:var_t:s0##g" ${WORKDIR}/fstab
 }
-do_install[prefuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '', 'fix_sepolicies', d)}"
 
+# Default bash prompt to ~#
+update_bash_prompt(){
+   sed -e '/-z "\$PS1"/d' -i ${WORKDIR}/profile
+   sed -i "/# Set the prompt for bash/a [ -z \"\$PS1\" ] || PS1='~ # '" ${WORKDIR}/profile
+}
+
+do_install[prefuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '', 'fix_sepolicies', d)}"
+do_install[prefuncs] += " ${@bb.utils.contains_any('MACHINE_FEATURES', 'qti-csm qti-vm', 'update_bash_prompt', '', d)}"
 do_install_append(){
     install -m 755 -o diag -g diag -d ${D}/media
     install -m 755 -o diag -g diag -d ${D}/mnt/sdcard
@@ -48,10 +55,4 @@ do_install_append() {
     else
         install -m 0644 ${WORKDIR}/fstab ${D}${sysconfdir}/fstab
     fi
-
-}
-
-do_install_prepend_trustedvm (){
-   sed -e '/-z "\$PS1"/d' -i ${WORKDIR}/profile
-   sed -i "/# Set the prompt for bash/a [ -z \"\$PS1\" ] || PS1='~ # '" ${WORKDIR}/profile
 }
