@@ -222,4 +222,4 @@ fakeroot do_ramdisk_create() {
         cd ${CURRENT_DIR}
 }
 
-addtask do_ramdisk_create after do_image before do_image_complete
+addtask do_ramdisk_create after do_image before do_makeboot
