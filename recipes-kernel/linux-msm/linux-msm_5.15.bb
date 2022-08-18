@@ -130,7 +130,6 @@ do_prebuilt_configure() {
     cp -R ../../../kernel_platform/msm-kernel/usr/gen_initramfs.sh ${B}/usr
 }
 
-do_prebuilt_shared_workdir[postfuncs] += "do_setup_module_compilation"
 do_prebuilt_shared_workdir[nostamp] = "1"
 do_prebuilt_shared_workdir[cleandirs] += " ${STAGING_KERNEL_BUILDDIR}"
 do_prebuilt_shared_workdir() {
@@ -200,6 +199,7 @@ python () {
         for task in d.getVar('PREBUILT_DISCARDED_TASKS').split():
             d.setVarFlag(task, 'noexec', '1')
         bb.build.addtask('do_prebuilt_configure', 'do_configure', 'do_unpack', d)
+        bb.build.addtask('do_setup_module_compilation', 'do_configure', 'do_unpack', d)
         bb.build.addtask('do_prebuilt_install', 'do_install', 'do_compile', d)
         bb.build.addtask('do_prebuilt_shared_workdir', 'do_compile_kernelmodules', 'do_compile', d)
 }
@@ -225,7 +225,6 @@ do_compile_append() {
 # when using our own module signing key kernel.bbclass will fail to copy the public part of the key
 # since it checks if the .pem file exists which is not the case, so we need to explicitely copy
 # the x509 (public key) file
-do_shared_workdir[postfuncs] += "do_setup_module_compilation"
 do_shared_workdir_append () {
         mkdir -p $kerneldir/certs
         cp certs/signing_key.x509 $kerneldir/certs/
