@@ -110,9 +110,9 @@ do_prebuilt_configure() {
     install -m 0644 ../msm-kernel/Module.symvers ${B}
     install -m 0644 ../msm-kernel/include/config/kernel.release ${B}/include/config/kernel.release
     install -m 0644 ../msm-kernel/scripts/module.lds ${B}/scripts/module.lds
-    install -m 0644 ../msm-kernel/scripts/sign-file ${B}/scripts/sign-file
-    install -m 0644 ../msm-kernel/certs/signing_key.x509 ${B}/certs/signing_key.x509
-    install -m 0644 ../msm-kernel/certs/signing_key.pem ${B}/certs/signing_key.pem
+    install -m 0755 ../msm-kernel/scripts/sign-file ${B}/scripts/sign-file
+    install -m 0755 ../msm-kernel/certs/signing_key.x509 ${B}/certs/signing_key.x509
+    install -m 0755 ../msm-kernel/certs/signing_key.pem ${B}/certs/signing_key.pem
     install -m 0644 ../msm-kernel/include/generated/utsrelease.h ${B}/include/generated
 
     install -d ${B}/${KERNEL_OUTPUT_DIR}
