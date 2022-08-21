@@ -3,6 +3,7 @@ FILESEXTRAPATHS_prepend_sdxlemur := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sa2150p-nand := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sa410m := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sa515m := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend_sa415m := "${THISDIR}/files:"
 
 REQUIRED_DISTRO_FEATURES = ""
 SRC_URI += "\
@@ -74,6 +75,17 @@ VOLATILE_BINDS_sa410m = "\
 "
 
 VOLATILE_BINDS_sa515m = "\
+/systemrw/adb_devid  /etc/adb_devid\n\
+/systemrw/data /etc/data/\n\
+/systemrw/data/adpl /etc/data/adpl/\n\
+/systemrw/data/usb /etc/data/usb/\n\
+/systemrw/data/ipa /etc/data/ipa/\n\
+/systemrw/rt_tables /etc/data/iproute2/rt_tables\n\
+/systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
+/systemrw/boot_hsic_comp /etc/usb/boot_hsic_comp\n\
+"
+
+VOLATILE_BINDS_sa415m = "\
 /systemrw/adb_devid  /etc/adb_devid\n\
 /systemrw/data /etc/data/\n\
 /systemrw/data/adpl /etc/data/adpl/\n\
