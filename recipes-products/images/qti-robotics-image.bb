@@ -32,6 +32,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-qti-gst \
         packagegroup-qti-ml \
         packagegroup-qti-mmframeworks \
+        ${@bb.utils.contains('MACHINE_FEATURES', 'qti-npu', 'packagegroup-qti-npu', '', d)} \
         packagegroup-qti-qmmf \
         packagegroup-qti-robotics \
         packagegroup-qti-securemsm \
