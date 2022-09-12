@@ -17,4 +17,4 @@ if [ -b "/dev/mapper/persist" -a $persistfmt -ne 0 ]; then
 else
     echo "persist already formatted, directly mounting"
 fi
-mount -t ext4 /dev/mapper/persist /persist
+mount -t ext4 /dev/mapper/persist /persist -o rootcontext=system_u:object_r:persist_t:s0
