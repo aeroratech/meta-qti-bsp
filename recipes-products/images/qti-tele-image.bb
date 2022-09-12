@@ -60,6 +60,7 @@ do_merge_dtbs() {
     ${DEPLOY_DIR_IMAGE}/build-artifacts/dtb \
     ${DEPLOY_DIR_IMAGE}/build-artifacts/techpack-dtbos ${DEPLOY_DIR_IMAGE}/dtbs
 }
+do_merge_dtbs[depends] += "virtual/kernel:do_deploy"
 
 do_copy_abl[dirs] = "${DEPLOY_DIR_IMAGE}"
 do_copy_abl() {
