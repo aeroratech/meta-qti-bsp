@@ -81,7 +81,7 @@ do_setup_module_compilation() {
     INSTALL_MODULE_HEADERS=1 \
     ./build/build_module.sh
 }
-addtask do_setup_module_compilation after do_unpack before do_compile
+addtask do_setup_module_compilation after do_copy_kernelbuild before do_deploy
 
 OEMVM_SUPPORT = "${@d.getVar('MACHINE_SUPPORTS_OEMVM') or "False"}"
 do_deploy () {
