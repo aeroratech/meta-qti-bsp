@@ -19,9 +19,9 @@ sign_strip_module() {
 
 do_strip_and_sign_dlkm() {
     module_path="$1"
-    signonly="${2:-false}"
+    enable_debug_symbols="${2:-false}"
 
-    if [ ! $signonly ] ; then
+    if [ $enable_debug_symbols == "false" ]; then
         #strip debug symbols
        ${STAGING_DIR_NATIVE}/usr/libexec/aarch64-oe-linux/gcc/aarch64-oe-linux/9.3.0/strip --strip-debug ${module_path}
     fi
