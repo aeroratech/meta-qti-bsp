@@ -72,6 +72,7 @@ VOLATILE_BINDS_sa410m = "\
 /systemrw/rt_tables /etc/data/iproute2/rt_tables\n\
 /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
 /systemrw/boot_hsic_comp /etc/usb/boot_hsic_comp\n\
+/systemrw/c2c /etc/c2c/\n\
 "
 
 VOLATILE_BINDS_sa515m = "\
@@ -83,6 +84,7 @@ VOLATILE_BINDS_sa515m = "\
 /systemrw/rt_tables /etc/data/iproute2/rt_tables\n\
 /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
 /systemrw/boot_hsic_comp /etc/usb/boot_hsic_comp\n\
+/systemrw/c2c /etc/c2c/\n\
 "
 
 VOLATILE_BINDS_sa415m = "\
