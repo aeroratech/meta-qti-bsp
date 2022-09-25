@@ -43,6 +43,15 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa410m = "\
        packagegroup-qti-telsdk \
 "
 
+# Following packages will be enabled later
+CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
+       packagegroup-qti-core packagegroup-qti-ss-mgr \
+       packagegroup-qti-telsdk subsystem-ramdump \
+       qmi-shutdown-modem modem-shutdown packagegroup-android-utils \
+       packagegroup-qti-internal packagegroup-qti-security-test \
+       packagegroup-startup-scripts packagegroup-support-utils \
+"
+
 python () {
     if d.getVar('PREFERRED_VERSION_linux-msm') == "5.15":
         bb.build.addtask('do_merge_dtbs', 'do_makeboot', 'do_makesystem', d)
