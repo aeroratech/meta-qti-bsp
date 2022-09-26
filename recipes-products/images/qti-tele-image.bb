@@ -39,7 +39,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
 
 # Following packages will be enabled later
 CORE_IMAGE_EXTRA_INSTALL_remove_sa410m = "\
-       packagegroup-qti-ss-mgr \
        qmi-shutdown-modem \
        packagegroup-qti-telsdk \
 "
