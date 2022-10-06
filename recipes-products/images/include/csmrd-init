@@ -328,6 +328,14 @@ case $fstab_suffix in
             start_rdshell
         fi
 
+        # Configure mhi_swipe1 interface for QDU Mplane App - OEM OAM App
+        OAM_HOST_ADDR="192.168.1.200"
+        MPLANE_ADDR="192.168.1.201"
+        MPLANE_INTERFACE="mhi_swip1"
+        config_interface "$MPLANE_INTERFACE" "$MPLANE_ADDR" "$OAM_HOST_ADDR"
+        if [ "$?" -ne 0 ]; then
+            echo "Failed to config interface: $MPLANE_INTERFACE"
+        fi
         # Create /etc/nbdtab and nbd-client connect remote nbdkit
         do_nbdtab "$HOST_ADDR"
         ;;
