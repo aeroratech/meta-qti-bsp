@@ -29,10 +29,8 @@ KERNEL_VARIANT = ""
 KERNEL_VARIANT_qti-distro-debug = "debug_"
 KERNEL_VARIANT_qti-distro-perf = "perf_"
 
-MACHINE_SUPPORTS_DTBO = "False"
-DTBO_DTB_NAMES        = "vendor/qcom/sa410m.dtb"
-NON_DTBO_DTB_NAMES    = "dtbs/dtb.img"
-KERNEL_DTB_NAMES      = "${@bb.utils.contains('MACHINE_SUPPORTS_DTBO', 'True', "${DTBO_DTB_NAMES}", "${NON_DTBO_DTB_NAMES}", d)}"
+MACHINE_SUPPORTS_DTBO = "True"
+KERNEL_DTB_NAMES      = "dtbs/dtb.img"
 
 MACHINE_USES_KERNEL_PREBUILTS = "True"
 KERNEL_PREBUILT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa410m_auto-${KERNEL_VARIANT}defconfig/dist"
