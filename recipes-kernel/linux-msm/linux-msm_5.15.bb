@@ -128,6 +128,9 @@ do_prebuilt_configure() {
     cp -R ../msm-kernel/usr/initramfs_inc_data ${B}/usr
     # gen_initramfs.sh is present in kernel source
     cp -R ../../../kernel_platform/msm-kernel/usr/gen_initramfs.sh ${B}/usr
+
+    install -d ${B}/${KERNEL_OUTPUT_DIR}/dts/vendor/qcom
+    cp -fR ../msm-kernel/arch/${ARCH}/boot/dts/vendor/qcom/* ${B}/${KERNEL_OUTPUT_DIR}/dts/vendor/qcom
 }
 
 do_prebuilt_shared_workdir[nostamp] = "1"
@@ -157,6 +160,11 @@ do_prebuilt_shared_workdir() {
     install -m 0644 include/config/kernel.release $kerneldir/include/config/kernel.release
     if [ -e "${B}/scripts/module.lds" ]; then
         install -m 0644 ${B}/scripts/module.lds ${STAGING_KERNEL_BUILDDIR}/scripts/module.lds
+    fi
+
+    if [ -d arch/${ARCH}/boot ]; then
+        mkdir -p $kerneldir/arch/${ARCH}/boot/
+        cp -fR arch/${ARCH}/boot/* $kerneldir/arch/${ARCH}/boot/
     fi
 }
 
