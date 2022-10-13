@@ -270,13 +270,10 @@ do_deploy() {
     install -m 0644 vmlinux ${DEPLOYDIR}
     install -m 0644 System.map ${DEPLOYDIR}
 
-    # copy dtbo files into deplydir and create dtbo.img if DTBO support enable
+    # Copy dtbo files into deploydir
     if [  "${DTBO_MACHINE}" == "True" ]; then
-        install -m 0644 ${DTBO_SRC_PATH}/*.dtbo ${DEPLOYDIR}
-        mkdtimg create ${DEPLOYDIR}/dtbo.img \
-             --page_size=${PAGE_SIZE} \
-             ${DEPLOYDIR}/*.dtbo
-
+        install -d ${DEPLOYDIR}/DTOverlays
+        install -m 0644 ${DTBO_SRC_PATH}/*.dtbo ${DEPLOYDIR}/DTOverlays
     fi
 
     # copy initramfs scripts
