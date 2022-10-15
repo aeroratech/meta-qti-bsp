@@ -363,6 +363,38 @@ mhi_ch_close() {
     return 0
 }
 
+MHI_CH_RETRIES=30
+# wait_for_mhi_ch - Waits on and opens a mhi channel to send/recv messages
+# @MHI_CH:  Path to mhi channel
+# @RETRIES: (optional) Retry count to open MHI_CH; default MHI_CH_RETRIES
+#
+# Returns 0 if MHI_CH was found and opened
+wait_for_mhi_ch() {
+    local MHI_CH="$1"
+    local RETRIES="$2"
+
+    if [ -z "$RETRIES" ]; then
+        RETRIES="$MHI_CH_RETRIES"
+    fi
+
+    mhi_ch_open $MHI_CH
+    ret="$?"
+
+    while [ "$ret" -ne 0 ]; do
+        if [ "$RETRIES" -le 0 ]; then
+           echo "Timeout waiting for $MHI_CH" >&2
+           return 1
+        fi
+        echo "Waiting on $MHI_CH..." >&2
+        sleep 1
+        (( RETRIES -= 1 ))
+        mhi_ch_open $MHI_CH
+        ret="$?"
+    done
+
+    return 0
+}
+
 config_interface()
 {
     LOCAL_INTERFACE="$1"
@@ -386,9 +418,6 @@ config_interface()
 
     # Configure route
     ip route add $REMOTE_ADDR via $LOCAL_ADDR
-
-    sleep 2
-
     return 0
 }
 
@@ -494,9 +523,45 @@ case $fstab_suffix in
         insmod /lib/modules/gsim.ko
         insmod /lib/modules/ecpri_dmam.ko
 
+        CTRL_DEV="/dev/mhi_pipe_16"
+        wait_for_mhi_ch $CTRL_DEV
+        ret="$?"
+        if [ "$ret" -ne 0 ]; then
+            start_rdshell
+        fi
+
+        echo "Sending sync message"
+        mhi_ch_sendmsg $CTRL_DEV START
+        ret="$?"
+        if [ "$ret" -ne 0 ]; then
+            echo "Could not send START"
+            start_rdshell
+        fi
+
+        echo "Waiting for config"
+        config_string="$(mhi_ch_recvmsg $CTRL_DEV 30)"
+        if [ -z "$config_string" ]; then
+            echo "Could not receive config from Host"
+            start_rdshell
+        fi
+
+        echo "Received config: $config_string"
+        HOST_ADDR=$(echo $config_string | cut -d' ' -f1)
+        LOCAL_ADDR=$(echo $config_string | cut -d' ' -f2)
+
+        mhi_ch_sendmsg $CTRL_DEV "Config received '$HOST_ADDR' '$LOCAL_ADDR'"
+        ret="$?"
+        if [ "$ret" -ne 0 ]; then
+            echo "Failed to send message"
+        fi
+
+        mhi_ch_close $CTRL_DEV
+        ret="$?"
+        if [ "$ret" -ne 0 ]; then
+            echo "Could not close $CTRL_DEV"
+        fi
+
         # Static IP
-        HOST_ADDR="192.168.1.172"
-        LOCAL_ADDR="192.168.1.173"
         LOCAL_INTERFACE="mhi_swip0"
         config_interface "$LOCAL_INTERFACE" "$LOCAL_ADDR" "$HOST_ADDR"
         if [ "$?" -ne 0 ]; then
