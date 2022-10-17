@@ -6,6 +6,10 @@ counter=0
 while [ ! -e /dev/mapper/persist ]; do
     counter=$((counter + 1))
     sleep 0.1
+    if [ $counter -gt 100 ]; then
+        echo "/dev/mapper/persist not found after 10 seconds"
+        exit 1
+    fi
 done
 counter=$((counter * 100))
 echo "/dev/mapper/persist ready, time = $counter ms"
@@ -14,6 +18,7 @@ blkid /dev/mapper/persist | grep "/dev/mapper/persist"
 persistfmt=$?
 if [ -b "/dev/mapper/persist" -a $persistfmt -ne 0 ]; then
     mkfs.ext4 /dev/mapper/persist
+    sync
 else
     echo "persist already formatted, directly mounting"
 fi
