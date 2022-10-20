@@ -44,7 +44,7 @@ DEFAULT_ENFORCING = "permissive"
 # qti-location:           Machine supports Location solution
 # qti-data-modem:         Machine supports QTI data modem solution
 
-MACHINE_FEATURES += "qti-sdx dm-verity-none"
+MACHINE_FEATURES += "qti-sdx dm-verity-none qti-sensors"
 
 MACHINE_MNT_POINTS = " \
     /dsp \
