@@ -1,0 +1,15 @@
+[Unit]
+SourcePath=/usr/bin/cryptinit.sh
+Description=SW Encryption Service
+After=letzd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Restart=no
+Nice=-20
+ExecStart=/usr/bin/cryptinit.sh
+ExecStop=/usr/bin/cryptshutdown.sh
+
+[Install]
+WantedBy=multi-user.target

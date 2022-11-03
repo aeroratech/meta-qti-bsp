@@ -32,134 +32,134 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 err() {
-	echo "<3>$*" > /dev/kmsg
+    echo "<3>$*" > /dev/kmsg
 }
 warn() {
-	echo "<4>$*" > /dev/kmsg
+    echo "<4>$*" > /dev/kmsg
 }
 notice() {
-	echo "<5>$*" > /dev/kmsg
+    echo "<5>$*" > /dev/kmsg
 }
 info() {
-	echo "<6>$*" > /dev/kmsg
+    echo "<6>$*" > /dev/kmsg
 }
 
 extract_bootconfig() {
-	sed -n 's/^'"$1"' = "\(.*\)"$/\1/p' /proc/bootconfig
+    sed -n 's/^'"$1"' = "\(.*\)"$/\1/p' /proc/bootconfig
 }
 extract_cmdline() {
-	sed -e 's/ /\n/g' /proc/cmdline | sed -n 's/^'"$1"'=\(.*\)$/\1/p'
+    sed -e 's/ /\n/g' /proc/cmdline | sed -n 's/^'"$1"'=\(.*\)$/\1/p'
 }
 extract_config() {
-	local res="$(extract_cmdline $1)"
-	[ -z "$res" ] && res="$(extract_bootconfig $1)"
-	echo $res
+    local res="$(extract_cmdline $1)"
+    [ -z "$res" ] && res="$(extract_bootconfig $1)"
+    echo $res
 }
 
 start_adbd()
 {
-	echo "start_adbd: setting up device for adbd"
-	# get soc platform
-	if [ -f /sys/devices/soc0/machine ]; then
-		socplatform=`cat /sys/devices/soc0/machine` 2> /dev/null
-	elif [ -f /sys/devices/system/soc/soc0/machine ]; then
-		socplatform=`cat /sys/devices/system/soc/soc0/machine` 2> /dev/null
-	else
-		socplatform=$(uname -r | cut -d "-" -f1-4)
-	fi
-	echo "start_adbd: soc: $socplatform"
+    echo "start_adbd: setting up device for adbd"
+    # get soc platform
+    if [ -f /sys/devices/soc0/machine ]; then
+        socplatform=`cat /sys/devices/soc0/machine` 2> /dev/null
+    elif [ -f /sys/devices/system/soc/soc0/machine ]; then
+        socplatform=`cat /sys/devices/system/soc/soc0/machine` 2> /dev/null
+    else
+        socplatform=$(uname -r | cut -d "-" -f1-4)
+    fi
+    echo "start_adbd: soc: $socplatform"
 
-	# find serialno from cmdline
-	serialno="$(extract_config "androidboot.serialno")"
-	echo "$serialno" | grep -qv "[^A-Za-z0-9]"
-	valid_serial=$?
-	if [ -z "$serialno" -o $valid_serial -ne 0 ]; then
-		echo "start_adbd: serialno not found with cmdline or bootconfig, using default value"
-		serialno="12345678"
-	fi
+    # find serialno from cmdline
+    serialno="$(extract_config "androidboot.serialno")"
+    echo "$serialno" | grep -qv "[^A-Za-z0-9]"
+    valid_serial=$?
+    if [ -z "$serialno" -o $valid_serial -ne 0 ]; then
+        echo "start_adbd: serialno not found with cmdline or bootconfig, using default value"
+        serialno="12345678"
+    fi
 
-	echo "start_adbd: serialno: $serialno"
-	mount -t configfs configfs /sys/kernel/config
-	if [ -d /sys/kernel/config/usb_gadget ]; then
-		notice "start_adbd: Configuring the USB gadget using ConfigFS"
-		cd /sys/kernel/config/usb_gadget
-		mkdir g1
-		cd g1
-		mkdir strings/0x409
-		mkdir configs/c.1
-		mkdir configs/c.1/strings/0x409
-		mkdir functions/ffs.adb
+    echo "start_adbd: serialno: $serialno"
+    mount -t configfs configfs /sys/kernel/config
+    if [ -d /sys/kernel/config/usb_gadget ]; then
+        notice "start_adbd: Configuring the USB gadget using ConfigFS"
+        cd /sys/kernel/config/usb_gadget
+        mkdir g1
+        cd g1
+        mkdir strings/0x409
+        mkdir configs/c.1
+        mkdir configs/c.1/strings/0x409
+        mkdir functions/ffs.adb
 
-		echo "$serialno" > strings/0x409/serialnumber
-		echo "QCOM" > strings/0x409/manufacturer
-		echo "$socplatform" > strings/0x409/product
-		echo 0x18d1 > /sys/kernel/config/usb_gadget/g1/idVendor
-		echo 0x4EE7 > /sys/kernel/config/usb_gadget/g1/idProduct
-		echo "ADB" > configs/c.1/strings/0x409/configuration
-	else
-		notice "start_adbd: Configuring the USB gadget using legacy method"
-		cd /sys/class/android_usb/android0/
-		echo 0 > enable
-		echo 05C6 > idVendor
-		echo 901D > idProduct
-		echo "$serialno" > iSerial
-		echo "QCOM" > iManufacturer
-		echo "$socplatform" > iProduct
-		echo diag > f_diag/clients
-		echo diag,ffs > functions
-		echo 1 > enable
-	fi
-	cd /
+        echo "$serialno" > strings/0x409/serialnumber
+        echo "QCOM" > strings/0x409/manufacturer
+        echo "$socplatform" > strings/0x409/product
+        echo 0x18d1 > /sys/kernel/config/usb_gadget/g1/idVendor
+        echo 0x4EE7 > /sys/kernel/config/usb_gadget/g1/idProduct
+        echo "ADB" > configs/c.1/strings/0x409/configuration
+    else
+        notice "start_adbd: Configuring the USB gadget using legacy method"
+        cd /sys/class/android_usb/android0/
+        echo 0 > enable
+        echo 05C6 > idVendor
+        echo 901D > idProduct
+        echo "$serialno" > iSerial
+        echo "QCOM" > iManufacturer
+        echo "$socplatform" > iProduct
+        echo diag > f_diag/clients
+        echo diag,ffs > functions
+        echo 1 > enable
+    fi
+    cd /
 
-	echo "start_adbd: Configuring FunctionFS endpoints for adbd"
-	if [ ! -d /dev/usb-ffs/adb ]; then
-	mkdir -p /dev/usb-ffs/adb
-	fi
-	if [ ! -e /dev/usb-ffs/adb/ep0 ]; then
-	mount -o uid=2000,gid=2000 -t functionfs adb /dev/usb-ffs/adb
-	fi
+    echo "start_adbd: Configuring FunctionFS endpoints for adbd"
+    if [ ! -d /dev/usb-ffs/adb ]; then
+    mkdir -p /dev/usb-ffs/adb
+    fi
+    if [ ! -e /dev/usb-ffs/adb/ep0 ]; then
+    mount -o uid=2000,gid=2000 -t functionfs adb /dev/usb-ffs/adb
+    fi
 
-	echo "start_adbd: Launching adbd"
-	/sbin/adbd &
+    echo "start_adbd: Launching adbd"
+    /sbin/adbd &
 
-	if [ -d /sys/kernel/config/usb_gadget/g1 ]; then
-		cd /sys/kernel/config/usb_gadget/g1
-		sleep 1
-		ln -s functions/ffs.adb configs/c.1/f1
-		echo 0x80 > configs/c.1/bmAttributes
+    if [ -d /sys/kernel/config/usb_gadget/g1 ]; then
+        cd /sys/kernel/config/usb_gadget/g1
+        sleep 1
+        ln -s functions/ffs.adb configs/c.1/f1
+        echo 0x80 > configs/c.1/bmAttributes
 
-		udcname=`ls -1 /sys/bus/platform/devices/ | grep ssusb | head -n 1`
+        udcname=`ls -1 /sys/bus/platform/devices/ | grep ssusb | head -n 1`
 
-		# Force USB to be in peripheral mode in case cable plug detection
-		# is not working or not enabled.
-		# This assumes we are using "dwc3/ssusb" based USB devices.
-		#    e.g. a600000.dwc3 -> a600000.ssusb
-		echo peripheral > /sys/bus/platform/devices/${udcname}/mode
+        # Force USB to be in peripheral mode in case cable plug detection
+        # is not working or not enabled.
+        # This assumes we are using "dwc3/ssusb" based USB devices.
+        #    e.g. a600000.dwc3 -> a600000.ssusb
+        echo peripheral > /sys/bus/platform/devices/${udcname}/mode
 
-		echo "start_adbd: waiting for USB device..."
-		i=1
-		while [ $i -lt 60 ]
-		do
-			udcname=`ls -1 /sys/class/udc | grep -v dummy_udc | head -n 1`
-			if [ -n "$udcname" ]; then
-				break
-			fi
-			sleep 1
-			((i=i+1))
-		done
+        echo "start_adbd: waiting for USB device..."
+        i=1
+        while [ $i -lt 60 ]
+        do
+            udcname=`ls -1 /sys/class/udc | grep -v dummy_udc | head -n 1`
+            if [ -n "$udcname" ]; then
+                break
+            fi
+            sleep 1
+            ((i=i+1))
+        done
 
-		if [ -z "$udcname" ]; then
-			echo "start_adbd: UDC didn't come up, won't be able to connect to adbd"
-		fi
+        if [ -z "$udcname" ]; then
+            echo "start_adbd: UDC didn't come up, won't be able to connect to adbd"
+        fi
 
-		echo "start_adbd: binding $udcname with gadget"
-		echo $udcname > UDC
-		cd /
+        echo "start_adbd: binding $udcname with gadget"
+        echo $udcname > UDC
+        cd /
 
-		echo "start_adbd: adbd successfully launched"
-	else
-		echo "start_adbd: USB gadget didn't get created /sys/kernel/config/usb_gadget/g1"
-	fi
+        echo "start_adbd: adbd successfully launched"
+    else
+        echo "start_adbd: USB gadget didn't get created /sys/kernel/config/usb_gadget/g1"
+    fi
 }
 
 start_rdshell()
@@ -187,6 +187,214 @@ start_rdshell()
     exec /bin/mksh
 }
 
+# ctrl_msg_send - Send a string over an mhi channel
+# @FILE:  file descriptor of an open mhi channel
+# @MSG: message to send
+#
+# Returns 0 on success
+mhi_ch_sendmsg() {
+    local MHI_CH="$1"
+    shift 1
+    local MSG="$*"
+    local ch_fd=$(get_mhi_ch_fd $MHI_CH)
+
+    if [ -z "$ch_fd" ]; then
+        echo "MHI channel $MHI_CH is not open" >&2
+        return 1
+    fi
+
+    eval "echo $MSG >&$ch_fd"
+    ret="$?"
+    if [ "$ret" -ne 0 ]; then
+        echo "Failed to send on $MHI_CH" >&2
+    fi
+
+    return $ret
+}
+
+MHI_RECV_TIMEOUT=10
+# mhi_ch_recvmsg - Receive a single string over an mhi channel
+# @MHI_CH:  Path to mhi channel
+# @TIMEOUT: (optional) Seconds to receive message in seconds; default MHI_RECV_TIMEOUT
+#
+# Return 0 if messages was receieved
+# If received, received message is printed
+mhi_ch_recvmsg() {
+    local MHI_CH="$1"
+    local TIMEOUT="$2"
+    local ch_fd=$(get_mhi_ch_fd $MHI_CH)
+
+    if [ -z "$ch_fd" ]; then
+        echo "MHI channel $MHI_CH is not open" >&2
+        return 1
+    fi
+
+    local ctrl_fd="${READ_FD[$ch_fd]}"
+    if [ -z "$ctrl_fd" ]; then
+        echo "Read file desc is not open" >&2
+        return 1
+    fi
+
+    if [ -z "$TIMEOUT" ]; then
+        TIMEOUT="$MHI_RECV_TIMEOUT"
+    fi
+
+    IFS= read -u$ctrl_fd -t $TIMEOUT -r line
+    ret="$?"
+    if [ "$ret" -ne 0 ]; then
+        echo "Failed to receive on $MHI_CH" >&2
+        return $ret
+    fi
+
+    echo $line
+
+    return $ret
+}
+
+# get_mhi_ch_fd - Find an file descriptor associated with an mhi channel
+# @MHI_CH: Path to mhi channel
+#
+# Returns 0 if a file descriptor was found
+# If found, assigned file descriptor for MHI_CH is printed
+get_mhi_ch_fd() {
+    local MHI_CH="$1"
+
+    for i in ${!MHI_CH_FD[@]}; do
+        if [ "${MHI_CH_FD[$i]}" = "$MHI_CH" ]; then
+            echo $i
+            return 0
+        fi
+    done
+
+    for open_fd in $(ls -d /proc/$$/fd/*); do
+        open_file="$(readlink $open_fd)"
+        if [ "$open_file" = "$MHI_CH" ]; then
+            ch_fd=$(basename $open_fd)
+            echo "$ch_fd"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# get_new_fd - Locates and prints a new file descriptor
+get_new_fd() {
+    local ch_fd=0
+    while [ -e "/proc/$$/fd/$ch_fd" ]; do
+        (( ch_fd += 1 ))
+    done
+    echo $ch_fd
+}
+
+# mhi_ch_open - Open an mhi channel as read/write
+# @MHI_CH: Path to mhi channel
+#
+# Returns 0 if MHI_CH was successfully opened
+mhi_ch_open() {
+    local MHI_CH="$1"
+    local ch_fd=0
+
+    if [ ! -e "$MHI_CH" ]; then
+        return 1
+    fi
+
+    ch_fd="$(get_mhi_ch_fd $MHI_CH)"
+    if [ ! -z "$ch_fd" ]; then
+        return 0
+    fi
+
+    ch_fd=$(get_new_fd)
+    eval "exec $ch_fd<>$MHI_CH" 2>/dev/null
+    ret="$?"
+    if [ "$ret" -ne 0 ]; then
+        echo "Could not open $MHI_CH" >&2
+        return $ret
+    fi
+
+    cat - <&"$ch_fd" |&
+    READ_PID[$ch_fd]="$!"
+
+    ch_rfd=$(get_new_fd)
+    eval "exec $ch_rfd<&p" 2>/dev/null
+    ret="$?"
+    if [ "$ret" -ne 0 ]; then
+        echo "Error opening read process" >&2
+        return $ret
+    fi
+    READ_FD[$ch_fd]="$ch_rfd"
+
+    echo "Opened $MHI_CH" >&2
+    MHI_CH_FD[$ch_fd]="$MHI_CH"
+    return 0
+}
+
+# mhi_ch_close - Close an open mhi channel
+# @MHI_CH: Path to mhi channel
+#
+# Returns 0 if file descriptor was able to close
+mhi_ch_close() {
+    local MHI_CH="$1"
+    local ch_fd=$(get_mhi_ch_fd $MHI_CH)
+
+    if [ -z "$ch_fd" ]; then
+        echo "MHI channel $MHI_CH is not open" >&2
+        return 1
+    fi
+
+    if [ ! -z "${READ_PID[$ch_fd]}" ]; then
+        kill "${READ_PID[$ch_fd]}"
+        READ_PID[$ch_fd]=""
+    fi
+
+    if [ ! -z "${READ_FD[$ch_fd]}" ]; then
+        eval "exec ${READ_FD[$ch_fd]}>&-"
+        READ_FD[$ch_fd]=""
+    fi
+
+    eval "exec $ch_fd>&-"
+    ret="$?"
+    if [ "$ret" -ne 0 ]; then
+        echo "Could not close <$ch_fd>" >&2
+        return $ret
+    fi
+    echo "Closed $MHI_CH" >&2
+
+    MHI_CH_FD[$ch_fd]=""
+    return 0
+}
+
+MHI_CH_RETRIES=30
+# wait_for_mhi_ch - Waits on and opens a mhi channel to send/recv messages
+# @MHI_CH:  Path to mhi channel
+# @RETRIES: (optional) Retry count to open MHI_CH; default MHI_CH_RETRIES
+#
+# Returns 0 if MHI_CH was found and opened
+wait_for_mhi_ch() {
+    local MHI_CH="$1"
+    local RETRIES="$2"
+
+    if [ -z "$RETRIES" ]; then
+        RETRIES="$MHI_CH_RETRIES"
+    fi
+
+    mhi_ch_open $MHI_CH
+    ret="$?"
+
+    while [ "$ret" -ne 0 ]; do
+        if [ "$RETRIES" -le 0 ]; then
+           echo "Timeout waiting for $MHI_CH" >&2
+           return 1
+        fi
+        echo "Waiting on $MHI_CH..." >&2
+        sleep 1
+        (( RETRIES -= 1 ))
+        mhi_ch_open $MHI_CH
+        ret="$?"
+    done
+
+    return 0
+}
+
 config_interface()
 {
     LOCAL_INTERFACE="$1"
@@ -210,9 +418,6 @@ config_interface()
 
     # Configure route
     ip route add $REMOTE_ADDR via $LOCAL_ADDR
-
-    sleep 2
-
     return 0
 }
 
@@ -242,22 +447,33 @@ do_mounts()
 
 do_mounts
 
+# do_nbdtab - create nbd tab and negotiate images on nbd blocks. Then mount systemfs ans switch root
+# @1:  HOST_ADDR
+# @2:  MHI Channel no
+#
 do_nbdtab()
 {
-# Create nbd-server config
-echo "nbd0 $1 system.img.raw persist" > /etc/nbdtab
-echo "nbd1 $1 systemrw.img.raw  persist" >> /etc/nbdtab
-echo "nbd2 $1 persist.img.raw  persist" >> /etc/nbdtab
-echo "nbd3 $1 userdata.img.raw  persist" >> /etc/nbdtab
-echo "nbd4 $1 cache.img.raw  persist" >> /etc/nbdtab
-echo "nbd5 $1 NON-HLOS.bin persist" >> /etc/nbdtab
+    portno="$(( 10809 + $2 ))"
+    # Create nbd-server config
+    echo "nbd0 $1 system.img.raw persist" > /etc/nbdtab
+    echo "nbd1 $1 systemrw.img.raw  persist" >> /etc/nbdtab
+    echo "nbd2 $1 persist.img.raw  persist" >> /etc/nbdtab
+    echo "nbd3 $1 userdata.img.raw  persist" >> /etc/nbdtab
+    echo "nbd4 $1 cache.img.raw  persist" >> /etc/nbdtab
+    echo "nbd5 $1 NON-HLOS.bin persist" >> /etc/nbdtab
 
-    /usr/sbin/nbd nbd0 # connect remote system.img
-    /usr/sbin/nbd nbd1 # connect remote systemrw.img
-    /usr/sbin/nbd nbd2 # connect remote persist.img
-    /usr/sbin/nbd nbd3 # connect remote userdata.img
-    /usr/sbin/nbd nbd4 # connect remote cache.img
-    /usr/sbin/nbd nbd5 # connect NON-HLOS
+    nbdclient nbd0 $portno # connect remote system.img
+    nbdclient nbd1 $portno # connect remote systemrw.img
+    nbdclient nbd2 $portno # connect remote persist.img
+    nbdclient nbd3 $portno # connect remote userdata.img
+    nbdclient nbd4 $portno # connect remote cache.img
+    nbdclient nbd5 $portno # connect NON-HLOS
+
+    # if nbd negotiation fails, drop to ramdsik
+    if [ "$?" -ne 0 ]; then
+        echo "NBD connection failed. Fall back to ramdisk shell for debugging"
+        start_rdshell
+    fi
 
     # mount system.img
     mnt_dir="/mnt/system"
@@ -280,7 +496,7 @@ echo "nbd5 $1 NON-HLOS.bin persist" >> /etc/nbdtab
 
 fstab_suffix="$(extract_config androidboot.fstab_suffix)"
 if [ -z "$fstab_suffix" ]; then
-    echo "No boot suffix detected, using default"
+    echo "No boot suffix detected, using default for flashless"
     fstab_suffix="default"
 else
     echo "Detected boot from: $fstab_suffix"
@@ -289,15 +505,25 @@ fi
 case $fstab_suffix in
     emmc)
         partition="$(extract_config root)"
-        if [ -e "$partition" ]; then
-            mnt_dir="/mnt/system"
-            mkdir -p $mnt_dir
-            mount -o ro $partition $mnt_dir
+        ## wait for system partition for 60sec
+        timeout=60
+        while [ ! -e "$partition" ]; do
+            echo "Waiting for $partition."
+            sleep 1
+            ((timeout -= 1))
+            if [ "$timeout" -le 0 ]; then
+                echo "$partition not available"
+                start_rdshell
+            fi
+        done
+        #mount system partition
+        mnt_dir="/mnt/system"
+        mkdir -p $mnt_dir
+        mount -o ro $partition $mnt_dir
 
-            umount /sys/kernel/debug /sys /proc /dev
-            echo "Switching to system partition on $partition"
-            exec /bin/switch_root -c /dev/console $mnt_dir /sbin/init
-        fi
+        umount /sys/kernel/debug /sys /proc /dev
+        echo "Switching to system partition on $partition"
+        exec /bin/switch_root -c /dev/console $mnt_dir /sbin/init
         ;;
     default)
         # default --> flashless
@@ -308,18 +534,62 @@ case $fstab_suffix in
         insmod /lib/modules/gsim.ko
         insmod /lib/modules/ecpri_dmam.ko
 
+        CTRL_DEV="/dev/mhi_pipe_16"
+        wait_for_mhi_ch $CTRL_DEV
+        ret="$?"
+        if [ "$ret" -ne 0 ]; then
+            start_rdshell
+        fi
+
+        echo "Sending sync message"
+        mhi_ch_sendmsg $CTRL_DEV START
+        ret="$?"
+        if [ "$ret" -ne 0 ]; then
+            echo "Could not send START"
+            start_rdshell
+        fi
+
+        echo "Waiting for config"
+        config_string="$(mhi_ch_recvmsg $CTRL_DEV 30)"
+        if [ -z "$config_string" ]; then
+            echo "Could not receive config from Host"
+            start_rdshell
+        fi
+
+        echo "Received config: $config_string"
+
+        mhi_ch_sendmsg $CTRL_DEV "Config received '$HOST_ADDR' '$LOCAL_ADDR'"
+        ret="$?"
+        if [ "$ret" -ne 0 ]; then
+            echo "Failed to send message"
+        fi
+
+        mhi_ch_close $CTRL_DEV
+        ret="$?"
+        if [ "$ret" -ne 0 ]; then
+            echo "Could not close $CTRL_DEV"
+        fi
+
         # Static IP
-        HOST_ADDR="192.168.1.172"
-        LOCAL_ADDR="192.168.1.173"
         LOCAL_INTERFACE="mhi_swip0"
+        HOST_ADDR="192.200.100.$config_string"
+        LOCAL_ADDR="192.200.101.$config_string"
         config_interface "$LOCAL_INTERFACE" "$LOCAL_ADDR" "$HOST_ADDR"
         if [ "$?" -ne 0 ]; then
             echo "Failed to config interface: $LOCAL_INTERFACE"
             start_rdshell
         fi
 
+        # Configure mhi_swipe1 interface for QDU Mplane App - OEM OAM App
+        OAM_HOST_ADDR="192.200.102.$config_string"
+        MPLANE_ADDR="192.200.103.$config_string"
+        MPLANE_INTERFACE="mhi_swip1"
+        config_interface "$MPLANE_INTERFACE" "$MPLANE_ADDR" "$OAM_HOST_ADDR"
+        if [ "$?" -ne 0 ]; then
+            echo "Failed to config interface: $MPLANE_INTERFACE"
+        fi
         # Create /etc/nbdtab and nbd-client connect remote nbdkit
-        do_nbdtab "$HOST_ADDR"
+        do_nbdtab $HOST_ADDR $config_string
         ;;
     rdshell)
         echo "Starting ramdisk shell"

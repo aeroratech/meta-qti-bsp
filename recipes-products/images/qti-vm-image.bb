@@ -8,11 +8,14 @@ ENABLE_SECUREMSM = "${@d.getVar('MACHINE_SUPPORTS_SECUREMSM') or "True"}"
 
 CORE_IMAGE_EXTRA_INSTALL += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'packagegroup-selinux-minimal', '', d)} \
-    packagegroup-startup-scripts \
+    post-boot \
+    sdcard-scripts-automount \
     e2fsprogs-mke2fs \
-    powerapp \
     procrank \
+    powerapp \
 "
+
+CORE_IMAGE_EXTRA_INSTALL += " ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-persist', 'packagegroup-qti-encryption', '', d)}"
 CORE_IMAGE_EXTRA_INSTALL += " ${@oe.utils.conditional('ENABLE_DISPLAY', 'True', 'packagegroup-qti-display', '', d)}"
 CORE_IMAGE_EXTRA_INSTALL += " ${@oe.utils.conditional('ENABLE_TOUCH', 'True', 'packagegroup-qti-touch', '', d)}"
 CORE_IMAGE_EXTRA_INSTALL += " ${@oe.utils.conditional('ENABLE_SECUREMSM', 'True', 'packagegroup-qti-securemsm', '', d)}"

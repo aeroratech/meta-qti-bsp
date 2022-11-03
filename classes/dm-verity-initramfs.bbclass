@@ -52,7 +52,7 @@ append_verity_metadata_to_system_image () {
 
     # Sign the root hash
     echo -n "${root_hash}" > ${WORKDIR}/roothash.txt
-    openssl smime -sign -nocerts -noattr -binary -in ${WORKDIR}/roothash.txt -inkey ${STAGING_KERNEL_BUILDDIR}/certs/verity_key.pem -signer ${STAGING_KERNEL_BUILDDIR}/certs/verity_cert.pem -outform der -out ${WORKDIR}/verity_sig.txt
+    openssl smime -sign -nocerts -noattr -binary -in ${WORKDIR}/roothash.txt -inkey ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/verity_key.pem -signer ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/verity_cert.pem -outform der -out ${WORKDIR}/verity_sig.txt
 
     # Clean up large files that are no longer needed
     rm ${VERITY_HASH_DEVICE}

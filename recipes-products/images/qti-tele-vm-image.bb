@@ -1,19 +1,19 @@
 inherit qimage qramdisk
 
-DEPENDS += " virtual/kernel"
+DEPENDS += "virtual/kernel"
 
-#ENABLE_DISPLAY = "${@d.getVar('MACHINE_SUPPORTS_DISPLAY') or "True"}"
 ENABLE_SECUREMSM = "${@d.getVar('MACHINE_SUPPORTS_SECUREMSM') or "True"}"
 
 CORE_IMAGE_EXTRA_INSTALL += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'packagegroup-selinux-minimal', '', d)} \
     packagegroup-startup-scripts \
     e2fsprogs-mke2fs \
+    ${@oe.utils.conditional('ENABLE_SECUREMSM', 'True', 'packagegroup-qti-securemsm', '', d)} \
 "
-CORE_IMAGE_EXTRA_INSTALL += " ${@oe.utils.conditional('ENABLE_SECUREMSM', 'True', 'packagegroup-qti-securemsm', '', d)}"
 
-#Exclude packages
+# Exclude packages
 PACKAGE_EXCLUDE += "readline"
+
 ROOTFS_POSTPROCESS_COMMAND_remove = " do_fsconfig;"
 USE_DEPMOD = "0"
 

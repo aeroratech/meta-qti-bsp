@@ -55,6 +55,9 @@ python do_makeboot () {
     xtra_parms=""
     if bb.utils.contains('MACHINE_FEATURES', 'nand-boot', True, False, d):
         xtra_parms = " --tags-addr" + " " + d.getVar('KERNEL_TAGS_OFFSET')
+        if oe.utils.conditional("PREFERRED_PROVIDER_virtual/mkbootimg-native", "mkbootimg-gki-native", True, False, d):
+            xtra_parms = xtra_parms.replace("--tags-addr", "--tags_offset")
+
     if (d.getVar("BOOT_HEADER_VERSION") or "0") != "0":
         xtra_parms += " --header_version " + d.getVar('BOOT_HEADER_VERSION')
         # header version setting expects dtb to be passed seprately but not appended to kernel

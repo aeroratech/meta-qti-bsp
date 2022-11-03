@@ -114,8 +114,7 @@ fakeroot do_ramdisk_create() {
         fi
 
         if [[ "${FLASHLESS_MCU}" == "True" ]]; then
-            cp ${IMAGE_ROOTFS}/usr/sbin/nbd-client.nbd usr/sbin/nbd
-            cp ${IMAGE_ROOTFS}/usr/sbin/setup_nbdclient usr/sbin/
+            cp ${IMAGE_ROOTFS}/usr/sbin/nbd-client.nbd bin/nbdclient
             cp ${IMAGE_ROOTFS}/etc/nbdtab etc/
 
             # DMA kos

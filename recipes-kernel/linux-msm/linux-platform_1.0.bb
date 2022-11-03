@@ -68,6 +68,11 @@ do_compile () {
 }
 
 do_install () {
+	:
+}
+
+# Set up hosttools for techpack module compilation
+do_setup_module_compilation() {
     cd ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform  && \
 
     BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \
@@ -76,7 +81,7 @@ do_install () {
     INSTALL_MODULE_HEADERS=1 \
     ./build/build_module.sh
 }
-
+addtask do_setup_module_compilation after do_copy_kernelbuild before do_deploy
 
 OEMVM_SUPPORT = "${@d.getVar('MACHINE_SUPPORTS_OEMVM') or "False"}"
 do_deploy () {

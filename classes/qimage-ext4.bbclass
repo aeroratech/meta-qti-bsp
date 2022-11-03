@@ -156,7 +156,7 @@ addtask do_makesystem after do_image before do_image_complete
 ################################################
 ### Generate userdata.img ###
 ################################################
-USERDATA_DIR = "${@bb.utils.contains('MACHINE_MNT_POINTS', 'overlay', 'overlay', 'data', d)}"
+USERDATA_DIR ??= "${@bb.utils.contains('MACHINE_MNT_POINTS', 'overlay', 'overlay', 'data', d)}"
 do_makeuserdata[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makeuserdata() {
