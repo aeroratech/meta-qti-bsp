@@ -12,6 +12,7 @@ IMAGE_FEATURES[validitems] += "csm"
 IMAGE_FEATURES += "read-only-rootfs csm"
 
 CORE_IMAGE_EXTRA_INSTALL += "\
+              dhrystone \
               glib-2.0 \
               coreutils \
               e2fsprogs \
