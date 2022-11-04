@@ -28,6 +28,7 @@ if [ ! -d "/persist/display" ]; then
     mkdir -p /persist/display/
     chown -R system:system /persist/display
     chmod 770 /persist/display
+    restorecon /persist/display
 else
     echo "/persist/display already created"
 fi
