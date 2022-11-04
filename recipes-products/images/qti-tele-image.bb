@@ -45,7 +45,7 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa410m = "\
 
 # Following packages will be enabled later
 CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
-       packagegroup-qti-core packagegroup-qti-ss-mgr \
+       packagegroup-qti-ss-mgr \
        packagegroup-qti-telsdk subsystem-ramdump \
        qmi-shutdown-modem modem-shutdown packagegroup-android-utils \
        packagegroup-qti-internal packagegroup-qti-security-test \
