@@ -78,4 +78,4 @@ do_copy_abl() {
 }
 
 # Following pacakges will be enabled later.
-CORE_IMAGE_EXTRA_INSTALL_remove_sa415m = "packagegroup-qti-telsdk qmi-shutdown-modem"
+CORE_IMAGE_EXTRA_INSTALL_remove_sa415m = "qmi-shutdown-modem"
