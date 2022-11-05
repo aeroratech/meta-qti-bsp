@@ -26,9 +26,9 @@ KERNEL_VARIANT_qti-distro-perf = "perf_"
 KERNEL_DTB_NAMES = "dtbs/dtb.img"
 
 MACHINE_USES_KERNEL_PREBUILTS = "True"
-KERNEL_PREBUILT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525m-${KERNEL_VARIANT}defconfig/dist"
-KERNEL_OUT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525m-${KERNEL_VARIANT}defconfig"
-KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa525m"
+KERNEL_PREBUILT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525-${KERNEL_VARIANT}defconfig/dist"
+KERNEL_OUT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525-${KERNEL_VARIANT}defconfig"
+KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa525"
 
 DEFAULT_ENFORCING = "permissive"
 
