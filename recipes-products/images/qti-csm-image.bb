@@ -14,6 +14,7 @@ IMAGE_FEATURES += "read-only-rootfs csm"
 CORE_IMAGE_EXTRA_INSTALL += "\
               dhrystone \
               glib-2.0 \
+              i2c-tools \
               coreutils \
               e2fsprogs \
               e2fsprogs-e2fsck \
