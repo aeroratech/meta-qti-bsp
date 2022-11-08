@@ -32,6 +32,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-support-utils \
         subsystem-ramdump \
         systemd-machine-units \
+        ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'mtd-utils-ubifs', '', d)} \
         qmi-shutdown-modem \
         modem-shutdown \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
@@ -47,9 +48,9 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa410m = "\
 CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
        packagegroup-qti-ss-mgr \
        packagegroup-qti-telsdk subsystem-ramdump \
-       qmi-shutdown-modem modem-shutdown packagegroup-android-utils \
+       qmi-shutdown-modem modem-shutdown \
        packagegroup-qti-internal packagegroup-qti-security-test \
-       packagegroup-startup-scripts packagegroup-support-utils \
+       packagegroup-support-utils \
 "
 
 python () {
