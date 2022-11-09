@@ -54,7 +54,7 @@ KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa410m_auto"
 # qti-location:           Machine supports Location solution
 # qti-data-modem:         Machine supports QTI data modem solution
 
-MACHINE_FEATURES += "qti-ab-boot qti-sdx nossd_listener dm-verity-none qti-remoteproc qti-sensors qti-avb"
+MACHINE_FEATURES += "qti-ab-boot qti-sdx nossd_listener dm-verity-none qti-remoteproc qti-sensors"
 
 MACHINE_MNT_POINTS = " \
     /dsp \
