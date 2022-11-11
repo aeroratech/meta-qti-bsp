@@ -26,4 +26,5 @@ RDEPENDS_packagegroup-qti-recoveryfs = " \
             ${@bb.utils.contains('DISTRO_FEATURES', 'ota-package-verification', 'openssl', '', d)} \
             ${@bb.utils.contains('DISTRO_FEATURES', 'ota-package-verification', 'openssl-bin', '', d)} \
             ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'packagegroup-selinux-minimal', '', d)} \
+            ${@bb.utils.contains('COMBINED_FEATURES', 'vbleima', 'ima-cert-setup', '', d)} \
 "

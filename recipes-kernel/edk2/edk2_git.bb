@@ -16,6 +16,9 @@ INSANE_SKIP_${PN} = "arch"
 
 VBLE = "${@bb.utils.contains('DISTRO_FEATURES', 'qti-vble','1', '0', d)}"
 
+VBLEIMA = "${@bb.utils.contains('COMBINED_FEATURES', 'vbleima','1', '0', d)}"
+VBLEEVM = "${@bb.utils.contains('COMBINED_FEATURES', 'vbleevm','1', '0', d)}"
+
 VERITY_ENABLED = "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', '1', '0', d), '0', d)}"
 
 EARLY_ETH = "${@bb.utils.contains('DISTRO_FEATURES', 'qti-early-eth', '1', '0', d)}"
@@ -40,6 +43,8 @@ EXTRA_OEMAKE = " \
     'ENABLE_SYSTEMD_BOOTSLOT=${SYSTEMD_BOOTSLOT_ENABLED}'\
     'ENABLE_DM_MOD_FOR_KERNEL5_4=${DM_MOD_FOR_KERNEL5_4}'\
     'VERIFIED_BOOT_LE=${VBLE}' \
+    'INTEGRITY_LE_IMA=${VBLEIMA}' \
+    'INTEGRITY_LE_EVM=${VBLEEVM}'\
     'VERITY_LE=${VERITY_ENABLED}' \
     'INIT_BIN_LE=\"/sbin/init\"' \
     'EDK_TOOLS_PATH=${S}/BaseTools' \
