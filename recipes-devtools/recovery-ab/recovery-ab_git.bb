@@ -28,7 +28,7 @@ EXTRA_OECONF_append = "${@bb.utils.contains('MACHINE_FEATURES', 'ota-package-ver
 CFLAGS += "-lsparse -llog"
 PARALLEL_MAKE = ""
 
-EXTRA_OECONF_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'qti-ab-boot', 'TARGET_SUPPORTS_AB=true', '', d)}"
+EXTRA_OECONF_append = " ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'TARGET_SUPPORTS_AB=true', '', d)}"
 
 FILES_${PN}  = "${bindir} ${libdir} ${includedir} /res /cache"
 

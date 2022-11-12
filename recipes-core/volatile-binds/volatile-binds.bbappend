@@ -2,6 +2,7 @@ FILESEXTRAPATHS_prepend_cinder := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sdxlemur := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sa2150p-nand := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sa410m := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend_sa525m := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sa515m := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sa415m := "${THISDIR}/files:"
 
@@ -73,6 +74,16 @@ VOLATILE_BINDS_sa410m = "\
 /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
 /systemrw/boot_hsic_comp /etc/usb/boot_hsic_comp\n\
 /systemrw/c2c /etc/c2c/\n\
+"
+
+VOLATILE_BINDS_sa525m = "\
+/systemrw/adb_devid  /etc/adb_devid\n\
+/systemrw/data /etc/data/\n\
+/systemrw/data/adpl /etc/data/adpl/\n\
+/systemrw/data/usb /etc/data/usb/\n\
+/systemrw/data/ipa /etc/data/ipa/\n\
+/systemrw/rt_tables /etc/data/iproute2/rt_tables\n\
+/systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
 "
 
 VOLATILE_BINDS_sa515m = "\

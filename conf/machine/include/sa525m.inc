@@ -7,12 +7,14 @@ include conf/machine/include/arm/arch-armv8a.inc
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
 PREFERRED_PROVIDER_virtual/mkbootimg-native = "mkbootimg-gki-native"
 PREFERRED_PROVIDER_virtual/dtc-native = "dtc-android-build-native"
-PREFERRED_VERSION_linux-msm ?= "5.15"
-PREFERRED_VERSION_linux-msm-headers ?= "5.15"
-PREFERRED_VERSION_kernel-toolchain ?= "5.15"
-PREFERRED_VERSION_dtc-android-build ?= "5.15"
-PREFERRED_VERSION_mkbootimg-gki-native ?= "5.15"
-PREFERRED_VERSION_dtc-android-build-native ?= "5.15"
+PREFERRED_PROVIDER_virtual/mkdtimg-native = "mkdtimg-gki-native"
+PREFERRED_VERSION_linux-msm = "5.15"
+PREFERRED_VERSION_linux-msm-headers = "5.15"
+PREFERRED_VERSION_kernel-toolchain = "5.15"
+PREFERRED_VERSION_dtc-android-build = "5.15"
+PREFERRED_VERSION_mkbootimg-gki-native = "5.15"
+PREFERRED_VERSION_dtc-android-build-native = "5.15"
+PREFERRED_VERSION_mkdtimg-gki-native = "5.15"
 SERIAL_CONSOLES = "115200;ttyMSM0"
 KERNEL_IMAGETYPE = "Image"
 KERNEL_BASE = "0xa8000000"
@@ -26,9 +28,9 @@ KERNEL_VARIANT_qti-distro-perf = "perf_"
 KERNEL_DTB_NAMES = "dtbs/dtb.img"
 
 MACHINE_USES_KERNEL_PREBUILTS = "True"
-KERNEL_PREBUILT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525m-${KERNEL_VARIANT}defconfig/dist"
-KERNEL_OUT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525m-${KERNEL_VARIANT}defconfig"
-KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa525m"
+KERNEL_PREBUILT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525-${KERNEL_VARIANT}defconfig/dist"
+KERNEL_OUT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525-${KERNEL_VARIANT}defconfig"
+KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa525"
 
 DEFAULT_ENFORCING = "permissive"
 
@@ -43,8 +45,9 @@ DEFAULT_ENFORCING = "permissive"
 # qti-sensors:            Machine supports sensors qti solution
 # qti-location:           Machine supports Location solution
 # qti-data-modem:         Machine supports QTI data modem solution
+# qti-mvm:                Machine supports QTI MVM solution
 
-MACHINE_FEATURES += "qti-sdx dm-verity-none"
+MACHINE_FEATURES += "qti-sdx dm-verity-none qti-sensors qti-mvm"
 
 MACHINE_MNT_POINTS = " \
     /dsp \

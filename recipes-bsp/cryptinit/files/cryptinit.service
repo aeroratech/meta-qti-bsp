@@ -1,6 +1,7 @@
 [Unit]
 SourcePath=/usr/bin/cryptinit.sh
 Description=SW Encryption Service
+Before=TUICoreService.service
 After=letzd.service
 
 [Service]

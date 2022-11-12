@@ -12,7 +12,9 @@ IMAGE_FEATURES[validitems] += "csm"
 IMAGE_FEATURES += "read-only-rootfs csm"
 
 CORE_IMAGE_EXTRA_INSTALL += "\
+              dhrystone \
               glib-2.0 \
+              i2c-tools \
               coreutils \
               e2fsprogs \
               e2fsprogs-e2fsck \
@@ -30,6 +32,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-ss-mgr \
               ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
               packagegroup-qti-core \
+              packagegroup-qti-transceiver \
 "
 
 do_merge_dtbs() {

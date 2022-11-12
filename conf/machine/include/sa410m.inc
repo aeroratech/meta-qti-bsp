@@ -10,13 +10,15 @@ include conf/machine/include/arm/arch-armv8a.inc
 PREFERRED_PROVIDER_virtual/kernel = "linux-msm"
 PREFERRED_PROVIDER_virtual/mkbootimg-native = "mkbootimg-gki-native"
 PREFERRED_PROVIDER_virtual/dtc-native = "dtc-android-build-native"
+PREFERRED_PROVIDER_virtual/mkdtimg-native = "mkdtimg-gki-native"
 PREFERRED_VERSION_linux-msm = "5.15"
 PREFERRED_VERSION_linux-msm-headers = "5.15"
 PREFERRED_VERSION_kernel-toolchain = "5.15"
 PREFERRED_VERSION_dtc-android-build = "5.15"
-PREFERRED_VERSION_mkbootimg-gki-native ?= "5.15"
-PREFERRED_VERSION_dtc-android-build-native ?= "5.15"
-SERIAL_CONSOLES ?= "115200;ttyMSM0"
+PREFERRED_VERSION_mkbootimg-gki-native = "5.15"
+PREFERRED_VERSION_dtc-android-build-native = "5.15"
+PREFERRED_VERSION_mkdtimg-gki-native = "5.15"
+SERIAL_CONSOLES = "115200;ttyMSM0"
 KERNEL_IMAGETYPE = "Image"
 KERNEL_BASE = "0x40000000"
 KERNEL_TAGS_OFFSET = "0x1e00000"
@@ -52,7 +54,7 @@ KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa410m_auto"
 # qti-location:           Machine supports Location solution
 # qti-data-modem:         Machine supports QTI data modem solution
 
-MACHINE_FEATURES += "qti-ab-boot qti-sdx nossd_listener dm-verity-none qti-remoteproc"
+MACHINE_FEATURES += "qti-ab-boot qti-sdx nossd_listener dm-verity-none qti-remoteproc qti-sensors"
 
 MACHINE_MNT_POINTS = " \
     /dsp \
