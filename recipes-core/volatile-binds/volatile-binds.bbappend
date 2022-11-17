@@ -40,6 +40,7 @@ VOLATILE_BINDS_sdxlemur = "\
 /systemrw/misc/wifi /etc/misc/wifi/\n\
 /systemrw/bluetooth /etc/bluetooth/\n\
 /systemrw/allplay /etc/allplay/\n\
+/var/volatile/lib /var/lib\n\
 "
 
 VOLATILE_BINDS_sa2150p-nand = "\

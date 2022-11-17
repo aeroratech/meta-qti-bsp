@@ -36,6 +36,8 @@ if [ ! -e "$2" ]; then
    echo >&2 "No System file/directory exist"
    exit 1
 fi
+var_lib_path=/var/lib
+volatile_lib_path=/var/volatile/lib
 
 spec=$1
 mountpoint=$2
@@ -73,6 +75,12 @@ if [ -d "$mountpoint" ]; then
             fi
             mount -o "bind" "$spec/$file" "$mountpoint/$file"
             test ! -x /sbin/restorecon || /sbin/restorecon "$mountpoint/$file"
+        elif [[ "$mountpoint" == "$var_lib_path" ]] && [[ "$spec" == "$volatile_lib_path" ]]; then
+            mountpath=$(echo $mountpoint | sed 's:/*$::')
+            if grep -qs "$mountpath" /proc/mounts; then
+                continue
+            fi
+            mount -o "bind" "$spec" "$mountpoint"
         fi
    done
 fi
