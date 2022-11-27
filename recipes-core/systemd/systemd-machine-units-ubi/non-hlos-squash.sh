@@ -26,6 +26,88 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
+UBIFS_VOL_HEADER="1831 0610"
+UBI_SYS_CLASS="/sys/class/ubi/ubi0"
+UBI_DEV_BLOCK="/dev/ubiblock0"
+
+IsFirmwareMounted () {
+ mountpoint /firmware
+ if [ $? -eq 0 ] ; then
+    echo "firmware volume is already mounted" > /dev/kmsg
+    exit 0;
+ fi
+}
+
+GetFirmwareVolumeID () {
+    firmware=$1
+    act_slot=`cat /proc/cmdline | sed 's/.*SLOT_SUFFIX=//' | awk '{print $1}' | tr -d '"'`
+    echo "active slot is $act_slot "  > /dev/kmsg
+    firmware_ab_name=${firmware}${act_slot}
+    volcount=`cat ${UBI_SYS_CLASS}/volumes_count`
+    for vid in `seq 0 $volcount`; do
+        echo $vid  > /dev/kmsg
+        name=`cat ${UBI_SYS_CLASS}_$vid/name`
+        if [ "$name" == "$firmware" ] || [ "$name" == "$firmware_ab_name" ]; then
+            echo "volume id found for $firmware_ab_name, volume id $vid "  > /dev/kmsg
+            echo $vid
+            break
+        fi
+        echo $name  > /dev/kmsg
+    done
+}
+
+FindAndMountUBIVol () {
+   partition=$1
+   dir=$2
+   local image_type="ubifs"
+   IsFirmwareMounted
+
+   volid=$(GetFirmwareVolumeID $partition)
+   echo "found volume index for firmware mount " $volid  > /dev/kmsg
+
+   if [ "$volid" == "" ]; then
+       echo "volume index not found for firmware volume "  > /dev/kmsg
+       exit 0
+   fi
+
+   device=/dev/ubi0_$volid
+   block_device=${UBI_DEV_BLOCK}_$volid
+   mkdir -p $dir
+
+   if [ -e "${UBI_DEV_BLOCK}_$volid" ]; then
+        echo "${UBI_DEV_BLOCK}_$volid exists" > /dev/kmsg
+   else
+        echo "${UBI_DEV_BLOCK}_$volid desnt exists, creating" > /dev/kmsg
+        ubiblock --create $device
+   fi
+
+   char_device=/dev/ubi0_0
+   # Check if the image type is squashfs in UBI volume
+   if dd if=${char_device}\
+       count=1 bs=4 2>/dev/null | grep 'hsqs' > /dev/null; then
+       image_type="squashfs"
+   elif dd if=${char_device} count=1 bs=4 2>/dev/null |\
+       hexdump | grep "${UBIFS_VOL_HEADER}" > /dev/null; then
+       image_type="ubifs"
+   else
+       image_type="unknown"
+   fi
+   echo "root fstype is $image_type " > /dev/kmsg
+
+   if [ "$image_type" == "squashfs" ]; then
+       echo "mounting modem squashfs image " > /dev/kmsg
+       mount -t squashfs $block_device $dir -o ro
+   else
+       echo "mounting modem ubifs image " > /dev/kmsg
+       mount -t ubifs $device $dir -o bulk_read
+   fi
+
+   if [ $? -ne 0 ] ; then
+      echo "Unable to mount firmware volume "
+      exit 0
+   fi
+}
+
 FindAndMountUBI () {
    partition=$1
    dir=$2
