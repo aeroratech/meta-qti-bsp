@@ -12,7 +12,6 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     sdcard-scripts-automount \
     e2fsprogs-mke2fs \
     procrank \
-    powerapp \
 "
 
 CORE_IMAGE_EXTRA_INSTALL += " ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-persist', 'packagegroup-qti-encryption', '', d)}"
