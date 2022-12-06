@@ -19,6 +19,7 @@ FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://OTA/recovery/"
 SRC_URI += "file://fstab_AB"
 SRC_URI += "file://fstab_AB_cache_ext4"
+SRC_URI += "file://mirror_copy.service"
 
 S = "${WORKDIR}/OTA/recovery/"
 
@@ -29,11 +30,13 @@ CFLAGS += "-lsparse -llog"
 PARALLEL_MAKE = ""
 
 EXTRA_OECONF_append = " ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'TARGET_SUPPORTS_AB=true', '', d)}"
+EXTRA_OECONF_append = " ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-mirror-sync', 'TARGET_SUPPORTS_MIRROR_AB_COPY=true', '', d)}"
 
-FILES_${PN}  = "${bindir} ${libdir} ${includedir} /res /cache"
-
+FILES_${PN}  = "${bindir} ${libdir} ${systemd_unitdir} ${includedir} /res /cache"
+SYSTEMD_SERVICE_${PN} = "mirror_copy.service"
 RM_WORK_EXCLUDE += "${PN}"
-
+INITSCRIPT_NAME = "mirror_copy"
+INITSCRIPT_PARAMS = "defaults"
 generate_public_key() {
     openssl pkcs8 -inform DER -nocrypt -in ${WORKSPACE}/OTA/build/target/product/security/testkey.pk8 -out ${TMPDIR}/deploy/images/sxr2130-mtp/ota-scripts/private.pem
     openssl rsa -in ${TMPDIR}/deploy/images/sxr2130-mtp/ota-scripts/private.pem -outform PEM -pubout > ${WORKDIR}/public.pem
@@ -51,7 +54,9 @@ do_install_append() {
                 install -m 0755 ${WORKDIR}/fstab_AB_cache_ext4 -D ${D}/res/recovery_volume_config
             fi
         fi
-
+        install -d ${D}${systemd_unitdir}/system/
+        install -m 0644 ${WORKDIR}/mirror_copy.service -D \
+                 ${D}${systemd_unitdir}/system/mirror_copy.service
         if ${@bb.utils.contains('MACHINE_FEATURES', 'ota-package-verification', 'true', 'false', d)}; then
             install -m 0755 ${WORKDIR}/public.pem -D ${D}/res/public.pem
         fi
