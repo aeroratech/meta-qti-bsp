@@ -46,7 +46,7 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa410m = "\
 
 # Following packages will be enabled later
 CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
-       packagegroup-qti-telsdk subsystem-ramdump \
+       subsystem-ramdump \
        qmi-shutdown-modem modem-shutdown \
        packagegroup-qti-internal packagegroup-qti-security-test \
        packagegroup-support-utils \
