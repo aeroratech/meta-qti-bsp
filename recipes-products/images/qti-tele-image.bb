@@ -54,7 +54,7 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
 
 python () {
     if d.getVar('PREFERRED_VERSION_linux-msm') == "5.15":
-        bb.build.addtask('do_merge_dtbs', 'do_makeboot', 'do_makesystem', d)
+        bb.build.addtask('do_merge_dtbs', 'do_makeboot', bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_makesystem_ubi', 'do_makesystem', d), d)
         bb.build.addtask('do_copy_abl', 'do_image_complete', 'do_makeboot', d)
 }
 
