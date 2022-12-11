@@ -47,7 +47,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
 CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
        subsystem-ramdump \
        qmi-shutdown-modem modem-shutdown \
-       packagegroup-qti-internal packagegroup-qti-security-test \
+       packagegroup-qti-security-test \
        packagegroup-support-utils \
 "
 
