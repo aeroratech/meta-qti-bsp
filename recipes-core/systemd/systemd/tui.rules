@@ -31,7 +31,7 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ACTION=="add" SUBSYSTEM=="mem_buf_vm", GROUP="system", MODE="0640"
-ACTION=="add" SUBSYSTEM=="dma_heap", GROUP="system", MODE="0640"
+ACTION=="add" SUBSYSTEM=="dma_heap", GROUP="system", MODE="0660"
 ACTION=="add" SUBSYSTEM=="membuf", GROUP="system", MODE="0660"
 ACTION=="add" SUBSYSTEM=="qti_virtio_mem", GROUP="system", MODE="0660"
 ACTION=="add" SUBSYSTEM=="smcinvoke", GROUP="system", MODE="0660"
