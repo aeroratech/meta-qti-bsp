@@ -50,7 +50,7 @@ DEFAULT_ENFORCING = "permissive"
 # qti-tzlog:              Machine supports tz/qsee logs
 # qti-smciqseecomd:       Machine supports smcinvoke based listeners
 
-MACHINE_FEATURES += "qti-sdx dm-verity-none qti-sensors qti-mvm qti-security qseecompat qti-tzlog qti-remoteproc qti-data-modem qti-location qti-audio qti-smciqseecomd qti-recovery"
+MACHINE_FEATURES += "qti-sdx dm-verity-none qti-sensors qti-mvm qti-security qseecompat qti-tzlog qti-remoteproc qti-data-modem qti-location qti-audio qti-smciqseecomd qti-recovery qti-cv2x"
 
 MACHINE_MNT_POINTS = " \
     /dsp \
