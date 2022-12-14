@@ -27,8 +27,6 @@ KERNEL_IMAGETYPE = "Image"
 KERNEL_CMD_PARAMS = ""
 KERNEL_DYNAMIC_DEFCONFIG = "True"
 SERIAL_CONSOLE = "115200 hvc0"
-KERNEL_CONFIG ?= "vendor/sa410m_televm_defconfig"
-KERNEL_CONFIG_qti-distro-debug ?= "vendor/sa410m_televm-debug_defconfig"
 
 MACHINE_USES_KERNEL_PREBUILTS = "True"
 MACHINE_SUPPORTS_USB = "False"
