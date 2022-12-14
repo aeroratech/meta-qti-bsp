@@ -3,7 +3,7 @@ inherit kernel
 DESCRIPTION = "CAF Linux Kernel"
 LICENSE = "GPLv2.0-with-linux-syscall-note"
 
-COMPATIBLE_MACHINE = "cinder|sa410m|scuba-auto|sa410m-televm|sa525m|sa525m-emmc"
+COMPATIBLE_MACHINE = "cinder|sa410m|scuba-auto|sa410m-televm|sa525m-televm|sa525m|sa525m-emmc"
 
 FILESPATH =+ "${WORKSPACE}:"
 
