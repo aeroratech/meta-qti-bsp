@@ -44,12 +44,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
 "
 
 # Following packages will be enabled later
-CORE_IMAGE_EXTRA_INSTALL_remove_sa410m = "\
-       qmi-shutdown-modem \
-       packagegroup-qti-telsdk \
-"
-
-# Following packages will be enabled later
 CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
        subsystem-ramdump \
        qmi-shutdown-modem modem-shutdown \
