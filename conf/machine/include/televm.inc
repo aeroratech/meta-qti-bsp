@@ -6,12 +6,14 @@ include conf/machine/include/arm/arch-armv8a.inc
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-msm"
 PREFERRED_PROVIDER_virtual/mkbootimg-native ?= "mkbootimg-gki-native"
 PREFERRED_PROVIDER_virtual/dtc-native ?= "dtc-android-build-native"
+PREFERRED_PROVIDER_virtual/mkdtimg-native ?= "mkdtimg-gki-native"
 PREFERRED_VERSION_linux-msm ?= "5.15"
 PREFERRED_VERSION_linux-msm-headers ?= "5.15"
 PREFERRED_VERSION_kernel-toolchain ?= "5.15"
 PREFERRED_VERSION_dtc-android-build ?= "5.15"
 PREFERRED_VERSION_mkbootimg-gki-native ?= "5.15"
 PREFERRED_VERSION_dtc-android-build-native ?= "5.15"
+PREFERRED_VERSION_mkdtimg-gki-native ?= "5.15"
 
 KERNEL_VARIANT = ""
 KERNEL_VARIANT_qti-distro-debug = "debug_"
@@ -34,6 +36,7 @@ MACHINE_SUPPORTS_ANDROID_PROPERTIES = "False"
 MACHINE_SUPPORTS_DISPLAY = "False"
 MACHINE_SUPPORTS_SECUREMSM = "False"
 MACHINE_MNT_POINTS = ""
+ENABLE_ADB = "False"
 
 # Formats of root filesystem images.
 IMAGE_FSTYPES += "ext4"
