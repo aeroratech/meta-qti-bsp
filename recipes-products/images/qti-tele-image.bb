@@ -32,6 +32,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-support-utils \
         subsystem-ramdump \
         systemd-machine-units \
+        ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'mtd-utils-ubifs', '', d)} \
         qmi-shutdown-modem \
         modem-shutdown \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
@@ -45,16 +46,15 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa410m = "\
 
 # Following packages will be enabled later
 CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
-       packagegroup-qti-ss-mgr \
-       packagegroup-qti-telsdk subsystem-ramdump \
-       qmi-shutdown-modem modem-shutdown packagegroup-android-utils \
+       subsystem-ramdump \
+       qmi-shutdown-modem modem-shutdown \
        packagegroup-qti-internal packagegroup-qti-security-test \
-       packagegroup-startup-scripts packagegroup-support-utils \
+       packagegroup-support-utils \
 "
 
 python () {
     if d.getVar('PREFERRED_VERSION_linux-msm') == "5.15":
-        bb.build.addtask('do_merge_dtbs', 'do_makeboot', 'do_makesystem', d)
+        bb.build.addtask('do_merge_dtbs', 'do_makeboot', bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_makesystem_ubi', 'do_makesystem', d), d)
         bb.build.addtask('do_copy_abl', 'do_image_complete', 'do_makeboot', d)
 }
 
@@ -76,6 +76,3 @@ do_copy_abl() {
         install -m 0644 ${KERNEL_PREBUILT_PATH}/abl_userdebug.elf ${DEPLOY_DIR_IMAGE}/${PN}/abl_userdebug.elf
     fi
 }
-
-# Following pacakges will be enabled later.
-CORE_IMAGE_EXTRA_INSTALL_remove_sa415m = "qmi-shutdown-modem"

@@ -363,7 +363,7 @@ mhi_ch_close() {
     return 0
 }
 
-MHI_CH_RETRIES=30
+MHI_CH_RETRIES=90
 # wait_for_mhi_ch - Waits on and opens a mhi channel to send/recv messages
 # @MHI_CH:  Path to mhi channel
 # @RETRIES: (optional) Retry count to open MHI_CH; default MHI_CH_RETRIES
@@ -454,6 +454,7 @@ do_mounts
 do_nbdtab()
 {
     portno="$(( 10809 + $2 ))"
+    config_portno="$(( 12809 + $2 ))"
     # Create nbd-server config
     echo "nbd0 $1 system.img.raw persist" > /etc/nbdtab
     echo "nbd1 $1 systemrw.img.raw  persist" >> /etc/nbdtab
@@ -461,6 +462,7 @@ do_nbdtab()
     echo "nbd3 $1 userdata.img.raw  persist" >> /etc/nbdtab
     echo "nbd4 $1 cache.img.raw  persist" >> /etc/nbdtab
     echo "nbd5 $1 NON-HLOS.bin persist" >> /etc/nbdtab
+    echo "nbd6 $1 default persist" >> /etc/nbdtab
 
     nbdclient nbd0 $portno # connect remote system.img
     nbdclient nbd1 $portno # connect remote systemrw.img
@@ -468,6 +470,7 @@ do_nbdtab()
     nbdclient nbd3 $portno # connect remote userdata.img
     nbdclient nbd4 $portno # connect remote cache.img
     nbdclient nbd5 $portno # connect NON-HLOS
+    nbdclient nbd6 $config_portno # connect Modem config files
 
     # if nbd negotiation fails, drop to ramdsik
     if [ "$?" -ne 0 ]; then
@@ -481,8 +484,13 @@ do_nbdtab()
     mount -o rw /dev/nbd0 $mnt_dir
     #umount /sys/kernel/debug /sys /proc /dev
 
+    # mount dumgr config readonly
+    mnt_qdumgr_dir="/mnt/system/etc/dumgr/config"
+    mkdir -p $mnt_qdumgr_dir
+    mount /dev/nbd6 $mnt_qdumgr_dir
+
     # update systemd mount files to mount it from nbd devices
-    cd /mnt/system/lib/systemd/system/
+    cd $mnt_dir/lib/systemd/system/
     sed -i 's+/dev/disk/by-partlabel/systemrw+/dev/nbd1+g' systemrw.mount
     sed -i 's+/dev/disk/by-partlabel/persist+/dev/nbd2+g' persist.mount
     sed -i 's+/dev/disk/by-partlabel/userdata+/dev/nbd3+g' data.mount
