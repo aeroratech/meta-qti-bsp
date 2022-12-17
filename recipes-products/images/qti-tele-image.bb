@@ -6,11 +6,16 @@ inherit qimage
 
 IMAGE_FEATURES += "read-only-rootfs ${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'persist-volume', '', d)}"
 
+# Install km-loader for selected machines
+EVDEVMODULE ?= 'False'
+EVDEVMODULE_sa515m = 'True'
+
 CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'e2fsprogs e2fsprogs-e2fsck e2fsprogs-mke2fs', '', d)} \
         glib-2.0 \
         i2c-tools \
         kernel-modules \
+        ${@oe.utils.conditional('EVDEVMODULE', 'True', 'km-loader', '', d)} \
         net-tools \
         pps-tools \
         spitools \
@@ -36,12 +41,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         qmi-shutdown-modem \
         modem-shutdown \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
-"
-
-# Following packages will be enabled later
-CORE_IMAGE_EXTRA_INSTALL_remove_sa410m = "\
-       qmi-shutdown-modem \
-       packagegroup-qti-telsdk \
 "
 
 # Following packages will be enabled later
