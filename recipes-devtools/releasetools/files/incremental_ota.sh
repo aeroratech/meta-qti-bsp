@@ -30,6 +30,10 @@
 # if sign is part of arguments, the testkey.pk8 located at OTA/build/target/product/security is taken as private key.
 # OEMs can replaces this file with their own private key.
 
+# Changes from Qualcomm Innovation Center are provided under the following license:
+# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 set -o xtrace
 
 if [ "$#" -lt 5 ]; then
@@ -52,6 +56,7 @@ export FSCONFIGFOPTS=" "
 block_based=" "
 python_version="python3"
 system_path=" "
+mirror_sync= ""
 
 if [ "$#" -gt 5 ]; then
     IFS=' ' read -a allopts <<< "$@"
@@ -63,6 +68,8 @@ if [ "$#" -gt 5 ]; then
            system_path="${allopts[${i}]}"
        elif [ "${allopts[${i}]}" = "--sign" ]; then
            sign_ota_package="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--mirror_sync" ]; then
+           mirror_sync="${allopts[${i}]}"
        else
            FSCONFIGFOPTS=$FSCONFIGFOPTS${allopts[${i}]}" "
        fi
@@ -103,7 +110,7 @@ fi
 
 cd $target_files && zip -q $2 META/*filesystem_config.txt SYSTEM/build.prop && cd ..
 
-$python_version ./ota_from_target_files $block_based -n -v -d $device_type -v -p . -m linux_embedded --no_signing --system_mount_path $system_path -i $1 $2 update_incr_$4.zip > ota_debug.txt 2>&1
+$python_version ./ota_from_target_files $block_based  $mirror_sync -n -v -d $device_type -v -p . -m linux_embedded --no_signing --system_mount_path $system_path -i $1 $2 update_incr_$4.zip > ota_debug.txt 2>&1
 
 if [[ $? = 0 ]]; then
     echo "OTA zip signing started"
