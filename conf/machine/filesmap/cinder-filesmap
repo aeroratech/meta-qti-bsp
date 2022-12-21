@@ -27,43 +27,23 @@
 
 # filename              partition
 
-NON-HLOS.ubi            modem
-NON-HLOS.bin            modem
-
-sbl1.mbn                sbl
-tz.mbn                  tz
-aop.mbn                 aop
-devcfg.mbn              tz_devcfg
-hyp.mbn                 qhee
-multi_image.mbn         multi_image
-uefi.elf                uefi
-xbl_cfg.elf             xbl_config
-abl.elf                 abl
-sec.elf                 sec
-apdp.mbn                apdp
-ipa_fws.elf             ipa_fw
-
-# filename + .bak       backup partition
-
-#sbl1.mbn.bak            sbl1bak
-#tz.mbn.bak              tzbak
-#rpm.mbn.bak             rpmbak
-#appsboot.mbn.bak        abootbak
-
-# For multiple file firmware images that differ from *.mbn and *.bin
-# you can specify filename.* to direct all files to the same location.
-# For example for modem.mdt, modem.b00, modem.b01,... modem.bxx files
-# writting 'modem.*   location' will direct all files to 'location'.
-# If still some files need to go to different location give the full
-# file name also, for example 'modem.b01   other_location'
-
-# filename              location
-
-mba.*                   /firmware/image
-modem.*                 /firmware/image
-bdwlan30.bin            /firmware/image
-nvm_tlv_3.0.bin         /firmware/image
-otp30.bin               /firmware/image
-qwlan30.bin             /firmware/image
-rampatch_tlv_3.0.tlv    /firmware/image
-utf30.bin               /firmware/image
+NON-HLOS.bin            /dev/block/bootdevice/by-name/modem
+abl.elf                 /dev/block/bootdevice/by-name/abl
+aop.mbn                 /dev/block/bootdevice/by-name/aop
+apdp.mbn                /dev/block/bootdevice/by-name/apdp
+ipa_fws.elf             /dev/block/bootdevice/by-name/ipa_fw
+logfs_ufs_8mb.bin       /dev/block/bootdevice/by-name/logfs
+multi_image.mbn         /dev/block/bootdevice/by-name/multi_image
+multi_image_qti.mbn     /dev/block/bootdevice/by-name/multiimgqti
+persist.img             /dev/block/bootdevice/by-name/persist
+hyp.mbn                 /dev/block/bootdevice/by-name/qhee
+Quantum.fv              /dev/block/bootdevice/by-name/quantumfv
+quantumsdk.fv           /dev/block/bootdevice/by-name/quantumsdk
+xbl_no_preamble.elf     /dev/block/bootdevice/by-name/sbl
+sec.elf                 /dev/block/bootdevice/by-name/sec
+tools32.fv              /dev/block/bootdevice/by-name/toolsfv
+tz.mbn                  /dev/block/bootdevice/by-name/tz
+devcfg.mbn              /dev/block/bootdevice/by-name/tz_devcfg
+uefi.elf                /dev/block/bootdevice/by-name/uefi
+xbl_config.elf          /dev/block/bootdevice/by-name/xbl_config
+xbl_ramdump.elf         /dev/block/bootdevice/by-name/xbl_ramdump
