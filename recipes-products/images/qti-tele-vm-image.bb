@@ -11,6 +11,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     ${@oe.utils.conditional('ENABLE_SECUREMSM', 'True', 'packagegroup-qti-securemsm', '', d)} \
     post-boot \
     systemd-machine-units \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location-vm', '', d)} \
 "
 
 # Exclude packages
