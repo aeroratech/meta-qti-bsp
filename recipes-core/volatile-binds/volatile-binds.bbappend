@@ -42,6 +42,9 @@ VOLATILE_BINDS_sdxlemur = "\
 /systemrw/allplay /etc/allplay/\n\
 /var/volatile/lib /var/lib\n\
 "
+VOLATILE_BINDS_cinder_append = "\
+/systemrw/gpt_checker_properties.conf /etc/gpt_checker_properties.conf\n\
+"
 
 VOLATILE_BINDS_sa2150p-nand = "\
 /systemrw/adb_devid  /etc/adb_devid\n\
