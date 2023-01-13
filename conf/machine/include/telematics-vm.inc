@@ -46,7 +46,6 @@ IMAGE_INIT_MANAGER = "systemd"
 
 SYSTEMIMAGE_TARGET = "system.img"
 VMIMAGE_TARGET = "vm-bootsys.img"
-VMIMAGE_FLAVOR = "televm"
 
 # UBI arguments
 UBINIZE_ARGS = "-m 4096 -p 256KiB -s 4096"

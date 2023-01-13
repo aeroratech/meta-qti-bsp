@@ -10,7 +10,7 @@ do_compose_vmimage[recrdeptask] = "do_ramdisk_create"
 DEPENDS += "ext4-utils-native mtd-utils-native"
 
 # Add list of VMs to pack together
-VM_IMAGES ?= "televm"
+VM_IMAGES ?= "televm fotavm"
 
 VMBOOTSYS_DEPLOY_DIR ?= "${DEPLOY_DIR}/images/${BASEMACHINE}-vmbootsys"
 VMPACKIMAGE_UBI_TARGET ?= "${VMBOOTSYS_DEPLOY_DIR}/vm-bootsys.ubi"
@@ -23,7 +23,11 @@ VM_COMBINED_SIZE_EXT4 ?= "270000000"
 
 do_copy_vmimages[dirs] = "${VMBOOTSYS_DEPLOY_DIR} ${VMBOOTSYS_DEPLOY_DIR}/vm-images/"
 do_copy_vmimages() {
-    cp -R ${DEPLOY_DIR}/images/${BASEMACHINE}-${VM}/vm-images/* ${VMBOOTSYS_DEPLOY_DIR}/vm-images/
+     if [ -d "${DEPLOY_DIR}/images/${BASEMACHINE}-${VM}/vm-images/" ]; then
+        cp -R ${DEPLOY_DIR}/images/${BASEMACHINE}-${VM}/vm-images/* ${VMBOOTSYS_DEPLOY_DIR}/vm-images/
+     else
+        echo "${DEPLOY_DIR}/images/${BASEMACHINE}-${VM} does not exist."
+     fi
 }
 
 do_setup_package[cleandirs] = "${VMBOOTSYS_DEPLOY_DIR}"
