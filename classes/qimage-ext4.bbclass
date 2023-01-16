@@ -196,7 +196,8 @@ do_makecache[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_makecache() {
     make_ext4fs  -s -l ${CACHE_IMAGE_ROOTFS_SIZE} \
-                ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${CACHEIMAGE_TARGET}
+                ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${CACHEIMAGE_TARGET} \
+                ${IMAGE_ROOTFS}/cache
 }
 
 ################################################
