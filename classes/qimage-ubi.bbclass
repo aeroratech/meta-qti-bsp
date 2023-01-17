@@ -16,7 +16,12 @@ SYSTEMIMAGE_UBIFS_TARGET ?= "${@bb.utils.contains('IMAGE_FEATURES', 'gluebi', bb
 USERIMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/userfs.ubifs"
 USERIMAGE_ROOTFS ?= "${WORKDIR}/usrfs"
 
+VMIMAGE_UBI_TARGET ?= "vm-bootsys.ubi"
+VMIMAGE_UBIFS_TARGET ?= "vm-bootsys.ubifs"
+VMIMAGE_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/vm-images/"
+
 UBINIZE_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubinize_system.cfg"
+UBINIZE_VM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubinize_vm.cfg"
 
 # Ensure SELinux file context variable is defined
 SELINUX_FILE_CONTEXTS ?= ""
@@ -182,8 +187,34 @@ fakeroot do_makesystem_ubi() {
     ubinize -o ${SYSTEMIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_CFG}
 }
 
+# Need to copy ubinize_vm.cfg file in the deploy directory
+do_create_ubinize_vm_config[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+
+do_create_ubinize_vm_config() {
+    cat << EOF > ${UBINIZE_VM_CFG}
+[vm_volume]
+mode=ubi
+image="${VMIMAGE_UBIFS_TARGET}"
+vol_id=0
+vol_type=dynamic
+vol_name=vm
+vol_flags=autoresize
+EOF
+
+}
+
+do_make_vmbootsys_ubi[prefuncs] += "do_create_ubinize_vm_config"
+do_make_vmbootsys_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+
+fakeroot do_make_vmbootsys_ubi() {
+    mkfs.ubifs -r ${VMIMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${VMIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
+    ubinize -o ${VMIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_VM_CFG}
+}
+
 python () {
-    if bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
+    if bb.utils.contains('IMAGE_FEATURES', 'vm', True, False, d):
+        bb.build.addtask('do_make_vmbootsys_ubi', 'do_image_complete', 'do_compose_vmimage', d)
+    elif bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
         bb.build.addtask('do_makesystem_gluebi', 'do_image_complete', 'do_image', d)
     else:
         bb.build.addtask('do_makesystem_ubi', 'do_image_complete', 'do_image', d)
