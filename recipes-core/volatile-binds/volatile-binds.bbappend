@@ -97,6 +97,7 @@ VOLATILE_BINDS_sa515m = "\
 /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
 /systemrw/boot_hsic_comp /etc/usb/boot_hsic_comp\n\
 /systemrw/c2c /etc/c2c/\n\
+/systemrw/tel.conf /etc/tel.conf\n\
 "
 
 VOLATILE_BINDS_sa415m = "\
