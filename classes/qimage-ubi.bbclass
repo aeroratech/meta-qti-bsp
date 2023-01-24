@@ -64,7 +64,7 @@ create_symlink_systemd_ubi_mount_rootfs() {
     # Symlink ubi mount files to systemd targets
     for entry in ${MACHINE_MNT_POINTS}; do
         mountname="${entry:1}"
-        if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" ]] ; then
+        if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" || "$mountname" == "vm-bootsys" ]] ; then
             cp -f ${IMAGE_ROOTFS_UBI}/lib/systemd/system/${mountname}-mount-ubi.service ${IMAGE_ROOTFS_UBI}/lib/systemd/system/${mountname}-mount.service
             ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.requires/${mountname}-mount.service
         else
@@ -94,6 +94,7 @@ create_symlink_systemd_ubi_mount_rootfs() {
     rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/sysinit.target.wants/rmt_storage.service
     rm -rf ${IMAGE_ROOTFS_UBI}/etc/udev/rules.d/rmtstorage.rules
     rm -rf ${IMAGE_ROOTFS_UBI}/etc/systemd/system/local-fs-pre.target.wants/set-slotsuffix.service
+    rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.requires/vm-bootsys.mount
     # Recheck when overlay support added for ubi
     rm -rf ${IMAGE_ROOTFS_UBI}/lib/systemd/system/local-fs.target.wants/overlay-restore.service
 
