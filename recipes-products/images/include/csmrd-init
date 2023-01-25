@@ -495,7 +495,15 @@ do_nbdtab()
     sed -i 's+/dev/disk/by-partlabel/persist+/dev/nbd2+g' persist.mount
     sed -i 's+/dev/disk/by-partlabel/userdata+/dev/nbd3+g' data.mount
     sed -i 's+/dev/disk/by-partlabel/cache+/dev/nbd4+g' cache.mount
-    sed -i 's+/dev/disk/by-partlabel/modem+/dev/nbd5+g' firmware.mount
+    if [ -f firmware-mount.service ]; then
+        sed -i 's+/dev/disk/by-partlabel/modem${SLOT_SUFFIX}+/dev/nbd5+g' firmware-mount.service
+        sed -i '/BindsTo=/d' firmware-mount.service
+        sed -i '/After=/d' firmware-mount.service
+    elif [ -f firmware.mount ]; then
+        sed -i 's+/dev/disk/by-partlabel/modem+/dev/nbd5+g' firmware.mount
+    else
+        echo "firmware.mount or firmware-mount.service are not found"
+    fi
 
     # Switch root to remote sysfs
     echo "Switching to system partition on $partition"
