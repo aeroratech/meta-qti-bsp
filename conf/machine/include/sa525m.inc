@@ -55,7 +55,6 @@ MACHINE_FEATURES += "qti-sdx dm-verity-none qti-sensors qti-mvm qti-security qse
 CONFLICT_MACHINE_FEATURES += "qti-cv2x"
 
 MACHINE_MNT_POINTS = " \
-    /dsp \
     /firmware \
     /systemrw \
     /persist \
