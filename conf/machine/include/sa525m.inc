@@ -32,7 +32,6 @@ KERNEL_PREBUILT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525-${KERNEL_
 KERNEL_OUT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525-${KERNEL_VARIANT}defconfig"
 KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa525"
 
-DEFAULT_ENFORCING = "permissive"
 
 # MACHINE_FEATURES ##
 # qti-adsp:               Machine supports QTI adsp solution
