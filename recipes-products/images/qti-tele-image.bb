@@ -2,7 +2,7 @@
 # Provides packages required to build
 # QTI Linux Telematics image.
 
-inherit qimage
+inherit qimage populate_sdk_qti
 
 IMAGE_FEATURES += "read-only-rootfs ${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'persist-volume', '', d)}"
 
@@ -77,3 +77,7 @@ do_copy_abl() {
         install -m 0644 ${KERNEL_PREBUILT_PATH}/abl_userdebug.elf ${DEPLOY_DIR_IMAGE}/${PN}/abl_userdebug.elf
     fi
 }
+
+# Remove unsupported SDK packages
+TOOLCHAIN_TARGET_TASK_remove = "ath6kl-utils-staticdev"
+TOOLCHAIN_TARGET_TASK_remove = "kernel-devsrc"
