@@ -15,6 +15,20 @@ do_unpack[cleandirs] += " ${S}"
 
 do_unpack () {
     cp -a ${WORKSPACE}/kernel-${PREFERRED_VERSION_linux-msm}/kernel_platform/msm-kernel/COPYING ${S}
+
+    # Temp workaround for path update
+    mkdir -p ${KERNEL_PREBUILT_PATH}/../msm-kernel/usr/
+    mkdir -p ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/
+    mkdir -p ${KERNEL_PREBUILT_PATH}/../msm-kernel/scripts/
+    cp -a ${KERNEL_PREBUILT_PATH}/gen_init_cpio ${KERNEL_PREBUILT_PATH}/../msm-kernel/usr/
+    cp -a ${KERNEL_PREBUILT_PATH}/initramfs_data.cpio ${KERNEL_PREBUILT_PATH}/../msm-kernel/usr/
+    cp -a ${KERNEL_PREBUILT_PATH}/initramfs_inc_data ${KERNEL_PREBUILT_PATH}/../msm-kernel/usr/
+    cp -a ${KERNEL_PREBUILT_PATH}/signing_cert.pem ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/
+    cp -a ${KERNEL_PREBUILT_PATH}/signing_key.pem ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/
+    cp -a ${KERNEL_PREBUILT_PATH}/verity_cert.pem ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/
+    cp -a ${KERNEL_PREBUILT_PATH}/verity_key.pem ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/
+    cp -a ${KERNEL_PREBUILT_PATH}/signing_key.x509 ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/
+    cp -a ${KERNEL_PREBUILT_PATH}/sign-file ${KERNEL_PREBUILT_PATH}/../msm-kernel/scripts/
 }
 
 do_configure () {
