@@ -98,6 +98,15 @@ create_system_dir() {
     fi
 }
 
+remove_generator_binaries() {
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-debug-generator
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-fstab-generator
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-gpt-auto-generator
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-hibernate-resume-generator
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-rc-local-generator
+    rm -rf ${IMAGE_ROOTFS}/lib/systemd/system-generators/systemd-system-update-generator
+}
+
 # Below is to generate sparse ext4 recovery image (OE by default supports raw ext4 images)
 do_create_recoveryfs_ext4() {
     if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'false', 'true', d)}; then
@@ -111,9 +120,11 @@ do_create_recoveryfs_ubi[prefuncs] += "update_usb_composition"
 do_create_recoveryfs_ubi[prefuncs] += "generate_public_key"
 do_create_recoveryfs_ubi[prefuncs] += "create_system_dir"
 do_create_recoveryfs_ubi[prefuncs] += "create_ubinize_config"
+do_create_recoveryfs_ubi[prefuncs] += "remove_generator_binaries"
 do_create_recoveryfs_ubi[dirs] = "${IMGDEPLOYDIR}"
 
 do_create_recoveryfs_ext4[prefuncs] = "do_fsconfig"
+do_create_recoveryfs_ext4[prefuncs] += "remove_generator_binaries"
 do_create_recoveryfs_ext4[dirs] = "${IMGDEPLOYDIR}"
 
 python () {
