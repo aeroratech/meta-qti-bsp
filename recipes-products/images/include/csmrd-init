@@ -363,7 +363,7 @@ mhi_ch_close() {
     return 0
 }
 
-MHI_CH_RETRIES=90
+MHI_CH_RETRIES=300
 # wait_for_mhi_ch - Waits on and opens a mhi channel to send/recv messages
 # @MHI_CH:  Path to mhi channel
 # @RETRIES: (optional) Retry count to open MHI_CH; default MHI_CH_RETRIES
