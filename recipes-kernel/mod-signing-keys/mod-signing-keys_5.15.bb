@@ -17,9 +17,11 @@ do_compile[noexec] = "1"
 do_install() {
  # Copy kernel certs
  install -d ${D}/kernel-certs
- install -m 0644 ${S}/msm-kernel/certs/signing_key.pem ${D}/kernel-certs/
- install -m 0644 ${S}/msm-kernel/certs/verity_key.pem ${D}/kernel-certs/
- install -m 0644 ${S}/msm-kernel/certs/verity_cert.pem ${D}/kernel-certs/
+ if "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v3', 'true', 'false', d), 'false', d)}"; then
+    install -m 0644 ${S}/msm-kernel/certs/signing_key.pem ${D}/kernel-certs/
+    install -m 0644 ${S}/msm-kernel/certs/verity_key.pem ${D}/kernel-certs/
+    install -m 0644 ${S}/msm-kernel/certs/verity_cert.pem ${D}/kernel-certs/
+ fi
 }
 
 SYSROOT_DIRS += "/kernel-certs"
