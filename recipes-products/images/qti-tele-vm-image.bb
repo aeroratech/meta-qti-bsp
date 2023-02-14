@@ -13,6 +13,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     systemd-machine-units \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location-vm', '', d)} \
     packagegroup-qti-telematics \
+    packagegroup-qti-data-vm \
 "
 
 # Exclude packages
