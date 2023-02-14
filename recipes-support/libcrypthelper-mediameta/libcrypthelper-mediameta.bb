@@ -16,6 +16,7 @@ SRC_URI  += "file://sdmsteppe/"
 SRC_URI  += "file://neo/"
 SRC_URI  += "file://cinder/"
 SRC_URI  += "file://qrb5165/"
+SRC_URI  += "file://qcs6490/"
 
 S = "${WORKDIR}/crypthelper-mediameta"
 
