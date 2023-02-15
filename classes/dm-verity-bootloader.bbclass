@@ -3,7 +3,7 @@
 
 DEPENDS += " verity-utils-native"
 
-CONFLICT_MACHINE_FEATURES += " dm-verity-none dm-verity-initramfs"
+CONFLICT_MACHINE_FEATURES += " dm-verity-none dm-verity-initramfs dm-verity-initramfs-v4"
 
 FIXED_SALT = "aee087a5be3b982978c923f566a94613496b417f2af592639bc80d141e34dfe7"
 BLOCK_SIZE = "4096"

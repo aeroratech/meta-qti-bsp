@@ -32,7 +32,7 @@
 
 # Generates boot.img without verity
 
-CONFLICT_MACHINE_FEATURES += " dm-verity-bootloader dm-verity-initramfs"
+CONFLICT_MACHINE_FEATURES += " dm-verity-bootloader dm-verity-initramfs dm-verity-initramfs-v4"
 
 BOOTIMGDEPLOYDIR = "${WORKDIR}/deploy-${PN}-bootimage-complete"
 
