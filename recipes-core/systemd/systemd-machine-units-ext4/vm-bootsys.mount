@@ -1,0 +1,11 @@
+# Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+[Unit]
+Before=local-fs.target
+ConditionDirectoryNotEmpty=!/vm-bootsys
+
+[Mount]
+What=/dev/disk/by-partlabel/vm-bootsys
+Where=/vm-bootsys
+Options=noexec,nodev,ro,context=system_u:object_r:vm-bootsys_t:s0
