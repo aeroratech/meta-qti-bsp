@@ -19,7 +19,7 @@ VMPACKIMAGE_ROOTFS ?= "${VMBOOTSYS_DEPLOY_DIR}/vm-images/"
 UBINIZE_VMPACK_CFG ?= "${VMBOOTSYS_DEPLOY_DIR}/ubinize_vm.cfg"
 
 # Size of the combined EXT4 image
-VM_COMBINED_SIZE_EXT4 ?= "270000000"
+VM_COMBINED_SIZE_EXT4 ?= "293601280"
 
 do_copy_vmimages[dirs] = "${VMBOOTSYS_DEPLOY_DIR} ${VMBOOTSYS_DEPLOY_DIR}/vm-images/"
 do_copy_vmimages() {
