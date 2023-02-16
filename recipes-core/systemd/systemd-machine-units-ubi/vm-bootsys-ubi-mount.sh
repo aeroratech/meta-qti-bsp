@@ -26,6 +26,15 @@ FindAndMountUBI () {
     done
 }
 
+CreateSplitBinsSymlink () {
+   vmbootsys_dir=$1
+   device=$2
+   for dir in $vmbootsys_dir/*/boot
+    do
+        ln -sf $dir/* $device/
+    done
+}
+
 mtd_file=/proc/mtd
 if [ -x /sbin/restorecon ]; then
     vm_bootsys_selinux_opt=",context=system_u:object_r:vm-bootsys_t:s0"
@@ -33,5 +42,6 @@ else
     vm_bootsys_selinux_opt=""
 fi
 eval FindAndMountUBI vm-bootsys /vm-bootsys $vm_bootsys_selinux_opt
+eval CreateSplitBinsSymlink /vm-bootsys /firmware/image/
 
 exit 0
