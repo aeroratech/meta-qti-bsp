@@ -1,6 +1,6 @@
-# QTI Linux Telematics image file.
+# QTI Linux Telematics Host VM image file.
 # Provides packages required to build
-# QTI Linux Telematics image.
+# QTI Linux Telematics Host VM image.
 
 require qti-tele-image.inc
 
