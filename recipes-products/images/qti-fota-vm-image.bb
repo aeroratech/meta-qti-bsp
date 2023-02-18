@@ -11,6 +11,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     ${@oe.utils.conditional('ENABLE_SECUREMSM', 'True', 'packagegroup-qti-securemsm', '', d)} \
     post-boot \
     systemd-machine-units \
+    packagegroup-qti-telematics \
 "
 
 # Exclude packages
