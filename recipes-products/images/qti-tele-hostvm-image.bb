@@ -19,6 +19,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         pps-tools \
         spitools \
         coreutils \
+        android-tools \
         packagegroup-android-utils \
         packagegroup-qti-core \
         ${@bb.utils.contains('MACHINE_FEATURES', 'android-binder', 'binder', '', d)} \
