@@ -1,0 +1,1 @@
+root=/dev/dm-0 ro init=/sbin/init 
