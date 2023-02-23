@@ -42,6 +42,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'mtd-utils-ubifs', '', d)} \
         qmi-shutdown-modem \
         modem-shutdown \
+        ${@bb.utils.contains('MACHINE_FEATURES', 'qti-virtualization', 'qcrosvm', '', d)} \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
 "
 
