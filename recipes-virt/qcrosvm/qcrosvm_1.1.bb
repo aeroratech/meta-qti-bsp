@@ -17,9 +17,18 @@ SRC_URI = "\
         file://external/rust/crates/ \
         file://external/minijail/ \
         file://qvirtmgr.service \
+        file://Cargo.toml \
+        file://devices-Cargo.toml \
 "
 
 S = "${WORKDIR}/telematics/apps/open-source/qcrosvm"
+
+do_patch_cargo () {
+  mv -f ${WORKDIR}/Cargo.toml ${WORKDIR}/external/crosvm/Cargo.toml
+  mv -f ${WORKDIR}/devices-Cargo.toml ${WORKDIR}/external/crosvm/devices/Cargo.toml
+}
+
+do_patch[postfuncs] += "do_patch_cargo"
 
 SYSTEMD_SERVICE_${PN} = "qvirtmgr.service"
 
