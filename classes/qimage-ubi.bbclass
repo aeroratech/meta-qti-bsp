@@ -118,6 +118,58 @@ create_symlink_systemd_ubi_mount_rootfs() {
 do_create_ubinize_config[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_create_ubinize_config() {
+if $(echo ${COMBINED_FEATURES} | grep -q "qti-ab-boot") ; then
+cat << EOF >> ${UBINIZE_CFG}
+[sysfs_a_volume]
+mode=ubi
+image="${SYSTEMIMAGE_UBIFS_TARGET}"
+vol_id=0
+vol_type=dynamic
+vol_name=rootfs_a
+vol_size="${ROOTFS_VOLUME_SIZE}"
+
+[sysfs_b_volume]
+mode=ubi
+image="${SYSTEMIMAGE_UBIFS_TARGET}"
+vol_id=1
+vol_type=dynamic
+vol_name=rootfs_b
+vol_size="${ROOTFS_VOLUME_SIZE}"
+
+[usrfs_volume]
+mode=ubi
+image="${USERIMAGE_UBIFS_TARGET}"
+vol_id=2
+vol_type=dynamic
+vol_name=usrfs
+vol_flags=autoresize
+
+[cache_volume]
+mode=ubi
+vol_id=3
+vol_type=dynamic
+vol_name=cachefs
+vol_size="${CACHE_VOLUME_SIZE}"
+
+[systemrw_volume]
+mode=ubi
+vol_id=4
+vol_type=dynamic
+vol_name=systemrw
+vol_size="${SYSTEMRW_VOLUME_SIZE}"
+
+EOF
+    if $(echo ${IMAGE_FEATURES} | grep -q "persist-volume"); then
+        cat << EOF >> ${UBINIZE_CFG}
+[persist_volume]
+mode=ubi
+vol_id=5
+vol_type=dynamic
+vol_name=persist
+vol_size="${PERSIST_VOLUME_SIZE}"
+EOF
+    fi
+else
     cat << EOF > ${UBINIZE_CFG}
 [sysfs_volume]
 mode=ubi
@@ -126,6 +178,7 @@ vol_id=0
 vol_type=dynamic
 vol_name=rootfs
 vol_size="${ROOTFS_VOLUME_SIZE}"
+
 [usrfs_volume]
 mode=ubi
 image="${USERIMAGE_UBIFS_TARGET}"
@@ -133,12 +186,14 @@ vol_id=1
 vol_type=dynamic
 vol_name=usrfs
 vol_flags=autoresize
+
 [cache_volume]
 mode=ubi
 vol_id=2
 vol_type=dynamic
 vol_name=cachefs
 vol_size="${CACHE_VOLUME_SIZE}"
+
 [systemrw_volume]
 mode=ubi
 vol_id=3
@@ -148,6 +203,7 @@ vol_size="${SYSTEMRW_VOLUME_SIZE}"
 EOF
     if $(echo ${IMAGE_FEATURES} | grep -q "persist-volume"); then
         cat << EOF >> ${UBINIZE_CFG}
+
 [persist_volume]
 mode=ubi
 vol_id=4
@@ -156,7 +212,7 @@ vol_name=persist
 vol_size="${PERSIST_VOLUME_SIZE}"
 EOF
     fi
-
+fi
 }
 
 create_rootfs_ubi[cleandirs] = "${IMAGE_ROOTFS_UBI}"
