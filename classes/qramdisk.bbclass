@@ -191,7 +191,7 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/lib/libpcre.so.1 lib/libpcre.so.1
         fi
 
-        if ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs', 'true', 'false', d), 'false', d)}; then
+        if ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains_any('MACHINE_FEATURES', 'dm-verity-initramfs dm-verity-initramfs-v3', 'true', 'false', d), 'false', d)}; then
             cp ${IMAGE_ROOTFS}/usr/sbin/veritysetup bin/
             cp ${WORKDIR}/verity.env etc/
             cp ${WORKDIR}/verity_sig.txt etc/
