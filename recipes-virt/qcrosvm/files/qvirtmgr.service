@@ -3,6 +3,8 @@
 
 [Unit]
 Description=Qualcomm Virtualization Manager
+After=vm-bootsys-mount.service
+Requires=vm-bootsys-mount.service
 
 [Service]
 Restart=on-failure
