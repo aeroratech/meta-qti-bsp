@@ -53,9 +53,10 @@ KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa525"
 # qti-tzlog:              Machine supports tz/qsee logs
 # qti-smciqseecomd:       Machine supports smcinvoke based listeners
 # android-binder:         Machine supports android binder
-# dm-verity-initramfs-v4  Machine supports Initramfs and dm-verity working with AVB
+# dm-verity-initramfs-v4: Machine supports Initramfs and dm-verity working with AVB
+# qti-nad-telaf:          Machine supports telematics application framework
 
-MACHINE_FEATURES += "qti-sdx dm-verity-initramfs-v4 qti-sensors qti-mvm qti-security qseecompat qti-tzlog qti-data-modem qti-location qti-audio qti-smciqseecomd qti-recovery qti-wwan-plus-cv2x qti-wlan qti-bluetooth qwesd android-binder qti-c2c qti-cv2x-compensator qti-dynamic-tsensreset"
+MACHINE_FEATURES += "qti-sdx dm-verity-initramfs-v4 qti-sensors qti-mvm qti-security qseecompat qti-tzlog qti-data-modem qti-location qti-audio qti-smciqseecomd qti-recovery qti-wwan-plus-cv2x qti-wlan qti-bluetooth qwesd android-binder qti-c2c qti-cv2x-compensator qti-dynamic-tsensreset qti-nad-telaf"
 
 CONFLICT_MACHINE_FEATURES += "qti-cv2x"
 
