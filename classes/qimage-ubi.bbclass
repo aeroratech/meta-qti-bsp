@@ -205,6 +205,7 @@ EOF
 }
 
 do_make_vmbootsys_ubi[prefuncs] += "do_create_ubinize_vm_config"
+do_make_vmbootsys_ubi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
 do_make_vmbootsys_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_make_vmbootsys_ubi() {
