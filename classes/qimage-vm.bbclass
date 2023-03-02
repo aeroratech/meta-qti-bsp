@@ -53,6 +53,8 @@ EOF
 do_pack_vm_images[nostamp] = "1"
 do_pack_vm_images[prefuncs] += 'do_setup_package'
 do_pack_vm_images[prefuncs] += "${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_create_ubinize_vmpack_config', '', d)}"
+do_pack_vm_images[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
+do_verity_ubinize[depends] += "${PN}:do_make_vmbootsys_ubi"
 
 do_pack_vm_images() {
     # copy file_contexts file to deploy dir
