@@ -62,7 +62,7 @@ IMAGE_LOGIN_MANAGER = "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', "", "bu
 DEPENDS += "\
              ext4-utils-native \
              gen-partitions-tool-native \
-             mtd-utils-native \
+             ${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'mtd-utils-native', '', d)} \
              openssl-native \
              pkgconfig-native \
              ptool-native \
