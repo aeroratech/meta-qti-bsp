@@ -7,20 +7,31 @@ PACKAGE_ARCH = "all"
 
 inherit allarch nopackages
 
-FILESPATH =+ "${KERNEL_PREBUILT_PATH}/../:"
-SRC_URI   =  "file://msm-kernel/"
-S = "${WORKDIR}"
+FILESPATH =+ "${WORKSPACE}:"
+
+SRC_URI   =  "file://kernel-${PV}/kernel_platform/msm-kernel"
+
+S  =  "${WORKDIR}/kernel-${PV}/kernel_platform/msm-kernel"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
+
+do_copy_cert_files() {
+    cp -a ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/signing_key.pem ${B}/signing_key.pem
+    cp -a ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/signing_key.pem ${B}/verity_key.pem
+    cp -a ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/signing_key.pem ${B}/verity_cert.pem
+
+}
+
+addtask do_copy_cert_files after do_compile before do_install
 
 do_install() {
  # Copy kernel certs
  install -d ${D}/kernel-certs
  if "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v3', 'true', 'false', d), 'false', d)}"; then
-    install -m 0644 ${S}/msm-kernel/certs/signing_key.pem ${D}/kernel-certs/
-    install -m 0644 ${S}/msm-kernel/certs/verity_key.pem ${D}/kernel-certs/
-    install -m 0644 ${S}/msm-kernel/certs/verity_cert.pem ${D}/kernel-certs/
+    install -m 0644 ${B}/signing_key.pem ${D}/kernel-certs/
+    install -m 0644 ${B}/verity_key.pem ${D}/kernel-certs/
+    install -m 0644 ${B}/verity_cert.pem ${D}/kernel-certs/
  fi
 }
 
