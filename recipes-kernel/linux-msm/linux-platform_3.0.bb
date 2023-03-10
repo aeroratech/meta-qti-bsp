@@ -23,7 +23,6 @@ do_unpack () {
     cp -a ${KERNEL_PREBUILT_PATH}/gen_init_cpio ${KERNEL_PREBUILT_PATH}/../msm-kernel/usr/
     cp -a ${KERNEL_PREBUILT_PATH}/initramfs_data.cpio ${KERNEL_PREBUILT_PATH}/../msm-kernel/usr/
     cp -a ${KERNEL_PREBUILT_PATH}/initramfs_inc_data ${KERNEL_PREBUILT_PATH}/../msm-kernel/usr/
-    cp -a ${KERNEL_PREBUILT_PATH}/signing_cert.pem ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/
     cp -a ${KERNEL_PREBUILT_PATH}/signing_key.pem ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/
     cp -a ${KERNEL_PREBUILT_PATH}/verity_cert.pem ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/
     cp -a ${KERNEL_PREBUILT_PATH}/verity_key.pem ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/
