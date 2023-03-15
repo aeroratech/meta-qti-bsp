@@ -5,6 +5,7 @@
 Description=Mount vmbootsys partition to /vm-bootsys mount point
 SourcePath=/etc/initscripts/vm-bootsys-ubi-mount.sh
 Before=local-fs.target
+DefaultDependencies=no
 
 [Service]
 Type=oneshot
