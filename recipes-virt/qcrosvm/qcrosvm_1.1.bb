@@ -19,6 +19,7 @@ SRC_URI = "\
         file://qvirtmgr.service \
         file://Cargo.toml \
         file://devices-Cargo.toml \
+        file://vmm-host-Cargo.toml \
 "
 
 S = "${WORKDIR}/telematics/apps/open-source/qcrosvm"
@@ -26,6 +27,7 @@ S = "${WORKDIR}/telematics/apps/open-source/qcrosvm"
 do_patch_cargo () {
   mv -f ${WORKDIR}/Cargo.toml ${WORKDIR}/external/crosvm/Cargo.toml
   mv -f ${WORKDIR}/devices-Cargo.toml ${WORKDIR}/external/crosvm/devices/Cargo.toml
+  mv -f ${WORKDIR}/vmm-host-Cargo.toml ${WORKDIR}/external/crosvm/third_party/vmm_vhost/Cargo.toml
 }
 
 do_patch[postfuncs] += "do_patch_cargo"
