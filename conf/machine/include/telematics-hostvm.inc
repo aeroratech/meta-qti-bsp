@@ -9,3 +9,4 @@ MACHINE_MNT_POINTS = " \
     /cache \
     /vm-bootsys \
 "
+KERNEL_PVM_VARIANT = "_hostvm"

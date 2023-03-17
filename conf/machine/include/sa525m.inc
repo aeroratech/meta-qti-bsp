@@ -26,11 +26,12 @@ KERNEL_CMD_PARAMS = "ro rootwait console=ttyMSM0,115200,n8 androidboot.hardware=
 KERNEL_VARIANT = ""
 KERNEL_VARIANT_qti-distro-debug = "debug_"
 KERNEL_VARIANT_qti-distro-perf = "perf_"
+KERNEL_PVM_VARIANT ?= ""
 KERNEL_DTB_NAMES = "dtbs/dtb.img"
 
 MACHINE_USES_KERNEL_PREBUILTS = "True"
-KERNEL_PREBUILT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525-${KERNEL_VARIANT}defconfig/dist"
-KERNEL_OUT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525-${KERNEL_VARIANT}defconfig"
+KERNEL_PREBUILT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525${KERNEL_PVM_VARIANT}-${KERNEL_VARIANT}defconfig/dist"
+KERNEL_OUT_PATH ?= "${WORKSPACE}/kernel-5.15/out/msm-kernel-sa525${KERNEL_PVM_VARIANT}-${KERNEL_VARIANT}defconfig"
 KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa525"
 
 
