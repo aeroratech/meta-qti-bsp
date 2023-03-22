@@ -56,8 +56,9 @@ KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa410m_auto"
 # qti-sensors:            Machine supports sensors qti solution
 # qti-location:           Machine supports Location solution
 # qti-data-modem:         Machine supports QTI data modem solution
+# qti-c2c:                Machine supports QTI c2c solution
 
-MACHINE_FEATURES += "qti-sdx nossd_listener dm-verity-none qti-remoteproc qti-sensors qti-qseecom qti-tzlog qti-security qti-audio qti-data-modem qti-location qti-wlan qti-bluetooth qwesd"
+MACHINE_FEATURES += "qti-sdx nossd_listener dm-verity-none qti-remoteproc qti-sensors qti-qseecom qti-tzlog qti-security qti-audio qti-data-modem qti-location qti-wlan qti-bluetooth qwesd qti-c2c"
 
 MACHINE_MNT_POINTS = " \
     /dsp \
