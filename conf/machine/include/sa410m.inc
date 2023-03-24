@@ -28,7 +28,7 @@ KERNEL_CONFIG ?= "vendor/sa410m_auto_defconfig"
 KERNEL_CONFIG_qti-distro-debug ?= "vendor/sa410m_auto-debug_defconfig"
 CONSOLE_PARAM ?= "console=ttyMSM0,115200,n8 no_console_suspend=1"
 CONSOLE_PARAM_qti-distro-perf ?= "console=ttyMSM0,115200,n8 no_console_suspend=1 loglevel=0 systemd.log_level=0 systemd.show_status=0"
-KERNEL_CMD_PARAMS = "noinitrd ro rootwait ${CONSOLE_PARAM} androidboot.hardware=qcom androidboot.console=ttyMSM0 lpm_levels.sleep_disabled=1 service_locator.enable=1 firmware_class.path=/lib/firmware/updates msm_rtb.filter=0x237 earlycon=qcom_geni,0x4a90000 systemd.setenv="SLOT_SUFFIX"="_a""
+KERNEL_CMD_PARAMS = "noinitrd ro rootwait ${CONSOLE_PARAM} coherent_pool=256K androidboot.hardware=qcom androidboot.console=ttyMSM0 lpm_levels.sleep_disabled=1 service_locator.enable=1 firmware_class.path=/lib/firmware/updates msm_rtb.filter=0x237 earlycon=qcom_geni,0x4a90000 systemd.setenv="SLOT_SUFFIX"="_a""
 
 KERNEL_VARIANT = ""
 KERNEL_VARIANT_qti-distro-debug = "debug_"
