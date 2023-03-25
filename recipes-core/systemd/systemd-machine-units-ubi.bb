@@ -41,5 +41,8 @@ add_ubi_scripts () {
 add_squashfs_scripts () {
     if ${@bb.utils.contains('MACHINE_MNT_POINTS', '/firmware', 'true', 'false', d)}; then
         install -m 0744 ${S}/non-hlos-squash.sh ${D}${sysconfdir}/initscripts/firmware-ubi-mount.sh
+        if ${@bb.utils.contains('DISTRO_FEATURES','qti-nad-ubi','true','false',d)}; then
+            sed -i -e 's/FindAndMountUBI modem/FindAndMountUBIVol firmware/' ${D}${sysconfdir}/initscripts/firmware-ubi-mount.sh
+        fi
     fi
 }
