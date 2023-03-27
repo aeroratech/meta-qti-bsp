@@ -26,6 +26,10 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# Changes from Qualcomm Innovation Center are provided under the following license:
+# Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 FindAndMountUBI () {
    partition=$1
    dir=$2
@@ -71,7 +75,7 @@ then
 
     eval FindAndMountUBI modem$SLOT_SUFFIX /firmware $firmware_selinux_opt
 else
-    mtd_block_number=`cat $mtd_file | grep -i modem | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+    mtd_block_number=`cat $mtd_file | grep -i -w modem | sed 's/^mtd//' | awk -F ':' '{print $1}'`
     ubiattach -m $mtd_block_number -d 1 /dev/ubi_ctrl
 
     eval FindAndMountUBI modem /firmware $firmware_selinux_opt
