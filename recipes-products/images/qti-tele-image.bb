@@ -51,3 +51,11 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
        qmi-shutdown-modem modem-shutdown \
        packagegroup-qti-security-test \
 "
+
+# Following packages will be enabled later
+CORE_IMAGE_EXTRA_INSTALL_remove_mdm9607 = "\
+       ${@bb.utils.contains('DISTRO_FEATURES', 'qti-telux', 'packagegroup-qti-telsdk', '', d)} \
+       subsystem-ramdump \
+       qmi-shutdown-modem \
+"
+
