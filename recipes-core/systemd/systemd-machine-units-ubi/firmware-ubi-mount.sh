@@ -74,6 +74,9 @@ then
     ubiattach -m $mtd_block_number -d 2 /dev/ubi_ctrl
 
     eval FindAndMountUBI modem$SLOT_SUFFIX /firmware $firmware_selinux_opt
+
+    mtd_block_number=`cat $mtd_file | grep -i misc | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+    chown 1000:6 /dev/mtd$mtd_block_number
 else
     mtd_block_number=`cat $mtd_file | grep -i -w modem | sed 's/^mtd//' | awk -F ':' '{print $1}'`
     ubiattach -m $mtd_block_number -d 1 /dev/ubi_ctrl
