@@ -33,6 +33,7 @@ DefaultDependencies=no
 
 [Service]
 Type=oneshot
+PassEnvironment="SLOT_SUFFIX"
 ExecStartPre=install -D -m 0664 -o radio -g radio /dev/null /var/run/resolv.conf
 ExecStart=/etc/initscripts/firmware-ubi-mount.sh
 Nice=-20
