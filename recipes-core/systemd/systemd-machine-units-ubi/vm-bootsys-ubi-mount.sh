@@ -56,7 +56,7 @@ then
 
     eval FindAndMountUBI vm-bootsys$SLOT_SUFFIX /vm-bootsys $vm_bootsys_selinux_opt
 else
-    mtd_block_number=`cat $mtd_file | grep -i vm-bootsys | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+    mtd_block_number=`cat $mtd_file | grep -i -w vm-bootsys | sed 's/^mtd//' | awk -F ':' '{print $1}'`
     ubiattach -m $mtd_block_number -d 3 /dev/ubi_ctrl
 
     eval FindAndMountUBI vm-bootsys /vm-bootsys $vm_bootsys_selinux_opt
