@@ -18,6 +18,9 @@ SRC_URI_append_qcs610 += "file://squashfs.cfg"
 SRC_URI_append_qrb5165 += " file://qca6390.cfg"
 SRC_URI_append_qrb5165 += " file://qcn9000.cfg"
 
+SRC_URI_append_qcs6490 += " file://qcs6490.cfg"
+SRC_URI_append_qcs6490 += " file://android_binderfs.cfg"
+
 DEPENDS += "llvm-arm-toolchain-native virtual/dtc-native rsync-native clang-native"
 TOOLCHAIN = "clang"
 RUNTIME = "llvm"
