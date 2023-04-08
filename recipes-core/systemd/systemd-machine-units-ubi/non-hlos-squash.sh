@@ -40,20 +40,28 @@ IsFirmwareMounted () {
 
 GetFirmwareVolumeID () {
     firmware=$1
-    act_slot=`cat /proc/cmdline | sed 's/.*SLOT_SUFFIX=//' | awk '{print $1}' | tr -d '"'`
+    act_slot=`cat /proc/cmdline | awk -F'SLOT_SUFFIX=' '{print $2}' | awk '{print $1}' | tr -d '"'`
+    if [ "x${act_slot}" == "x" ]; then
+       act_slot="_a"
+    fi
     echo "active slot is $act_slot "  > /dev/kmsg
     firmware_ab_name=${firmware}${act_slot}
     volcount=`cat ${UBI_SYS_CLASS}/volumes_count`
+    vol_found=""
     for vid in `seq 0 $volcount`; do
         echo $vid  > /dev/kmsg
         name=`cat ${UBI_SYS_CLASS}_$vid/name`
         if [ "$name" == "$firmware" ] || [ "$name" == "$firmware_ab_name" ]; then
             echo "volume id found for $firmware_ab_name, volume id $vid "  > /dev/kmsg
             echo $vid
+            vol_found=${vid}
             break
         fi
         echo $name  > /dev/kmsg
     done
+    if [ "${vol_found}" == "" ]; then
+       eval FindAndMountUBI modem /firmware
+    fi
 }
 
 FindAndMountUBIVol () {

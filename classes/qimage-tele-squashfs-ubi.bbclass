@@ -133,7 +133,6 @@ create_symlink_systemd_ubi_mount_rootfs() {
 do_create_ubinize_config[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 do_create_ubinize_config() {
-if $(echo ${DISTRO_FEATURES} | grep -q "qti-nad-debug-dev"); then
     cat << EOF > ${UBINIZE_CFG}
 [sysfs_a_volume]
 mode=ubi
@@ -233,7 +232,6 @@ vol_name=persist
 vol_size="${PERSIST_VOLUME_SIZE}"
 EOF
         fi
-fi
 }
 
 # Squahshfs cfg
@@ -353,21 +351,19 @@ python create_rootfs_ubi () {
 do_makesystem_ubi[prefuncs] += "create_rootfs_ubi"
 do_makesystem_ubi[prefuncs] += "create_symlink_userfs"
 do_makesystem_ubi[prefuncs] += "create_symlink_systemd_ubi_mount_rootfs"
-do_makesystem_ubi[prefuncs] += "${@bb.utils.contains('DISTRO_FEATURES', 'qti-nad-debug-dev', 'do_create_ubinize_config, '', d)}"
+do_makesystem_ubi[prefuncs] += "do_create_ubinize_config"
 do_makesystem_ubi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
 do_makesystem_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_makesystem_ubi() {
    mkfs.ubifs -r ${USERIMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS_DATA} -o ${USERIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
-   if ${@bb.utils.contains('DISTRO_FEATURES', 'qti-nad-debug-dev', 'true', 'false', d)} ; then
-      if ${@bb.utils.contains('IMAGE_FEATURES', 'modem-volume', 'true', 'false', d)}; then
-          if [ -d ${MODEM_IMAGE_DIR} ]; then
-              mkfs.ubifs -r ${MODEM_IMAGE_DIR} --selinux=${SELINUX_CONTEXT_MODEM} -o ${MODEM_UBIFS_IMAGE} ${MKUBIFS_ARGS}
-          fi
-      fi
-      mkfs.ubifs -r ${IMAGE_ROOTFS_UBI} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${SYSTEMIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
-      ubinize -o ${SYSTEMIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_CFG}
+   if ${@bb.utils.contains('IMAGE_FEATURES', 'modem-volume', 'true', 'false', d)}; then
+       if [ -d ${MODEM_IMAGE_DIR} ]; then
+           mkfs.ubifs -r ${MODEM_IMAGE_DIR} --selinux=${SELINUX_CONTEXT_MODEM} -o ${MODEM_UBIFS_IMAGE} ${MKUBIFS_ARGS}
+       fi
    fi
+   mkfs.ubifs -r ${IMAGE_ROOTFS_UBI} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${SYSTEMIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
+   ubinize -o ${SYSTEMIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_CFG}
 }
 
 do_makesystem_squashfs[prefuncs] += "do_create_squash_ubinize_config_ab"
@@ -457,7 +453,7 @@ do_verity_ubinize() {
 do_makesystem_gluebi[prefuncs] += "create_rootfs_ubi"
 do_makesystem_gluebi[prefuncs] += "create_symlink_userfs"
 do_makesystem_gluebi[prefuncs] += "create_symlink_systemd_ubi_mount_rootfs"
-do_makesystem_gluebi[prefuncs] += "${@bb.utils.contains('DISTRO_FEATURES', 'qti-nad-debug-dev', 'do_create_ubinize_config, '', d)}"
+do_makesystem_gluebi[prefuncs] += "do_create_ubinize_config"
 do_makesystem_gluebi[prefuncs] += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', 'adjust_system_size_for_verity', '', d), '', d)}"
 do_makesystem_gluebi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
 do_makesystem_gluebi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
