@@ -9,6 +9,9 @@ PACKAGE_INSTALL += "${@oe.utils.conditional('ENABLE_ADB', 'True', 'adbd usb-comp
 PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils e2fsprogs dosfstools ethtool iputils iperf2 iperf3 devmem2 tcpdump', '', d)}"
 PACKAGE_INSTALL += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'nbd-client techpack-ecpri', '', d)}"
 
+# Adding mtd-utils to support dm-verity v4 for NAND
+PACKAGE_INSTALL += "${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'mtd-utils', '', d)}"
+
 do_ramdisk_create[depends] += "virtual/kernel:do_deploy"
 do_ramdisk_create[cleandirs] += "${RAMDISKDIR}"
 fakeroot do_ramdisk_create() {
@@ -154,6 +157,10 @@ fakeroot do_ramdisk_create() {
                 cp ${COREBASE}/meta-qti-bsp/recipes-products/images/include/csmrd-init .
                 chmod 744 csmrd-init
                 ln -s csmrd-init init
+            elif ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'true', 'false', d)}; then
+                install -m 744 ${COREBASE}/meta-qti-bsp/recipes-products/images/include/ramdisk-init.sh init
+                cp ${IMAGE_ROOTFS}/usr/sbin/ubi* usr/sbin/
+                ln -s busybox bin/dd
             else
                 ln -s bin/busybox init
             fi
