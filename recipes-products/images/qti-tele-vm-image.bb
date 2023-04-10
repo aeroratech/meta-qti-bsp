@@ -17,6 +17,10 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'qti-telux', 'packagegroup-qti-telsdk', '', d)} \
 "
 
+CORE_IMAGE_EXTRA_INSTALL_append_sa525m += " \
+    packagegroup-qti-core-vm \
+"
+
 # Exclude packages
 PACKAGE_EXCLUDE += "readline"
 
