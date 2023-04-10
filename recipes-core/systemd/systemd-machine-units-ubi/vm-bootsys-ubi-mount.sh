@@ -28,6 +28,7 @@ FindAndMountUBI () {
             sleep 0.010
         fi
     done
+    chown -R root:root /vm-bootsys
 }
 
 CreateSplitBinsSymlink () {

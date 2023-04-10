@@ -9,6 +9,7 @@ DefaultDependencies=no
 
 [Service]
 Type=oneshot
+PassEnvironment="SLOT_SUFFIX"
 ExecStart=/etc/initscripts/vm-bootsys-ubi-mount.sh
 
 [Install]
