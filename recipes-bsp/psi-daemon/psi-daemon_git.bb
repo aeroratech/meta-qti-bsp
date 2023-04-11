@@ -12,7 +12,13 @@ FILESPATH =+ "${WORKSPACE}/vendor/qcom/opensource/:"
 SRC_URI   = "file://psi_daemon"
 
 S = "${WORKDIR}/psi_daemon"
-DEPENDS += "libcutils liblog libutils libbase libvmmem libvmmem-headers"
+DEPENDS += "virtual/kernel libcutils liblog libutils libbase libvmmem libvmmem-headers linux-msm-headers"
+
+# To get kernel headers for compilation
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
+
+EXTRA_OECONF = " --with-sanitized-headers=${STAGING_INCDIR}/linux-msm/usr/include \
+                 --disable-static "
 
 PACKAGES +="${PN}-test-bin"
 
