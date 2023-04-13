@@ -7,7 +7,7 @@ QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota
 
 inherit ${QIMGUBICLASSES}
 
-IMAGE_FEATURES[validitems] += "nand2x gluebi nad-modem-volume telaf-volume persist-volume vm-bootsys-volume"
+IMAGE_FEATURES[validitems] += "nand2x gluebi nad-modem-volume telaf-volume persist-volume vm-bootsys-volume vm-systemrw-volume"
 
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
 
@@ -394,6 +394,18 @@ vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
 
 EOF
     fi
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
+    if $(echo ${IMAGE_FEATURES} | grep -q "vm-systemrw-volume"); then
+        cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
+[vm_systemrw_volume]
+mode=ubi
+vol_id=$vol_id
+vol_type=dynamic
+vol_name=vm_systemrw
+vol_size="${VM_SYSTEMRW_VOLUME_SIZE}"
+
+EOF
+    fi
 }
 
 create_rootfs_tele_ubi[cleandirs] = "${IMAGE_ROOTFS_SQUASHFS_UBI}"
@@ -466,9 +478,7 @@ fakeroot do_make_vmbootsys_ubi() {
 }
 
 python () {
-    if bb.utils.contains('IMAGE_FEATURES', 'vm', True, False, d):
-        bb.build.addtask('do_make_vmbootsys_ubi', 'do_image_complete', 'do_compose_vmimage', d)
-    elif bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
+    if bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
         bb.build.addtask('do_makesystem_gluebi', 'do_image_complete', 'do_image', d)
     else:
         bb.build.addtask('do_makesystem_tele_ubi', 'do_image_complete', 'do_makesystem_ubi', d)
