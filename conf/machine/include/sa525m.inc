@@ -50,8 +50,9 @@ KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa525"
 # qti-tzlog:              Machine supports tz/qsee logs
 # qti-smciqseecomd:       Machine supports smcinvoke based listeners
 # android-binder:         Machine supports android binder
+# dm-verity-initramfs-v4  Machine supports Initramfs and dm-verity working with AVB
 
-MACHINE_FEATURES += "qti-sdx dm-verity-none qti-sensors qti-mvm qti-security qseecompat qti-tzlog qti-remoteproc qti-data-modem qti-location qti-audio qti-smciqseecomd qti-recovery qti-wwan-plus-cv2x qti-wlan qti-bluetooth qwesd android-binder qti-c2c"
+MACHINE_FEATURES += "qti-sdx dm-verity-initramfs-v4 qti-sensors qti-mvm qti-security qseecompat qti-tzlog qti-remoteproc qti-data-modem qti-location qti-audio qti-smciqseecomd qti-recovery qti-wwan-plus-cv2x qti-wlan qti-bluetooth qwesd android-binder qti-c2c"
 
 CONFLICT_MACHINE_FEATURES += "qti-cv2x"
 
