@@ -78,7 +78,8 @@ append_verity_metadata_to_system_image2() {
          echo adjustedSystemSize: $adjustedSystemSize
          ImgPath="${UNSPARSED_SYSTEMIMAGE}"
 # remake the system image size with  returend value .
-         make_ext4fs  -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_MAP_TARGET} \
+         make_ext4fs  -C ${WORKDIR}/rootfs-fsconfig.conf \
+              -B ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMIMAGE_MAP_TARGET} \
               -a / -b 4096 -l ${adjustedSystemSize}  ${IMAGE_EXT4_SELINUX_OPTIONS} \
                       ${ImgPath}  ${IMAGE_ROOTFS_EXT4} /dev/null || invalid_image=1
 
