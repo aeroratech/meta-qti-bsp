@@ -7,7 +7,7 @@ QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota
 
 inherit ${QIMGUBICLASSES}
 
-IMAGE_FEATURES[validitems] += "persist-volume nand2x gluebi"
+IMAGE_FEATURES[validitems] += "persist-volume nand2x gluebi vm-bootsys-volume"
 
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
 
@@ -120,6 +120,8 @@ create_symlink_systemd_ubi_mount_rootfs() {
    cp ${IMAGE_ROOTFS_UBI}/etc/udev/rules.d/mountpartitions ${IMAGE_ROOTFS_UBI}/etc/udev/rules.d/mountpartitions.rules
 }
 
+VM_BOOTSYS_VOLUME_SIZE ??= "128MiB"
+
 # Need to copy ubinize.cfg file in the deploy directory
 do_create_ubinize_config[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
@@ -173,6 +175,25 @@ vol_id=5
 vol_type=dynamic
 vol_name=persist
 vol_size="${PERSIST_VOLUME_SIZE}"
+
+EOF
+    fi
+    if $(echo ${IMAGE_FEATURES} | grep -q "vm-bootsys-volume"); then
+        cat << EOF >> ${UBINIZE_CFG}
+[vm-bootsys_a_volume]
+mode=ubi
+vol_id=6
+vol_type=dynamic
+vol_name=vm-bootsys_a
+vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+
+[vm-bootsys_b_volume]
+mode=ubi
+vol_id=7
+vol_type=dynamic
+vol_name=vm-bootsys_b
+vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+
 EOF
     fi
 else
@@ -216,6 +237,18 @@ vol_id=4
 vol_type=dynamic
 vol_name=persist
 vol_size="${PERSIST_VOLUME_SIZE}"
+
+EOF
+    fi
+    if $(echo ${IMAGE_FEATURES} | grep -q "vm-bootsys-volume"); then
+        cat << EOF >> ${UBINIZE_CFG}
+[vm-bootsys_volume]
+mode=ubi
+vol_id=5
+vol_type=dynamic
+vol_name=vm-bootsys
+vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+
 EOF
     fi
 fi
