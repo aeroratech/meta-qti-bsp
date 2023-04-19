@@ -39,15 +39,6 @@ FindAndMountUBIVolume () {
    fi
 }
 
-CreateSplitBinsSymlink () {
-   vmbootsys_dir=$1
-   device=$2
-   for dir in $vmbootsys_dir/*/boot
-    do
-        ln -sf $dir/* $device/
-    done
-}
-
 if [ -x /sbin/restorecon ]; then
     vm_bootsys_selinux_opt=",context=system_u:object_r:vm-bootsys_t:s0"
 else
@@ -75,7 +66,5 @@ else
 fi
 
 chown -R root:root /vm-bootsys
-
-eval CreateSplitBinsSymlink /vm-bootsys /firmware/image/
 
 exit 0

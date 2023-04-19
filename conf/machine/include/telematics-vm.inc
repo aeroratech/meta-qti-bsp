@@ -49,6 +49,8 @@ IMAGE_INIT_MANAGER = "systemd"
 SYSTEMIMAGE_TARGET = "system.img"
 VMIMAGE_TARGET = "vm-bootsys.img"
 
+VM_SPLIT_BINS_PATH = "boot"
+
 # UBI arguments
 UBINIZE_ARGS = "-m 4096 -p 256KiB -s 4096"
 MKUBIFS_ARGS = "-m 4096 -e 253952 -c 2146 -F"
