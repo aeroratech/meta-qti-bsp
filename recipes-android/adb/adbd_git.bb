@@ -37,6 +37,10 @@ do_install_append() {
     fi
 
     if ${@oe.utils.conditional('ADB_OVER_PCIE', 'True', 'true', 'false', d)}; then
+        if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-csm', 'true', 'false', d)}; then
+             install -d ${D}${userfsdatadir}
+             install -m 0755 ${S}/debug_transport.conf -D ${D}${userfsdatadir}/debug_transport.conf
+        fi
         install -m 0755 ${S}/start_pcie -D ${D}${sysconfdir}/start_pcie
         install -m 0644 ${S}/pcie.service -D ${D}${systemd_unitdir}/system/pcie.service
         sed -i 's/default.target/local-fs.target/g' ${D}${systemd_unitdir}/system/pcie.service
@@ -47,3 +51,4 @@ SYSTEMD_SERVICE_${PN}  = " adbd.service "
 SYSTEMD_SERVICE_${PN} += "${@oe.utils.conditional('ADB_OVER_PCIE','True', 'pcie.service', '',d)}"
 
 FILES_${PN} += "${systemd_unitdir}/system/"
+FILES_${PN} += "${userfsdatadir}/"

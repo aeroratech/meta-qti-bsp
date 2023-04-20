@@ -450,7 +450,7 @@ do_mounts
 # do_nbdtab - create nbd tab and negotiate images on nbd blocks. Then mount systemfs ans switch root
 # @1:  HOST_ADDR
 # @2:  MHI Channel no
-#
+# @3: Debug transport
 do_nbdtab()
 {
     portno="$(( 10809 + $2 ))"
@@ -504,6 +504,15 @@ do_nbdtab()
     else
         echo "firmware.mount or firmware-mount.service are not found"
     fi
+
+    # set debug transport
+    echo "Set debug transport to $3"
+    # mount userdata.img
+    mnt_data_dir="/mnt/system/data"
+    mkdir -p $mnt_data_dir
+    mount -o rw /dev/nbd3 $mnt_data_dir
+    echo $3 > $mnt_data_dir/debug_transport.conf
+    umount $mnt_data_dir
 
     # Switch root to remote sysfs
     echo "Switching to system partition on $partition"
@@ -596,8 +605,16 @@ fi   # end of  if verity file exist check.
             echo "Could not receive config from Host"
             start_rdshell
         fi
-
         echo "Received config: $config_string"
+
+        echo "Receive debug transport"
+        debug_transport="$(mhi_ch_recvmsg $CTRL_DEV 30)"
+        if [ -z "$debug_transport" ]; then
+            echo "Could not receive debug_transport from Host"
+            start_rdshell
+        fi
+        echo "Received debug transport: $debug_transport"
+
 
         mhi_ch_sendmsg $CTRL_DEV "Config received '$HOST_ADDR' '$LOCAL_ADDR'"
         ret="$?"
@@ -630,7 +647,7 @@ fi   # end of  if verity file exist check.
             echo "Failed to config interface: $MPLANE_INTERFACE"
         fi
         # Create /etc/nbdtab and nbd-client connect remote nbdkit
-        do_nbdtab $HOST_ADDR $config_string
+        do_nbdtab $HOST_ADDR $config_string $debug_transport
         ;;
     rdshell)
         echo "Starting ramdisk shell"

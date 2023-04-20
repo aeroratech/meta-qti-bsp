@@ -31,7 +31,7 @@ update_bash_prompt(){
 }
 
 do_install[prefuncs] += " ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', '', 'fix_sepolicies', d)}"
-do_install[prefuncs] += " ${@bb.utils.contains_any('MACHINE_FEATURES', 'qti-csm qti-vm', 'update_bash_prompt', '', d)}"
+do_install[prefuncs] += " ${@bb.utils.contains_any('MACHINE_FEATURES', 'qti-csm qti-vm qti-vm-guest', 'update_bash_prompt', '', d)}"
 do_install_append(){
     install -m 755 -o diag -g diag -d ${D}/media
     install -m 755 -o diag -g diag -d ${D}/mnt/sdcard

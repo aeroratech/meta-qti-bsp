@@ -51,7 +51,7 @@ persist.vendor.audio.qas.enabled=true
 #Speaker Protection
 vendor.audio.feature.spkr_prot.enable=true
 persist.vendor.audio.speaker.prot.enable=true
-persist.vendor.audio.spv3.enable=true
+persist.vendor.audio.spv4.enable=true
 persist.vendor.audio.avs.afe_api_version=2
 
 #enable weston during boot

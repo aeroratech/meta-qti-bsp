@@ -1,4 +1,4 @@
-inherit qimage populate_sdk_qti
+inherit qimage populate_sdk_qti ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'qramdisk', '', d)}
 
 IMAGE_FEATURES += "read-only-rootfs ${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'persist-volume', '', d)}"
 

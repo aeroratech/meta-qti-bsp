@@ -19,7 +19,7 @@ VMPACKIMAGE_ROOTFS ?= "${VMBOOTSYS_DEPLOY_DIR}/vm-images/"
 UBINIZE_VMPACK_CFG ?= "${VMBOOTSYS_DEPLOY_DIR}/ubinize_vm.cfg"
 
 # Size of the combined EXT4 image
-VM_COMBINED_SIZE_EXT4 ?= "270000000"
+VM_COMBINED_SIZE_EXT4 ?= "314572800"
 
 do_copy_vmimages[dirs] = "${VMBOOTSYS_DEPLOY_DIR} ${VMBOOTSYS_DEPLOY_DIR}/vm-images/"
 do_copy_vmimages() {
@@ -53,6 +53,8 @@ EOF
 do_pack_vm_images[nostamp] = "1"
 do_pack_vm_images[prefuncs] += 'do_setup_package'
 do_pack_vm_images[prefuncs] += "${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_create_ubinize_vmpack_config', '', d)}"
+do_pack_vm_images[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
+do_verity_ubinize[depends] += "${PN}:do_make_vmbootsys_ubi"
 
 do_pack_vm_images() {
     # copy file_contexts file to deploy dir

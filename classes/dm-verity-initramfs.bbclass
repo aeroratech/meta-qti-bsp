@@ -1,6 +1,6 @@
 DEPENDS += "cryptsetup-native openssl-native"
 
-CONFLICT_MACHINE_FEATURES += " dm-verity-bootloader dm-verity-none"
+CONFLICT_MACHINE_FEATURES += " dm-verity-bootloader dm-verity-none dm-verity-initramfs-v4"
 
 CORE_IMAGE_EXTRA_INSTALL += "cryptsetup"
 

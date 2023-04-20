@@ -1,4 +1,4 @@
-inherit qimage qramdisk
+inherit qimage qramdisk qcpioimage
 
 DEPENDS += " virtual/kernel"
 
@@ -24,3 +24,4 @@ IMAGE_FEATURES += "vm oemvm"
 
 do_compose_vmimage[recrdeptask] = "do_ramdisk_create"
 do_compose_vmimage[recrdeptask] += "do_merge_dtbs"
+do_compose_vmimage[recrdeptask] += "do_extracpio_create"

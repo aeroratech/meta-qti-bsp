@@ -7,18 +7,22 @@ FindAndMountUBI () {
    dir=$2
    extra_opts=$3
 
-   mtd_block_number=`cat $mtd_file | grep -i $partition | sed 's/^mtd//' | awk -F ':' '{print $1}'`
    echo "MTD : Detected block device : $dir for $partition"
    mkdir -p $dir
 
-   ubiattach -m $mtd_block_number -d 2 /dev/ubi_ctrl
-   device=/dev/ubi2_0
+   device=/dev/ubi3_0
+
+   if [ "$SLOT_SUFFIX" = "_b" ]
+   then
+        device=/dev/ubi4_0
+   fi
+
    while [ 1 ]
     do
         if [ -c $device ]
         then
             test -x /sbin/restorecon && /sbin/restorecon $device
-            mount -t ubifs /dev/ubi2_0 $dir -o bulk_read
+            mount -t ubifs $device $dir -o bulk_read$extra_opts
             break
         else
             sleep 0.010
@@ -41,7 +45,23 @@ if [ -x /sbin/restorecon ]; then
 else
     vm_bootsys_selinux_opt=""
 fi
-eval FindAndMountUBI vm-bootsys /vm-bootsys $vm_bootsys_selinux_opt
+
+if [ $SLOT_SUFFIX ]
+then
+    mtd_block_number=`cat $mtd_file | grep -i vm-bootsys_a | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+    ubiattach -m $mtd_block_number -d 3 /dev/ubi_ctrl
+
+    mtd_block_number=`cat $mtd_file | grep -i vm-bootsys_b | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+    ubiattach -m $mtd_block_number -d 4 /dev/ubi_ctrl
+
+    eval FindAndMountUBI vm-bootsys$SLOT_SUFFIX /vm-bootsys $vm_bootsys_selinux_opt
+else
+    mtd_block_number=`cat $mtd_file | grep -i -w vm-bootsys | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+    ubiattach -m $mtd_block_number -d 3 /dev/ubi_ctrl
+
+    eval FindAndMountUBI vm-bootsys /vm-bootsys $vm_bootsys_selinux_opt
+fi
+
 eval CreateSplitBinsSymlink /vm-bootsys /firmware/image/
 
 exit 0

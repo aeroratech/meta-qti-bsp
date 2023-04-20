@@ -17,6 +17,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         ${@oe.utils.conditional('EVDEVMODULE', 'True', 'km-loader', '', d)} \
         net-tools \
         pps-tools \
+        libgpiod libgpiod-tools \
         spitools \
         coreutils \
         packagegroup-android-utils \
@@ -49,5 +50,4 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
        subsystem-ramdump \
        qmi-shutdown-modem modem-shutdown \
        packagegroup-qti-security-test \
-       packagegroup-support-utils \
 "

@@ -17,8 +17,10 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         ${@oe.utils.conditional('EVDEVMODULE', 'True', 'km-loader', '', d)} \
         net-tools \
         pps-tools \
+        libgpiod libgpiod-tools \
         spitools \
         coreutils \
+        android-tools \
         packagegroup-android-utils \
         packagegroup-qti-core \
         ${@bb.utils.contains('MACHINE_FEATURES', 'android-binder', 'binder', '', d)} \
@@ -41,6 +43,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'mtd-utils-ubifs', '', d)} \
         qmi-shutdown-modem \
         modem-shutdown \
+        ${@bb.utils.contains('MACHINE_FEATURES', 'qti-virtualization', 'packagegroup-qti-virtualization', '', d)} \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
 "
 

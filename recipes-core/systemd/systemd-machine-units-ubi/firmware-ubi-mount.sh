@@ -26,23 +26,31 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# Changes from Qualcomm Innovation Center are provided under the following license:
+# Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 FindAndMountUBI () {
    partition=$1
    dir=$2
    extra_opts=$3
 
-   mtd_block_number=`cat $mtd_file | grep -i $partition | sed 's/^mtd//' | awk -F ':' '{print $1}'`
    echo "MTD : Detected block device : $dir for $partition"
    mkdir -p $dir
 
-   ubiattach -m $mtd_block_number -d 1 /dev/ubi_ctrl
    device=/dev/ubi1_0
+
+   if [ "$SLOT_SUFFIX" = "_b" ]
+   then
+        device=/dev/ubi2_0
+   fi
+
    while [ 1 ]
     do
         if [ -c $device ]
         then
             test -x /sbin/restorecon && /sbin/restorecon $device
-            mount -t ubifs /dev/ubi1_0 $dir -o bulk_read$extra_opts
+            mount -t ubifs $device $dir -o bulk_read$extra_opts
             break
         else
             sleep 0.010
@@ -56,6 +64,24 @@ if [ -x /sbin/restorecon ]; then
 else
     firmware_selinux_opt=""
 fi
-eval FindAndMountUBI modem /firmware $firmware_selinux_opt
+
+if [ $SLOT_SUFFIX ]
+then
+    mtd_block_number=`cat $mtd_file | grep -i modem_a | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+    ubiattach -m $mtd_block_number -d 1 /dev/ubi_ctrl
+
+    mtd_block_number=`cat $mtd_file | grep -i modem_b | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+    ubiattach -m $mtd_block_number -d 2 /dev/ubi_ctrl
+
+    eval FindAndMountUBI modem$SLOT_SUFFIX /firmware $firmware_selinux_opt
+
+    mtd_block_number=`cat $mtd_file | grep -i misc | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+    chown 1000:6 /dev/mtd$mtd_block_number
+else
+    mtd_block_number=`cat $mtd_file | grep -i -w modem | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+    ubiattach -m $mtd_block_number -d 1 /dev/ubi_ctrl
+
+    eval FindAndMountUBI modem /firmware $firmware_selinux_opt
+fi
 
 exit 0

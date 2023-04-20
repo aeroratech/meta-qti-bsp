@@ -18,6 +18,7 @@ PREFERRED_VERSION_dtc-android-build = "5.15"
 PREFERRED_VERSION_mkbootimg-gki-native = "5.15"
 PREFERRED_VERSION_dtc-android-build-native = "5.15"
 PREFERRED_VERSION_mkdtimg-gki-native = "5.15"
+PREFERRED_VERSION_qcrosvm = "1.1"
 SERIAL_CONSOLES = "115200;ttyMSM0"
 KERNEL_IMAGETYPE = "Image"
 KERNEL_BASE = "0x40000000"
@@ -25,7 +26,9 @@ KERNEL_TAGS_OFFSET = "0x1e00000"
 KERNEL_DYNAMIC_DEFCONFIG = "True"
 KERNEL_CONFIG ?= "vendor/sa410m_auto_defconfig"
 KERNEL_CONFIG_qti-distro-debug ?= "vendor/sa410m_auto-debug_defconfig"
-KERNEL_CMD_PARAMS = "noinitrd ro rootwait console=ttyMSM0,115200,n8 no_console_suspend=1 androidboot.hardware=qcom androidboot.console=ttyMSM0 lpm_levels.sleep_disabled=1 service_locator.enable=1 firmware_class.path=/lib/firmware/updates msm_rtb.filter=0x237 earlycon=qcom_geni,0x4a90000 systemd.setenv="SLOT_SUFFIX"="_a""
+CONSOLE_PARAM ?= "console=ttyMSM0,115200,n8 no_console_suspend=1"
+CONSOLE_PARAM_qti-distro-perf ?= "console=ttyMSM0,115200,n8 no_console_suspend=1 loglevel=0 systemd.log_level=0 systemd.show_status=0"
+KERNEL_CMD_PARAMS = "noinitrd ro rootwait ${CONSOLE_PARAM} coherent_pool=256K androidboot.hardware=qcom androidboot.console=ttyMSM0 lpm_levels.sleep_disabled=1 service_locator.enable=1 firmware_class.path=/lib/firmware/updates msm_rtb.filter=0x237 earlycon=qcom_geni,0x4a90000 systemd.setenv="SLOT_SUFFIX"="_a""
 
 KERNEL_VARIANT = ""
 KERNEL_VARIANT_qti-distro-debug = "debug_"
@@ -53,8 +56,9 @@ KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa410m_auto"
 # qti-sensors:            Machine supports sensors qti solution
 # qti-location:           Machine supports Location solution
 # qti-data-modem:         Machine supports QTI data modem solution
+# qti-c2c:                Machine supports QTI c2c solution
 
-MACHINE_FEATURES += "qti-ab-boot qti-sdx nossd_listener dm-verity-none qti-remoteproc qti-sensors qti-qseecom qti-tzlog qti-security qti-audio qti-data-modem qti-location qti-wlan qti-bluetooth qwesd"
+MACHINE_FEATURES += "qti-sdx nossd_listener dm-verity-none qti-remoteproc qti-sensors qti-qseecom qti-tzlog qti-security qti-audio qti-data-modem qti-location qti-wlan qti-bluetooth qwesd qti-c2c"
 
 MACHINE_MNT_POINTS = " \
     /dsp \
