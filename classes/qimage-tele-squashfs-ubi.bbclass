@@ -76,6 +76,10 @@ create_symlink_systemd_ubi_mount_tele_rootfs() {
         if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" || "$mountname" == "vm-bootsys" ]] ; then
             cp -f ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/${mountname}-mount-ubi.service ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/${mountname}-mount.service
             ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/local-fs.target.requires/${mountname}-mount.service
+            if [ -e ${IMAGE_ROOTFS_SQUASHFS_UBI}/etc/initscripts/non-hlos-squash.sh ]; then
+              rm -f ${IMAGE_ROOTFS_SQUASHFS_UBI}/etc/initscripts/firmware-ubi-mount.sh
+              mv -f ${IMAGE_ROOTFS_SQUASHFS_UBI}/etc/initscripts/non-hlos-squash.sh ${IMAGE_ROOTFS_SQUASHFS_UBI}/etc/initscripts/firmware-ubi-mount.sh
+            fi
         else
             cp ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/${mountname}-ubi.mount ${IMAGE_ROOTFS_SQUASHFS_UBI}/lib/systemd/system/${mountname}.mount
             if [ "$mountname" = "systemrw" ]; then
