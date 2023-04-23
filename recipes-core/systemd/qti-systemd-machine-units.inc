@@ -68,6 +68,7 @@ fix_sepolicies () {
     sed -i "s#,rootcontext=system_u:object_r:persist_t:s0##g" ${WORKDIR}/persist.mount
     sed -i "s#,rootcontext=system_u:object_r:system_data_t:s0##g" ${WORKDIR}/systemrw.mount
     sed -i "s#,context=system_u:object_r:vm-bootsys_t:s0##g" ${WORKDIR}/vm-bootsys.mount
+    sed -i "s#,context=system_u:object_r:vm-bootsys_t:s0##g" ${WORKDIR}/vm-bootsys-mount.service
 
     # TODO: figure out the selinux context for the overlays
     sed -i "s#,rootcontext=system_u:object_r:overlay_t:s0##g" ${WORKDIR}/overlay.mount
