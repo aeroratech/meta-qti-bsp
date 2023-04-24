@@ -62,15 +62,16 @@ if [ ! -z "$is_vm_bootsys_vol_enabled" ];
 then
     eval FindAndMountUBIVolume ubi0:$vm_bootsys_part_name /vm-bootsys $vm_bootsys_selinux_opt
 else
-    ubi_dev_id=3
-    if [ "$SLOT_SUFFIX" = "_b" ];
+    ubi_dev_id=4
+    if [ "$SLOT_SUFFIX" != "_b" ];
     then
-        ubi_dev_id=4
+        ubi_dev_id=3
+        vm_bootsys_part_name="vm-bootsys$SLOT_SUFFIX|vm-bootsys"
     fi
     mtd_block_number=`cat $mtd_file | grep -i -w -E $vm_bootsys_part_name | sed 's/^mtd//' | awk -F ':' '{print $1}'`
     ubiattach -m $mtd_block_number -d $ubi_dev_id /dev/ubi_ctrl
 
-    eval FindAndMountUBI $vm_bootsys_part_name /vm-bootsys $vm_bootsys_selinux_opt $ubi_dev_id
+    eval FindAndMountUBI vm-bootsys$SLOT_SUFFIX /vm-bootsys $vm_bootsys_selinux_opt $ubi_dev_id
 fi
 
 chown -R root:root /vm-bootsys
