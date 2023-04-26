@@ -474,6 +474,8 @@ fakeroot do_makesystem_squashfs() {
     else
         mksquashfs ${IMAGE_ROOTFS_SQUASHFS_UBI} ${SYSTEMIMAGE_SQUASHFS_TARGET} -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1
     fi
+}
+do_makesystem_squashfs_ubi () {
     ubinize -o ${SYSTEMIMAGE_SQUASHFS_UBI_AB_TARGET} ${UBINIZE_ARGS} ${SQUASHFS_UBINIZE_CFG_AB}
 }
 
@@ -534,6 +536,11 @@ python () {
         bb.build.addtask('do_makesystem_squashfs', 'do_image_complete', 'do_makesystem_tele_ubi', d)
         if bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', True, False, d):
             bb.build.addtask('do_maketelaf_squashfs', 'do_image_complete', 'do_makesystem_ubi', d)
+        if bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', True, False, d):
+            bb.build.addtask('do_sign_system_squashfs', 'do_image_complete', 'do_makesystem_squashfs', d)
+            bb.build.addtask('do_makesystem_squashfs_ubi', 'do_image_complete', 'do_sign_system_squashfs', d)
+        else:
+            bb.build.addtask('do_makesystem_squashfs_ubi', 'do_image_complete', 'do_makesystem_squashfs', d)
 }
 
 do_patch_ubi_tools() {

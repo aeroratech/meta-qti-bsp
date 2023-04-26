@@ -78,6 +78,9 @@ RRECOMMENDS_${PN} = "kernel-module-aes-generic \
                      kernel-module-sha256-generic \
                      kernel-module-xts \
 "
+PACKAGECONFIG_remove_class-target = " \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'udev', '', d)} \
+"
 
 EXTRA_OECONF = "--enable-static"
 # Building without largefile is not supported by upstream

@@ -73,6 +73,12 @@ CERT_CA_PATH="/etc/keys/x509_root.der"
 # FDE Encryption path
 FDE_ENCRYPTION_PATH="/tmp/test.img"
 
+# Recoveryfs partition or volume name
+RECOVERYFS_DEV="recoveryfs"
+
+# verity feature status
+VERITY_ENV="/etc/verity.env"
+
 #------------------------------------------------------------
 
 # Temporary rootfs mount node
@@ -446,10 +452,26 @@ MountSystem () {
     local nad_fde_status="disabled"
     local sys_key_index="0"
     local vb_parameter="-k /etc/keys/x509_root.der"
+    local vb_option=
 
     if [ ! -e /bin/dd ]; then
         LOGD "Error: cmd: /bin/dd not found"
         return ${STATUS_ERR}
+    fi
+
+    if [ "x${VERITY_ENV}" == "x" ]; then
+        VERITY_ENV="/proc/cmdline"
+    fi
+
+    if ${Bgrep} 'recovery=' /proc/cmdline > /dev/null; then
+        LOGD "Runing to recovery mode"
+        if ${Bgrep} -Ew "${RECOVERYFS_DEV}" /proc/mtd > /dev/null; then
+            # Recoveryfs is a partition and use ${DM_SYST_NAME} as volume name
+            parti_name="${RECOVERYFS_DEV}"
+        else
+            # Recoveryfs is a UBI volume name in partition: ${parti_name}
+            DM_SYST_NAME="${RECOVERYFS_DEV}"
+        fi
     fi
 
     GetStorageDev "${parti_name}"
@@ -468,16 +490,14 @@ MountSystem () {
             return ${STATUS_ERR}
         fi
 
-        if ${Bgrep} 'recovery=' /proc/cmdline > /dev/null; then
-            SYS_IMAGE_VOL=`${Bcat} /proc/cmdline | ${Bawk} -F 'recovery=' '{print $2}' | ${Bawk} '{print $1}'`
-        else
-            GetUbiVolumeID ${SYS_UBI_DEV_NUM} ${DM_SYST_NAME}
-            if [ "${GetUbiVolumeID_RESULT}" == "" ]; then
-                LOGD "Cannot get ${DM_SYST_NAME} volume."
-                return ${STATUS_ERR}
-            fi
-            SYS_IMAGE_VOL=${GetUbiVolumeID_RESULT}
+        # Get the boot system volume number
+        GetUbiVolumeID ${SYS_UBI_DEV_NUM} ${DM_SYST_NAME}
+        if [ "${GetUbiVolumeID_RESULT}" == "" ]; then
+            LOGD "Cannot get ${DM_SYST_NAME} volume."
+            return ${STATUS_ERR}
         fi
+        SYS_IMAGE_VOL=${GetUbiVolumeID_RESULT}
+
         if [ "${SYS_IMAGE_VOL}" == "" ]; then
             LOGD "Cannot get ${DM_SYST_NAME} volume."
             return ${STATUS_ERR}
@@ -499,7 +519,7 @@ MountSystem () {
 
         # UBIFS don't support signing, so won't work with FDE
         if [ "${image_type}" != "ubifs" ]; then
-            if ${Bgrep} 'nad_fde=1' /proc/cmdline > /dev/null; then
+            if ${Bgrep} 'nad_fde=1' ${VERITY_ENV} > /dev/null; then
 
                 # 4+4 device has not enough ram size for FDE encryption
                 # So, skip encryption if the memory is smaller than ${RAM_SIZE_LIMIT_VOL}
@@ -561,9 +581,13 @@ MountSystem () {
                 fi
 
             # For root file system Verified boot enabling
-            elif ${Bgrep} 'nad_avb=1' /proc/cmdline > /dev/null; then
+            elif ${Bgrep} 'nad_avb=1' ${VERITY_ENV} > /dev/null; then
                 dm_verity_device=/dev/mapper/${DM_SYST_NAME}
-                verified-boot -n ${DM_SYST_NAME} -d ${block_device} -k ${CERT_CA_PATH}
+                if ${Bgrep} 'secure=1' /proc/cmdline > /dev/null; then
+                    vb_option="-s"
+                fi
+                verified-boot -n ${DM_SYST_NAME} -d ${block_device} -k ${CERT_CA_PATH} ${vb_option}
+
                 if [ $? -ne ${STATUS_OK} ] ; then
                     LOGD "Created dm-verity device ${dm_verity_device} failed."
                     return ${STATUS_ERR}
@@ -583,7 +607,7 @@ MountSystem () {
                 return ${STATUS_ERR}
             fi
         elif [ "${image_type}" == "ubifs" ]; then
-            busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read
+            busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read,ro
             if [ $? -ne ${STATUS_OK} ]; then
                 LOGD "Error: mount ubifs ${char_device} failed"
                 return ${STATUS_ERR}

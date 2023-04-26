@@ -1,9 +1,9 @@
 # Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# This file "dm-verity-initramfs-v4.bbclasss" will:
+# This file "dm-verity-initramfs-v4.bbclasss"
 # 1, Generate boot.img with initramfs.
-# 2, Enable dm-verity feature with avb for NAND. (This feature will be added in the later commit)
+# 2, Enable dm-verity feature with avb for NAND.
 
 CONFLICT_MACHINE_FEATURES += " dm-verity-bootloader dm-verity-initramfs dm-verity-none"
 
@@ -64,3 +64,18 @@ do_makeboot[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}"
 do_makeboot[stamp-extra-info] = "${MACHINE_ARCH}"
 
 addtask do_makeboot before do_image_complete
+
+#squashfs files
+SYSTEMIMAGE_SQUASHFS_TARGET = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/sysfs.squash"
+
+do_sign_system_squashfs () {
+    # Sign the system image
+    ${TMPDIR}/work-shared/avbtool/avbtool add_hashtree_footer \
+        --image ${SYSTEMIMAGE_SQUASHFS_TARGET} \
+        --partition_name rootfs \
+        --algorithm SHA256_RSA2048 \
+        --key ${TMPDIR}/work-shared/avbtool/qpsa_attestca.key \
+        --public_key_metadata ${TMPDIR}/work-shared/avbtool/qpsa_attestca.der \
+        --do_not_generate_fec --rollback_index 0
+}
+do_sign_system_squashfs[depends] += "avbtool-native:do_install"
