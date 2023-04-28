@@ -484,10 +484,10 @@ do_nbdtab()
     mount -o rw /dev/nbd0 $mnt_dir
     #umount /sys/kernel/debug /sys /proc /dev
 
-    # mount dumgr config readonly
-    mnt_qdumgr_dir="/mnt/system/etc/dumgr/config"
-    mkdir -p $mnt_qdumgr_dir
-    mount /dev/nbd6p1 $mnt_qdumgr_dir
+    # mount hostmgr config readonly
+    mnt_hostmgr_dir="/mnt/system/etc/csm/x100"
+    mkdir -p $mnt_hostmgr_dir
+    mount /dev/nbd6p1 $mnt_hostmgr_dir
 
     # update systemd mount files to mount it from nbd devices
     cd $mnt_dir/lib/systemd/system/
