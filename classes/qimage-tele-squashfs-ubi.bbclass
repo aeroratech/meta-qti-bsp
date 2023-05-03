@@ -7,7 +7,7 @@ QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota
 
 inherit ${QIMGUBICLASSES}
 
-IMAGE_FEATURES[validitems] += "nand2x gluebi modem-volume telaf-volume persist-volume"
+IMAGE_FEATURES[validitems] += "nand2x gluebi nad-modem-volume telaf-volume persist-volume"
 
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
 
@@ -153,7 +153,7 @@ vol_type=dynamic
 vol_name=rootfs_b
 vol_size="${ROOTFS_VOLUME_SIZE}"
 EOF
-        if $(echo ${IMAGE_FEATURES} | grep -q "modem-volume"); then
+        if $(echo ${IMAGE_FEATURES} | grep -q "nad-modem-volume"); then
             cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [modem_a_volume]
 mode=ubi
@@ -257,7 +257,7 @@ vol_type=dynamic
 vol_name=rootfs_b
 vol_size="${SYSTEM_SQUASHFS_VOLUME_SIZE}"
 EOF
-    if $(echo ${IMAGE_FEATURES} | grep -q "modem-volume"); then
+    if $(echo ${IMAGE_FEATURES} | grep -q "nad-modem-volume"); then
         cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 [modem_a_volume]
 mode=ubi
@@ -361,7 +361,7 @@ do_makesystem_tele_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_makesystem_tele_ubi() {
    mkfs.ubifs -r ${USER_IMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS_DATA} -o ${USER_IMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
-   if ${@bb.utils.contains('IMAGE_FEATURES', 'modem-volume', 'true', 'false', d)}; then
+   if ${@bb.utils.contains('IMAGE_FEATURES', 'nad-modem-volume', 'true', 'false', d)}; then
        if [ -d ${MODEM_IMAGE_DIR} ]; then
            mkfs.ubifs -r ${MODEM_IMAGE_DIR} --selinux=${SELINUX_CONTEXT_MODEM} -o ${MODEM_UBIFS_IMAGE} ${MKUBIFS_ARGS}
        fi
@@ -374,7 +374,7 @@ do_makesystem_squashfs[prefuncs] += "do_create_squash_ubinize_config_ab"
 do_makesystem_squashfs[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_makesystem_squashfs() {
-    if ${@bb.utils.contains('IMAGE_FEATURES', 'modem-volume', 'true', 'false', d)}; then
+    if ${@bb.utils.contains('IMAGE_FEATURES', 'nad-modem-volume', 'true', 'false', d)}; then
         if [ -d ${MODEM_IMAGE_DIR} ]; then
             mksquashfs ${MODEM_IMAGE_DIR} ${MODEM_SQUASHFS_IMAGE} -context-file ${SELINUX_CONTEXT_MODEM} -noappend -comp gzip -Xcompression-level 9 -noI -b 65536 -processors 1
         fi
