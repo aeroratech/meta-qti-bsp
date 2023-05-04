@@ -145,7 +145,7 @@ vol_type=dynamic
 vol_name=rootfs_b
 vol_size="${ROOTFS_VOLUME_SIZE}"
 EOF
-    if $(echo ${IMAGE_FEATURES} | grep -q "modem-volume"); then
+    if $(echo ${IMAGE_FEATURES} | grep -q -w "^modem-volume$"); then
         cat << EOF >> ${UBINIZE_CFG}
 [modem_a_volume]
 mode=ubi
@@ -223,7 +223,7 @@ vol_type=dynamic
 vol_name=rootfs
 vol_size="${ROOTFS_VOLUME_SIZE}"
 EOF
-    if $(echo ${IMAGE_FEATURES} | grep -q "modem-volume"); then
+    if $(echo ${IMAGE_FEATURES} | grep -q -w "^modem-volume$"); then
         cat << EOF >> ${UBINIZE_CFG}
 [modem_volume]
 mode=ubi
