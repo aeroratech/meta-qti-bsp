@@ -13,6 +13,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     post-boot \
     systemd-machine-units \
     packagegroup-qti-telematics \
+    packagegroup-qti-data-vm \
 "
 
 # Exclude packages
