@@ -33,6 +33,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
               packagegroup-qti-core \
               packagegroup-qti-transceiver \
+              packagegroup-transceiver-perf-measurement \
 "
 
 do_merge_dtbs() {
