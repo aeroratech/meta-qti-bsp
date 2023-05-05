@@ -23,6 +23,13 @@ fakeroot do_ramdisk_create() {
         mkdir -p ${RAMDISKDIR}/usr
         mkdir -p ${RAMDISKDIR}/usr/bin
         mkdir -p ${RAMDISKDIR}/usr/sbin
+        if [[ "${FLASHLESS_MCU}" == "True" ]]; then
+            mkdir -p ${RAMDISKDIR}/lib/firmware/qcom_aw_phy/
+            mkdir -p ${RAMDISKDIR}/usr/share/dhcpcd/hooks/
+            mkdir -p ${RAMDISKDIR}/usr/libexec/dhcpcd-hooks
+            mkdir -p ${RAMDISKDIR}/usr/lib/dhcpcd/dev/
+            mkdir -p ${RAMDISKDIR}/var/db/dhcpcd/
+        fi
         mkdir -p ${RAMDISKDIR}/dev
         mknod -m 0600 ${RAMDISKDIR}/dev/console c 5 1
         mknod -m 0600 ${RAMDISKDIR}/dev/tty c 5 0
@@ -121,8 +128,27 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/etc/nbdtab etc/
 
             # DMA kos
-            cp ${IMAGE_ROOTFS}/usr/lib/modules/ecpri_dmam.ko lib/modules/
             cp ${IMAGE_ROOTFS}/usr/lib/modules/gsim.ko lib/modules/
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/ecpri_dmam.ko lib/modules/
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/fpc_qsfp.ko lib/modules/
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/lassen_qcom_aw_phy.ko lib/modules/
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/lassen_mtip.ko lib/modules/
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/lassen_secure_eip.ko lib/modules/
+            cp ${IMAGE_ROOTFS}/usr/lib/modules/ecpri_core.ko lib/modules/
+            cp ${IMAGE_ROOTFS}/lib/firmware/qcom_aw_phy/eth_custom_rates_1.hex lib/firmware/qcom_aw_phy/
+            # install dhcpcd
+            cp ${IMAGE_ROOTFS}/etc/dhcpcd.conf etc/
+            cp ${IMAGE_ROOTFS}/usr/lib/dhcpcd/dev/udev.so usr/lib/dhcpcd/dev/
+            cp ${IMAGE_ROOTFS}/usr/libexec/dhcpcd-hooks/01-test usr/libexec/dhcpcd-hooks/
+            cp ${IMAGE_ROOTFS}/usr/libexec/dhcpcd-hooks/02-dump usr/libexec/dhcpcd-hooks/
+            cp ${IMAGE_ROOTFS}/usr/libexec/dhcpcd-hooks/20-resolv.conf usr/libexec/dhcpcd-hooks/
+            cp ${IMAGE_ROOTFS}/usr/libexec/dhcpcd-hooks/30-hostname usr/libexec/dhcpcd-hooks/3
+            cp ${IMAGE_ROOTFS}/usr/libexec/dhcpcd-hooks/50-ntp.conf usr/libexec/dhcpcd-hooks/
+            cp ${IMAGE_ROOTFS}/usr/libexec/dhcpcd-run-hooks usr/libexec/
+            cp ${IMAGE_ROOTFS}/usr/sbin/dhcpcd usr/sbin/
+            cp ${IMAGE_ROOTFS}/usr/share/dhcpcd/hooks/10-wpa_supplicant usr/share/dhcpcd/hooks/
+            cp ${IMAGE_ROOTFS}/usr/share/dhcpcd/hooks/15-timezone usr/share/dhcpcd/hooks/
+            cp ${IMAGE_ROOTFS}/usr/share/dhcpcd/hooks/29-lookup-hostname usr/share/dhcpcd/hooks/
         fi
 
         if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'true', 'false', d)}; then
