@@ -16,6 +16,7 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-qti-telematics \
     packagegroup-qti-data-vm \
     ${@bb.utils.contains('DISTRO_FEATURES', 'qti-telux', 'packagegroup-qti-telsdk', '', d)} \
+    packagegroup-support-utils \
 "
 
 CORE_IMAGE_EXTRA_INSTALL_append_sa525m += " \
