@@ -137,21 +137,24 @@ create_symlink_systemd_ubi_mount_tele_rootfs() {
 do_create_ubinize_tele_config[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs"
 
 do_create_ubinize_tele_config() {
+vol_id=0
     cat << EOF > ${UBINIZE_SYSTEM_CFG}
 [sysfs_a_volume]
 mode=ubi
 image="${SYSTEM_IMAGE_UBIFS_TARGET}"
-vol_id=0
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=rootfs_a
 vol_size="${ROOTFS_VOLUME_SIZE}"
+
 [sysfs_b_volume]
 mode=ubi
 image="${SYSTEM_IMAGE_UBIFS_TARGET}"
-vol_id=1
+vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=rootfs_b
 vol_size="${ROOTFS_VOLUME_SIZE}"
+
 EOF
         if $(echo ${IMAGE_FEATURES} | grep -q "nad-modem-volume"); then
             cat << EOF >> ${UBINIZE_SYSTEM_CFG}
@@ -163,11 +166,13 @@ EOF
 image="${MODEM_UBIFS_IMAGE}"
 EOF
             fi
+vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
 cat << EOF >> ${UBINIZE_SYSTEM_CFG}
-vol_id=2
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=firmware_a
 vol_size="${MODEM_VOLUME_SIZE}"
+
 [modem_b_volume]
 mode=ubi
 EOF
@@ -176,64 +181,76 @@ EOF
 image="${MODEM_UBIFS_IMAGE}"
 EOF
             fi
+vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
 cat << EOF >> ${UBINIZE_SYSTEM_CFG}
-vol_id=3
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=firmware_b
 vol_size="${MODEM_VOLUME_SIZE}"
+
 EOF
         fi
+vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
         if $(echo ${IMAGE_FEATURES} | grep -q "telaf-volume"); then
             cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [telaf_a_volume]
 mode=ubi
-vol_id=4
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=telaf_a
 vol_size="${TELAF_SQUASHFS_VOLUME_SIZE}"
+
 [telaf_b_volume]
 mode=ubi
-vol_id=5
+vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=telaf_b
 vol_size="${TELAF_SQUASHFS_VOLUME_SIZE}"
+
 [telaf_app_volume]
 mode=ubi
-vol_id=6
+vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=telaf_app
 vol_size="${TELAF_APP_VOLUME_SIZE}"
+
 EOF
         fi
+vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
 cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [usrfs_volume]
 mode=ubi
 image="${USER_IMAGE_UBIFS_TARGET}"
-vol_id=7
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=usrfs
 vol_flags=autoresize
+
 [cache_volume]
 mode=ubi
-vol_id=8
+vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=cachefs
 vol_size="${CACHE_VOLUME_SIZE}"
+
 [systemrw_volume]
 mode=ubi
-vol_id=9
+vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=systemrw
 vol_size="${SYSTEMRW_VOLUME_SIZE}"
+
 EOF
+vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
         if $(echo ${IMAGE_FEATURES} | grep -q "persist-volume"); then
             cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [persist_volume]
 mode=ubi
-vol_id=10
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=persist
 vol_size="${PERSIST_VOLUME_SIZE}"
+
 EOF
         fi
 }
@@ -241,21 +258,24 @@ EOF
 # Squahshfs cfg
 do_create_squash_ubinize_config_ab[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 do_create_squash_ubinize_config_ab() {
+vol_id=0
     cat << EOF > ${SQUASHFS_UBINIZE_CFG_AB}
 [sysfs_a_volume]
 mode=ubi
 image="${SYSTEMIMAGE_SQUASHFS_TARGET}"
-vol_id=0
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=rootfs_a
 vol_size="${SYSTEM_SQUASHFS_VOLUME_SIZE}"
+
 [sysfs_b_volume]
 mode=ubi
 image="${SYSTEMIMAGE_SQUASHFS_TARGET}"
-vol_id=1
+vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=rootfs_b
 vol_size="${SYSTEM_SQUASHFS_VOLUME_SIZE}"
+
 EOF
     if $(echo ${IMAGE_FEATURES} | grep -q "nad-modem-volume"); then
         cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
@@ -267,11 +287,13 @@ EOF
 image="${MODEM_SQUASHFS_IMAGE}"
 EOF
             fi
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
 cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
-vol_id=2
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=firmware_a
 vol_size="${MODEM_SQUASHFS_VOLUME_SIZE}"
+
 [modem_b_volume]
 mode=ubi
 EOF
@@ -280,64 +302,76 @@ EOF
 image="${MODEM_SQUASHFS_IMAGE}"
 EOF
             fi
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
 cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
-vol_id=3
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=firmware_b
 vol_size="${MODEM_SQUASHFS_VOLUME_SIZE}"
+
 EOF
     fi
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
     if $(echo ${IMAGE_FEATURES} | grep -q "telaf-volume"); then
         cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 [telaf_a_volume]
 mode=ubi
-vol_id=4
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=telaf_a
 vol_size="${TELAF_SQUASHFS_VOLUME_SIZE}"
+
 [telaf_b_volume]
 mode=ubi
-vol_id=5
+vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=telaf_b
 vol_size="${TELAF_SQUASHFS_VOLUME_SIZE}"
+
 [telaf_app_volume]
 mode=ubi
-vol_id=6
+vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=telaf_app
 vol_size="${TELAF_APP_VOLUME_SIZE}"
+
 EOF
     fi
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
 cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 [usrfs_volume]
 mode=ubi
 image="${USER_IMAGE_UBIFS_TARGET}"
-vol_id=7
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=usrfs
 vol_flags=autoresize
+
 [cache_volume]
 mode=ubi
-vol_id=8
+vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=cachefs
 vol_size="${CACHE_VOLUME_SIZE}"
+
 [systemrw_volume]
 mode=ubi
-vol_id=9
+vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=systemrw
 vol_size="${SYSTEMRW_VOLUME_SIZE}"
+
 EOF
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
     if $(echo ${IMAGE_FEATURES} | grep -q "persist-volume"); then
         cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 [persist_volume]
 mode=ubi
-vol_id=10
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=persist
 vol_size="${PERSIST_VOLUME_SIZE}"
+
 EOF
     fi
 }
