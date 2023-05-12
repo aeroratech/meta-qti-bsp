@@ -141,6 +141,11 @@ do_prebuilt_configure() {
 
     install -d ${B}/${KERNEL_OUTPUT_DIR}/dts/vendor/qcom
     cp -fR ../msm-kernel/arch/${ARCH}/boot/dts/vendor/qcom/* ${B}/${KERNEL_OUTPUT_DIR}/dts/vendor/qcom
+
+    # Copied prebuilt kernel modules
+    for kmod in $(find . -name "*.ko") ; do
+        install -m 0644 $kmod ${B}
+    done
 }
 
 do_prebuilt_shared_workdir[nostamp] = "1"
@@ -201,6 +206,14 @@ fakeroot do_prebuilt_install() {
 
     # Copied files may cause host contamination due to invalid UID. Change ownership to root.
     find ${D} -name '*' -exec chown -h root:root {} \;
+
+    # Install modules
+    mkdir -p ${D}/lib/modules/${KERNEL_VERSION}
+    for mod in *.ko; do
+        if [ -f $mod ]; then
+            install -m 0644 $mod ${D}/lib/modules/${KERNEL_VERSION}/
+        fi
+    done
 }
 
 # Must be ran no earlier than after do_kernel_checkout or else Makefile won't be in ${S}/Makefile
