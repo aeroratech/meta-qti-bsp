@@ -7,7 +7,7 @@ QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota
 
 inherit ${QIMGUBICLASSES}
 
-IMAGE_FEATURES[validitems] += "nand2x gluebi nad-modem-volume telaf-volume persist-volume"
+IMAGE_FEATURES[validitems] += "nand2x gluebi nad-modem-volume telaf-volume persist-volume vm-bootsys-volume"
 
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
 
@@ -20,6 +20,7 @@ MODEM_UBIFS_IMAGE = "${WORKSPACE}/NON-HLOS.ubifs"
 VM_IMAGE_UBI_TARGET ?= "vm-bootsys.ubi"
 VM_IMAGE_UBIFS_TARGET ?= "vm-bootsys.ubifs"
 VM_IMAGE_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/vm-images/"
+VM_BOOTSYS_VOLUME_SIZE ??= "128MiB"
 
 UBINIZE_SYSTEM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/ubinize_system.cfg"
 UBINIZE_VM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubinize_vm.cfg"
@@ -156,16 +157,16 @@ vol_name=rootfs_b
 vol_size="${ROOTFS_VOLUME_SIZE}"
 
 EOF
-        if $(echo ${IMAGE_FEATURES} | grep -q "nad-modem-volume"); then
-            cat << EOF >> ${UBINIZE_SYSTEM_CFG}
+    if $(echo ${IMAGE_FEATURES} | grep -q "nad-modem-volume"); then
+        cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [modem_a_volume]
 mode=ubi
 EOF
-            if [ -f ${MODEM_UBIFS_IMAGE} ]; then
-               cat << EOF >> ${UBINIZE_SYSTEM_CFG}
+        if [ -f ${MODEM_UBIFS_IMAGE} ]; then
+            cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 image="${MODEM_UBIFS_IMAGE}"
 EOF
-            fi
+        fi
 vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
 cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 vol_id=$vol_id
@@ -176,11 +177,11 @@ vol_size="${MODEM_VOLUME_SIZE}"
 [modem_b_volume]
 mode=ubi
 EOF
-            if [ -f ${MODEM_UBIFS_IMAGE} ]; then
-               cat << EOF >> ${UBINIZE_SYSTEM_CFG}
+        if [ -f ${MODEM_UBIFS_IMAGE} ]; then
+            cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 image="${MODEM_UBIFS_IMAGE}"
 EOF
-            fi
+        fi
 vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
 cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 vol_id=$vol_id
@@ -189,10 +190,10 @@ vol_name=firmware_b
 vol_size="${MODEM_VOLUME_SIZE}"
 
 EOF
-        fi
+    fi
 vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
-        if $(echo ${IMAGE_FEATURES} | grep -q "telaf-volume"); then
-            cat << EOF >> ${UBINIZE_SYSTEM_CFG}
+    if $(echo ${IMAGE_FEATURES} | grep -q "telaf-volume"); then
+        cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [telaf_a_volume]
 mode=ubi
 vol_id=$vol_id
@@ -215,7 +216,7 @@ vol_name=telaf_app
 vol_size="${TELAF_APP_VOLUME_SIZE}"
 
 EOF
-        fi
+    fi
 vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
 cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [usrfs_volume]
@@ -242,8 +243,8 @@ vol_size="${SYSTEMRW_VOLUME_SIZE}"
 
 EOF
 vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
-        if $(echo ${IMAGE_FEATURES} | grep -q "persist-volume"); then
-            cat << EOF >> ${UBINIZE_SYSTEM_CFG}
+    if $(echo ${IMAGE_FEATURES} | grep -q "persist-volume"); then
+        cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [persist_volume]
 mode=ubi
 vol_id=$vol_id
@@ -252,7 +253,7 @@ vol_name=persist
 vol_size="${PERSIST_VOLUME_SIZE}"
 
 EOF
-        fi
+    fi
 }
 
 # Squahshfs cfg
@@ -282,11 +283,11 @@ EOF
 [modem_a_volume]
 mode=ubi
 EOF
-            if [ -f ${MODEM_SQUASHFS_IMAGE} ]; then
-               cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
+        if [ -f ${MODEM_SQUASHFS_IMAGE} ]; then
+            cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 image="${MODEM_SQUASHFS_IMAGE}"
 EOF
-            fi
+        fi
 vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
 cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 vol_id=$vol_id
@@ -297,11 +298,11 @@ vol_size="${MODEM_SQUASHFS_VOLUME_SIZE}"
 [modem_b_volume]
 mode=ubi
 EOF
-            if [ -f ${MODEM_SQUASHFS_IMAGE} ]; then
-               cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
+        if [ -f ${MODEM_SQUASHFS_IMAGE} ]; then
+            cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 image="${MODEM_SQUASHFS_IMAGE}"
 EOF
-            fi
+        fi
 vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
 cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 vol_id=$vol_id
@@ -371,6 +372,25 @@ vol_id=$vol_id
 vol_type=dynamic
 vol_name=persist
 vol_size="${PERSIST_VOLUME_SIZE}"
+
+EOF
+    fi
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
+    if $(echo ${IMAGE_FEATURES} | grep -q "vm-bootsys-volume"); then
+        cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
+[vm-bootsys_a_volume]
+mode=ubi
+vol_id=$vol_id
+vol_type=dynamic
+vol_name=vm-bootsys_a
+vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+
+[vm-bootsys_b_volume]
+mode=ubi
+vol_id=$((++vol_id))
+vol_type=dynamic
+vol_name=vm-bootsys_b
+vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
 
 EOF
     fi
