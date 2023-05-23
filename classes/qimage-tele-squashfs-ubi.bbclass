@@ -12,7 +12,7 @@ IMAGE_FEATURES[validitems] += "nand2x gluebi nad-modem-volume telaf-volume persi
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
 
 SYSTEM_IMAGE_UBI_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/sysfs.ubi"
-SYSTEM_IMAGE_UBIFS_TARGET ?= "${@bb.utils.contains('IMAGE_FEATURES', 'gluebi', bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity/${SYSTEMIMAGE_GLUEBI_TARGET}/${SYSTEMIMAGE_GLUEBI_TARGET}', '${SYSTEMIMAGE_GLUEBI_TARGET}', d), 'sysfs.ubifs', d)}"
+SYSTEM_IMAGE_UBIFS_TARGET ?= "${@bb.utils.contains('IMAGE_FEATURES', 'gluebi', bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity/${SYSTEMIMAGE_GLUEBI_TARGET}/${SYSTEMIMAGE_GLUEBI_TARGET}', '${SYSTEMIMAGE_GLUEBI_TARGET}', d), 'squashfs/sysfs.ubifs', d)}"
 USER_IMAGE_UBIFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/userfs.ubifs"
 USER_IMAGE_ROOTFS ?= "${WORKDIR}/usrfs-data"
 MODEM_UBIFS_IMAGE = "${WORKSPACE}/NON-HLOS.ubifs"
@@ -471,7 +471,7 @@ python () {
     elif bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
         bb.build.addtask('do_makesystem_gluebi', 'do_image_complete', 'do_image', d)
     else:
-        bb.build.addtask('do_makesystem_tele_ubi', 'do_image_complete', 'do_image', d)
+        bb.build.addtask('do_makesystem_tele_ubi', 'do_image_complete', 'do_makesystem_ubi', d)
         bb.build.addtask('do_makesystem_squashfs', 'do_image_complete', 'do_makesystem_tele_ubi', d)
 }
 
