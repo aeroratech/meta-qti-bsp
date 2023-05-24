@@ -51,6 +51,8 @@ do_install() {
   install -d ${D}${sysconfdir}/initscripts
   install -d ${D}${systemd_unitdir}/system/multi-user.target.wants/
   install -d ${D}/include/linux
+  install -d ${D}/usr/include
+  cp -rf ${WORKSPACE}/vendor/qcom/opensource/dsp-kernel/include/uapi/ ${D}/usr/include
   install -m 755 ${WORKDIR}/start_dsp_le ${D}${sysconfdir}/initscripts
   install -m 0755 ${WORKDIR}/vendor/qcom/opensource/dsp-kernel/frpc-trusted-adsprpc.ko -D ${WORKDIR}/frpc-trusted-adsprpc.ko
   # strip debug symbols and sign the module
