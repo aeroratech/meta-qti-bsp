@@ -528,6 +528,59 @@ else
 fi
 
 case $fstab_suffix in
+    network_boot)
+        echo "In Network boot configuration"
+
+        LOCAL_INTERFACE="eth00"
+
+        # source /usr/bin/ecpri_install
+        /sbin/insmod /lib/modules/gsim.ko
+        /sbin/insmod /lib/modules/ecpri_dmam.ko
+        /sbin/insmod /lib/modules/fpc_qsfp.ko
+        /sbin/insmod /lib/modules/lassen_qcom_aw_phy.ko qcom_aw_phy_ref_clk_mode=1
+        /sbin/insmod /lib/modules/lassen_mtip.ko
+        /sbin/insmod /lib/modules/lassen_secure_eip.ko
+        /sbin/insmod /lib/modules/ecpri_core.ko
+        ethtool -s $LOCAL_INTERFACE msglvl 1
+        ethtool -s $LOCAL_INTERFACE autoneg off
+
+        # Dynamic IP
+        INTERFACE_TIMEOUT=60
+        ifconfig -a $LOCAL_INTERFACE >/dev/null 2>&1
+        while [ "$?" -ne 0 ]; do
+            echo "Waiting for $LOCAL_INTERFACE..."
+            sleep 1
+            if [ "$INTERFACE_TIMEOUT" -le 0 ]; then
+                start_rdshell
+            fi
+            (( INTERFACE_TIMEOUT -= 1 ))
+            ifconfig -a $LOCAL_INTERFACE >/dev/null 2>&1
+        done
+
+        /usr/sbin/dhcpcd $LOCAL_INTERFACE
+        if [ "$?" -ne 0 ]; then
+            echo "error starting dhcpcd..."
+            start_rdshell
+        fi
+
+        HOST_ADDRESS_TIMEOUT=5
+        while [[ -z $HOST_ADDR ]]; do
+            echo "Waiting to get HOST Address..."
+            sleep 1
+            if [ "$HOST_ADDRESS_TIMEOUT" -le 0 ]; then
+                start_rdshell
+            fi
+            (( HOST_ADDRESS_TIMEOUT -= 1 ))
+            # /usr/sbin/dhcpcd $LOCAL_INTERFACE
+            # sleep 1
+            HOST_ADDR="$(echo $(/usr/sbin/dhcpcd -U $LOCAL_INTERFACE | grep "dhcp_server_identifier=" | cut -d'=' -f2))"
+            echo "Server Address : $HOST_ADDR"
+        done
+
+        # Create /etc/nbdtab and nbd-client connect remote nbdkit
+        do_nbdtab $HOST_ADDR 0 "usb"
+
+        ;;
     emmc)
         partition="$(extract_config root)"
         ## wait for system partition for 60sec
