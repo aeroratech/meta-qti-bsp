@@ -9,6 +9,9 @@ OTA_TARGET_IMAGE_ROOTFS_UBI = "${WORKDIR}/ota-target-image-ubi"
 OTA_TARGET_FILES_UBI = "target-files-ubi.zip"
 OTA_TARGET_FILES_UBI_PATH = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_UBI}"
 
+OTA_TARGET_FILES_UBI_AB = "target-files-ubi_ab.zip"
+OTA_TARGET_FILES_UBI_AB_PATH = "${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_TARGET_FILES_UBI_AB}"
+
 MACHINE_FILESMAP_SEARCH_PATH ?= "${@':'.join('%s/conf/machine/filesmap' % p for p in '${BBPATH}'.split(':'))}}"
 MACHINE_FILESMAP_FULL_PATH = "${@machine_search(d.getVar('MACHINE_FILESMAP_CONF'), d.getVar('MACHINE_FILESMAP_SEARCH_PATH')) or ''}"
 
@@ -43,6 +46,11 @@ do_recovery_ubi() {
         cp ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${BOOTIMAGE_TARGET} ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOTABLE_IMAGES/recovery.img
     fi
 
+    # if dtbo.img file exist then copy
+    if [ -f ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${DTBOIMAGE_TARGET} ]; then
+        cp ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${DTBOIMAGE_TARGET} ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/dtbo.img
+    fi
+
     # copy the contents of system rootfs
     if ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('IMAGE_FEATURES', 'gluebi', 'true', 'false', d), 'false', d)}; then
         cp ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/verity/system-gluebi.ext4/system-gluebi.ext4 ${OTA_TARGET_IMAGE_ROOTFS_UBI}/BOOTABLE_IMAGES/system.img
@@ -71,13 +79,28 @@ do_recovery_ubi() {
     cp   ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/usr/bin/applypatch ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin/.
     cp   ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/usr/bin/updater ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin/.
 
+    if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
+        cp -r ${IMAGE_ROOTFS_SQUASHFS_UBI}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/.
+        cp   ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/usr/bin/applypatch ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin/.
+        cp   ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/usr/bin/updater ${OTA_TARGET_IMAGE_ROOTFS_UBI}/OTA/bin/.
+        if ${@bb.utils.contains('MACHINE_FEATURES', 'tele-squashfs-ubi', 'true', 'false', d)}; then
+            SQUASHFS_SUPPORTED="1"
+        fi
+    fi
+
     # if squashfs is supported, we use block-based OTA upgrade.
     if [[ "${SQUASHFS_SUPPORTED}" == "1" ]]; then
         # what we have is a squashfs image.
         # OTA scripts expect a sparse image for block-based package.
         # run img2simg on the squashfs image - this is purely aesthetic
         # and adds no value to the compression of the image.
-        img2simg ${DEPLOY_DIR_IMAGE}/${BASEMACHINE}-sysfs.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/system.img
+        # use squashfs2sparse for generating image for squashfs
+
+        if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
+            squashfs2sparse ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/squashfs/sysfs.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/system.img
+        else
+            img2simg ${DEPLOY_DIR_IMAGE}/${BASEMACHINE}-sysfs.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/system.img
+        fi
 
         # set block img diff version to v3
         echo "blockimgdiff_versions=3" >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
@@ -128,6 +151,10 @@ do_recovery_ubi() {
         echo use_set_metadata=1 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
     fi
 
+    if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
+      echo le_target_supports_nad=1 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
+    fi
+
     # copy contents of META folder
     #recovery_api_version is from recovery module
     echo recovery_api_version=3 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
@@ -136,7 +163,7 @@ do_recovery_ubi() {
     echo blocksize=131072 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
 
     # boot_size: Size of boot partition from partition.xml
-    echo boot_size=0x1900000 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
+    echo boot_size=0x2400000 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
 
     # recovery_size : Size of recovery partition from partition.xml
     echo recovery_size=0x00C00000 >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
@@ -160,6 +187,10 @@ do_recovery_ubi() {
     echo default_system_dev_certificate=build/abcd >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/META/misc_info.txt
 
     cd ${OTA_TARGET_IMAGE_ROOTFS_UBI} && zip -qry ${OTA_TARGET_FILES_UBI_PATH} *
+
+    if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
+        cd ${OTA_TARGET_IMAGE_ROOTFS_UBI} && zip -qry ${OTA_TARGET_FILES_UBI_AB_PATH} *
+    fi
 }
 
 addtask do_recovery_ubi after do_image_complete before do_build
@@ -172,6 +203,18 @@ do_gen_otazip_ubi() {
         cp update_ubi.zip ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}
     else
         bbwarn "update_ubi.zip failed to create"
+    fi
+
+    if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
+        ./full_ota.sh ${OTA_TARGET_FILES_UBI_AB_PATH} ${IMAGE_ROOTFS_UBI} ubi_ab --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT}
+    fi
+
+    if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
+      if [[ -e update_ubi_ab.zip ]]; then
+           cp update_ubi_ab.zip ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}
+       else
+           bbwarn "update_ubi_ab.zip failed to create"
+       fi
     fi
 }
 addtask do_gen_otazip_ubi after do_recovery_ubi before do_build

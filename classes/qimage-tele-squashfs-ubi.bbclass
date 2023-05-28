@@ -10,7 +10,10 @@ inherit ${QIMGUBICLASSES}
 IMAGE_FEATURES[validitems] += "nand2x gluebi nad-modem-volume persist-volume vm-bootsys-volume vm-systemrw-volume"
 IMAGE_FEATURES[validitems] += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'telaf-volume', '', d)}"
 
-CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
+CORE_IMAGE_EXTRA_INSTALL += "\
+                            systemd-machine-units-ubi \
+                            ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'recovery-ab', '', d)} \
+                            "
 
 SYSTEM_IMAGE_UBI_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/sysfs.ubi"
 SYSTEM_IMAGE_UBIFS_TARGET ?= "${@bb.utils.contains('IMAGE_FEATURES', 'gluebi', bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity/${SYSTEMIMAGE_GLUEBI_TARGET}/${SYSTEMIMAGE_GLUEBI_TARGET}', '${SYSTEMIMAGE_GLUEBI_TARGET}', d), 'squashfs/sysfs.ubifs', d)}"
