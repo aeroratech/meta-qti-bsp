@@ -14,6 +14,7 @@ PREFERRED_VERSION_dtc-android-build ?= "5.15"
 PREFERRED_VERSION_mkbootimg-gki-native ?= "5.15"
 PREFERRED_VERSION_dtc-android-build-native ?= "5.15"
 PREFERRED_VERSION_mkdtimg-gki-native ?= "5.15"
+PREFERRED_VERSION:securemsmdlkm ?= "1.0"
 
 KERNEL_VARIANT = ""
 KERNEL_VARIANT_qti-distro-debug = "debug_"
