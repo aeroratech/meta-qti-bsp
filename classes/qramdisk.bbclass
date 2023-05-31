@@ -6,8 +6,9 @@ TOYBOX_RAMDISK ?= "False"
 ENABLE_ADB ?= "True"
 ENABLE_ADB_qti-distro-base-user ?= "False"
 PACKAGE_INSTALL += "${@oe.utils.conditional('ENABLE_ADB', 'True', 'adbd usb-composition usb-composition-usbd', '', d)}"
-PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils e2fsprogs dosfstools ethtool iputils iperf2 iperf3 devmem2 tcpdump', '', d)}"
+PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils ethtool iputils devmem2 tcpdump', '', d)}"
 PACKAGE_INSTALL += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'nbd-client techpack-ecpri', '', d)}"
+DEPENDS += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'binutils-cross-${TARGET_ARCH}', '', d)}"
 
 # Adding mtd-utils to support dm-verity v4 for NAND
 PACKAGE_INSTALL += "${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'mtd-utils', '', d)}"
@@ -56,9 +57,6 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/bin/arping bin/
             cp ${IMAGE_ROOTFS}/usr/lib/libgpg-error.so.0 lib/libgpg-error.so.0
             cp ${IMAGE_ROOTFS}/usr/bin/devmem2 bin/
-            cp ${IMAGE_ROOTFS}/usr/bin/iperf bin/
-            cp ${IMAGE_ROOTFS}/usr/bin/iperf3 bin/
-            cp ${IMAGE_ROOTFS}/usr/lib/libiperf.so.0 lib/libiperf.so.0
             cp ${IMAGE_ROOTFS}/usr/sbin/tcpdump bin/
             cp ${IMAGE_ROOTFS}/usr/lib/libpcap.so.1 lib/libpcap.so.1
             cp ${IMAGE_ROOTFS}/usr/lib/libcrypto.so.1.1 lib/
@@ -84,16 +82,10 @@ fakeroot do_ramdisk_create() {
                 cp ${IMAGE_ROOTFS}/usr/bin/gawk bin/
                 cp ${IMAGE_ROOTFS}/usr/bin/expr.coreutils bin/
                 cp ${IMAGE_ROOTFS}/usr/bin/tr.coreutils bin/
-                cp ${IMAGE_ROOTFS}/usr/sbin/mkfs.vfat.dosfstools bin/
-                cp ${IMAGE_ROOTFS}/sbin/mkfs.ext2.e2fsprogs bin/
-                cp ${IMAGE_ROOTFS}/sbin/mkfs.ext3 bin/
-                cp ${IMAGE_ROOTFS}/sbin/mkfs.ext4 bin/
                 cp ${IMAGE_ROOTFS}/sbin/ip.iproute2 bin/
                 ln -s gawk bin/awk
                 ln -s expr.coreutils bin/expr
                 ln -s tr.coreutils bin/tr
-                ln -s mkfs.vfat.dosfstools bin/mkfs.vfat
-                ln -s mkfs.ext2.e2fsprogs bin/mkfs.ext2
                 ln -s ip.iproute2 bin/ip
             fi
             # install all the toybox commands
@@ -136,6 +128,8 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/usr/lib/modules/lassen_secure_eip.ko lib/modules/
             cp ${IMAGE_ROOTFS}/usr/lib/modules/ecpri_core.ko lib/modules/
             cp ${IMAGE_ROOTFS}/lib/firmware/qcom_aw_phy/eth_custom_rates_1.hex lib/firmware/qcom_aw_phy/
+            # strip debug symbols from kos
+            ${STRIP} --strip-unneeded lib/modules/*ko
             # install dhcpcd
             cp ${IMAGE_ROOTFS}/etc/dhcpcd.conf etc/
             cp ${IMAGE_ROOTFS}/usr/lib/dhcpcd/dev/udev.so usr/lib/dhcpcd/dev/
