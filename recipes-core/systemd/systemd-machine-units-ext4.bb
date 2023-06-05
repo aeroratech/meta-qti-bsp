@@ -18,6 +18,13 @@ do_install_append () {
         install -m 0644 ${S}/set-slotsuffix.service ${D}${systemd_unitdir}/system
     fi
 
+    if ${@bb.utils.contains('MACHINE_MNT_POINTS','/systemrw','true','false',d)}; then
+        if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-guest', 'true', 'false', d)}; then
+            install -d ${D}/lib/systemd/system/systemrw.mount.d
+            install -m 0755 ${WORKDIR}/systemrw-gvm.conf ${D}/lib/systemd/system/systemrw.mount.d/
+        fi
+    fi
+
 }
 
 SYSTEMD_SERVICE_${PN} += "${@bb.utils.contains('COMBINED_FEATURES','qti-ab-boot',' set-slotsuffix.service','',d)}"

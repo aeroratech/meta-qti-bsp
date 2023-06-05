@@ -8,7 +8,9 @@ MACHINE_MNT_POINTS = " \
     /data \
     /cache \
     /vm-bootsys \
+    /vm_systemrw \
 "
+
 KERNEL_VARIANT_qti-distro-debug ??= "hostvm_debug_"
 KERNEL_VARIANT_qti-distro-perf ??= "hostvm_perf_"
 

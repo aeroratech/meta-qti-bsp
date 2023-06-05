@@ -1,7 +1,7 @@
 # Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-IMAGE_FEATURES[validitems] += "vm"
+IMAGE_FEATURES[validitems] += "vm vm-bootsys-volume vm-systemrw-volume"
 IMAGE_FEATURES += "vm"
 
 do_gen_partition_bin[noexec] = "1"
@@ -12,22 +12,32 @@ DEPENDS += "ext4-utils-native mtd-utils-native"
 # Add list of VMs to pack together
 VM_IMAGES ?= "televm fotavm"
 
-VMBOOTSYS_DEPLOY_DIR ?= "${DEPLOY_DIR}/images/${BASEMACHINE}-vmbootsys"
+VMBOOTSYS_DEPLOY_DIR ?= "${DEPLOY_DIR}/images/${BASEMACHINE}-vmbootsys/"
 VMPACKIMAGE_UBI_TARGET ?= "${VMBOOTSYS_DEPLOY_DIR}/vm-bootsys.ubi"
 VMPACKIMAGE_UBIFS_TARGET ?= "${VMBOOTSYS_DEPLOY_DIR}/vm-bootsys.ubifs"
 VMPACKIMAGE_ROOTFS ?= "${VMBOOTSYS_DEPLOY_DIR}/vm-images/"
 UBINIZE_VMPACK_CFG ?= "${VMBOOTSYS_DEPLOY_DIR}/ubinize_vm.cfg"
+VMSYSTEMRW_PACKIMAGE_UBIFS_TARGET ?= "${VMBOOTSYS_DEPLOY_DIR}/vm-systemrw.ubifs"
+VMSYSTEMRW_PACKIMAGE_ROOTFS ?= "${VMBOOTSYS_DEPLOY_DIR}/vm-systemrw/"
 
 # Size of the combined EXT4 image
 VM_COMBINED_SIZE_EXT4 ?= "314572800"
 
-do_copy_vmimages[dirs] = "${VMBOOTSYS_DEPLOY_DIR} ${VMBOOTSYS_DEPLOY_DIR}/vm-images/"
+do_copy_vmimages[dirs] = "${VMBOOTSYS_DEPLOY_DIR} ${VMBOOTSYS_DEPLOY_DIR}/vm-images/ ${VMBOOTSYS_DEPLOY_DIR}/vm-systemrw/"
 do_copy_vmimages() {
-     if [ -d "${DEPLOY_DIR}/images/${BASEMACHINE}-${VM}/vm-images/" ]; then
+    if [ -d "${DEPLOY_DIR}/images/${BASEMACHINE}-${VM}/vm-images/" ]; then
         cp -R ${DEPLOY_DIR}/images/${BASEMACHINE}-${VM}/vm-images/* ${VMBOOTSYS_DEPLOY_DIR}/vm-images/
-     else
-        echo "${DEPLOY_DIR}/images/${BASEMACHINE}-${VM} does not exist."
-     fi
+    else
+        echo "${DEPLOY_DIR}/images/${BASEMACHINE}-${VM}/vm-images does not exist."
+    fi
+
+    if ${@bb.utils.contains('MACHINE_FEATURES','qti-vm-systemrw', 'true', 'false', d)}; then
+        if [ -d "${DEPLOY_DIR}/images/${BASEMACHINE}-${VM}/vm-systemrw/" ]; then
+            cp -R ${DEPLOY_DIR}/images/${BASEMACHINE}-${VM}/vm-systemrw/* ${VMBOOTSYS_DEPLOY_DIR}/vm-systemrw/
+        else
+            echo "${DEPLOY_DIR}/images/${BASEMACHINE}-${VM}/vm-systemrw does not exist."
+        fi
+    fi
 }
 
 do_setup_package[cleandirs] = "${VMBOOTSYS_DEPLOY_DIR}"
@@ -54,7 +64,7 @@ do_pack_vm_images[nostamp] = "1"
 do_pack_vm_images[prefuncs] += 'do_setup_package'
 do_pack_vm_images[prefuncs] += "${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_create_ubinize_vmpack_config', '', d)}"
 do_pack_vm_images[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools', '', d)}"
-do_verity_ubinize[depends] += "${PN}:do_make_vmbootsys_ubi"
+do_pack_vm_images[depends] += "${PN}:do_make_vmbootsys_ubi"
 
 do_pack_vm_images() {
     # copy file_contexts file to deploy dir
@@ -71,6 +81,11 @@ do_pack_vm_images() {
         mkfs.ubifs -r ${VMPACKIMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS} \
                    -o ${VMPACKIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
         ubinize -o ${VMPACKIMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_VMPACK_CFG}
+
+        if ${@bb.utils.contains('MACHINE_FEATURES','qti-vm-systemrw', 'true', 'false', d)}; then
+            mkfs.ubifs -r ${VMSYSTEMRW_PACKIMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS} \
+                                -o ${VMSYSTEMRW_PACKIMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
+        fi
     fi
 }
 
