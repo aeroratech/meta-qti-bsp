@@ -29,7 +29,7 @@ KERNEL_CMD_PARAMS = ""
 KERNEL_DYNAMIC_DEFCONFIG = "True"
 SERIAL_CONSOLE = "115200 hvc0"
 
-MACHINE_FEATURES += "qti-vm-guest gh-loader qti-location qti-sensors qti-vm-systemrw"
+MACHINE_FEATURES += "qti-vm-guest gh-loader qti-location qti-sensors qti-vm-systemrw tele-squashfs-ubi"
 
 MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 TOYBOX_RAMDISK = "False"

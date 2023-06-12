@@ -2,19 +2,36 @@
 # Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+UBI_SYS_CLASS="/sys/class/ubi/ubi0"
+UBI_DEV_BLOCK="/dev/ubiblock0"
+SQUASHFS_IMG="1"
+
+GetVMBootSysVolumeID () {
+    partition=$1
+    volcount=`cat ${UBI_SYS_CLASS}/volumes_count`
+
+    for vid in `seq 0 $volcount`; do
+        name=`cat ${UBI_SYS_CLASS}_$vid/name`
+        if [ "$name" == "$partition" ]; then
+            echo $vid
+            break
+        fi
+    done
+}
+
 FindAndMountUBI () {
-   partition=$1
-   dir=$2
-   extra_opts=$3
-   ubi_dev_id=$4
+    partition=$1
+    dir=$2
+    extra_opts=$3
+    ubi_dev_id=$4
 
-   echo "MTD : Detected block device : $dir for $partition"
-   mkdir -p $dir
+    echo "MTD : Detected block device : $dir for $partition"
+    mkdir -p $dir
 
-   device="/dev/ubi$ubi_dev_id""_0"
+    device="/dev/ubi$ubi_dev_id""_0"
 
-   while [ 1 ]
-    do
+    while [ 1 ]
+     do
         if [ -c $device ]
         then
             test -x /sbin/restorecon && /sbin/restorecon $device
@@ -23,20 +40,37 @@ FindAndMountUBI () {
         else
             sleep 0.010
         fi
-    done
+     done
+
     chown -R root:root /vm-bootsys
 }
 
 FindAndMountUBIVolume () {
-   partition=$1
-   dir=$2
-   extra_opts=$3
+    partition=$1
+    dir=$2
+    extra_opts=$3
+    ubi_dev_id=$4
 
-   mkdir -p $dir
-   eval mount -t ubifs $partition $dir -o bulk_read$extra_opts
-   if [ $? -ne 0 ] ; then
-       echo "vm-bootsys mount failed" > /dev/kmsg
-   fi
+    volid=$(GetVMBootSysVolumeID $partition)
+    if [ "$volid" == "" ]; then
+        echo "volume index not found for $partition volume "  > /dev/kmsg
+        exit 0
+    fi
+
+    device=/dev/ubi0_$volid
+    block_device=${UBI_DEV_BLOCK}_$volid
+
+    if [ "$SQUASHFS_IMG" == "1" ]; then
+        ubiblock --create $device
+        eval mount -t squashfs $block_device $dir -o ro$extra_opts
+    else
+        eval mount -t ubifs ubi$ubi_dev_id:$partition $dir -o bulk_read$extra_opts
+     fi
+
+    if [ $? -ne 0 ] ; then
+        echo "$partition volume mount failed" > /dev/kmsg
+        exit 0
+     fi
 }
 
 if [ -x /sbin/restorecon ]; then
@@ -57,7 +91,8 @@ is_vm_bootsys_vol_enabled=`ubinfo -d 0 -N $vm_bootsys_part_name`
 
 if [ ! -z "$is_vm_bootsys_vol_enabled" ];
 then
-    eval FindAndMountUBIVolume ubi0:$vm_bootsys_part_name /vm-bootsys $vm_bootsys_selinux_opt
+    ubi_dev_id=0
+    eval FindAndMountUBIVolume $vm_bootsys_part_name /vm-bootsys $vm_bootsys_selinux_opt $ubi_dev_id
 else
     ubi_dev_id=4
     if [ "$SLOT_SUFFIX" != "_b" ];

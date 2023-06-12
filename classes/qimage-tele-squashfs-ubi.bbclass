@@ -19,12 +19,12 @@ USER_IMAGE_ROOTFS ?= "${WORKDIR}/usrfs-data"
 MODEM_UBIFS_IMAGE = "${WORKSPACE}/NON-HLOS.ubifs"
 
 VM_IMAGE_UBI_TARGET ?= "vm-bootsys.ubi"
-VM_IMAGE_UBIFS_TARGET ?= "vm-bootsys.ubifs"
+VM_IMAGE_SQUASHFS_TARGET ?= "vm-bootsys.squash"
 VM_IMAGE_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/vm-images/"
 VM_BOOTSYS_VOLUME_SIZE ??= "128MiB"
 
 UBINIZE_SYSTEM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/ubinize_system.cfg"
-UBINIZE_VM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/ubinize_vm.cfg"
+SQUASHFS_UBINIZE_VM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/squashfs_ubinize_vm.cfg"
 
 #squashfs files
 SYSTEMIMAGE_SQUASHFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/sysfs.squash"
@@ -488,32 +488,46 @@ fakeroot do_maketelaf_squashfs() {
     fi
 }
 
-# Need to copy ubinize_vm.cfg file in the deploy directory
-do_create_ubinize_vm_config[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
-
-do_create_ubinize_vm_config() {
-    cat << EOF > ${UBINIZE_VM_CFG}
-[vm_volume]
+# Need to copy squashfs_ubinize_vm.cfg file in the deploy directory
+do_create_squashfs_ubinize_vm_config[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/"
+do_create_squashfs_ubinize_vm_config() {
+    cat << EOF > ${SQUASHFS_UBINIZE_VM_CFG}
+[vm-bootsys_volume]
 mode=ubi
-image="${VM_IMAGE_UBIFS_TARGET}"
+image="${VM_IMAGE_SQUASHFS_TARGET}"
 vol_id=0
 vol_type=dynamic
-vol_name=vm
+vol_name=vm-bootsys
+vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+
+[vm_systemrw_volume]
+mode=ubi
+image="${VMSYSTEMRW_IMAGE_UBIFS_TARGET}"
+vol_id=1
+vol_type=dynamic
+vol_name=vm_systemrw
 vol_flags=autoresize
 EOF
 
 }
 
-do_make_vmbootsys_ubi[prefuncs] += "do_create_ubinize_vm_config"
-do_make_vmbootsys_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+do_make_vmbootsys_squashfs[prefuncs] += "do_create_squashfs_ubinize_vm_config"
+do_make_vmbootsys_squashfs[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/"
 
-fakeroot do_make_vmbootsys_ubi() {
-    mkfs.ubifs -r ${VM_IMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS} -o ${VM_IMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
-    ubinize -o ${VM_IMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${UBINIZE_VM_CFG}
+fakeroot do_make_vmbootsys_squashfs() {
+    if [[ "${DISTRO_FEATURES}" =~ "selinux" ]] ; then
+        mksquashfs ${VM_IMAGE_ROOTFS} ${VM_IMAGE_SQUASHFS_TARGET} -context-file ${SELINUX_FILE_CONTEXTS} -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1
+    else
+        mksquashfs ${VM_IMAGE_ROOTFS} ${VM_IMAGE_SQUASHFS_TARGET} -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1
+    fi
+
+    ubinize -o ${VM_IMAGE_UBI_TARGET} ${UBINIZE_ARGS} ${SQUASHFS_UBINIZE_VM_CFG}
 }
 
 python () {
-    if bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
+    if bb.utils.contains('IMAGE_FEATURES', 'vm', True, False, d):
+        bb.build.addtask('do_make_vmbootsys_squashfs', 'do_image_complete', 'do_compose_vmimage', d)
+    elif bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
         bb.build.addtask('do_makesystem_gluebi', 'do_image_complete', 'do_image', d)
     else:
         bb.build.addtask('do_makesystem_tele_ubi', 'do_image_complete', 'do_makesystem_ubi', d)
