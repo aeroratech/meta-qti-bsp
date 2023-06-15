@@ -31,3 +31,8 @@ RDEPENDS_packagegroup-support-utils = "\
     libnl \
     libxml2 \
     "
+
+# Sa525m overwrite the packagegroup to only include chrony
+RDEPENDS_packagegroup-support-utils_sa525m = "\
+    chrony \
+    "
