@@ -47,6 +47,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         modem-shutdown \
         ${@bb.utils.contains('MACHINE_FEATURES', 'qti-virtualization', 'packagegroup-qti-virtualization', '', d)} \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
+        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'packagegroup-qti-telaf', '', d)} \
 "
 
 # Following packages will be enabled later

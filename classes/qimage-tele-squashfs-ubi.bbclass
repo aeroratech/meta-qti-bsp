@@ -7,7 +7,8 @@ QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota
 
 inherit ${QIMGUBICLASSES}
 
-IMAGE_FEATURES[validitems] += "nand2x gluebi nad-modem-volume telaf-volume persist-volume vm-bootsys-volume vm-systemrw-volume"
+IMAGE_FEATURES[validitems] += "nand2x gluebi nad-modem-volume persist-volume vm-bootsys-volume vm-systemrw-volume"
+IMAGE_FEATURES[validitems] += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'telaf-volume', '', d)}"
 
 CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
 
@@ -32,6 +33,10 @@ SQUASHFS_UBINIZE_CFG_AB ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/squashfs_
 MODEM_IMAGE_DIR = "${WORKSPACE}/modem_image"
 SELINUX_CONTEXT_MODEM = "${WORKSPACE}/fctx1"
 MODEM_SQUASHFS_IMAGE = "${WORKSPACE}/NON-HLOS.squash"
+
+TELAF_RO_SQUASHFS_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/telaf_ro.squashfs"
+TELAF_RO_IMAGE_PATH ?= "${DEPLOY_DIR_IMAGE}/telaf-images/telaf_ro"
+TELAF_RO_SELINUX_FILE_CONTEXTS ?= "${DEPLOY_DIR_IMAGE}/telaf-images/security/selinux/sepolicy/files/file_contexts"
 
 # Ensure SELinux file context variable is defined
 SELINUX_FILE_CONTEXTS ?= ""
@@ -136,6 +141,7 @@ create_symlink_systemd_ubi_mount_tele_rootfs() {
 
 # Need to copy ubinize.cfg file in the deploy directory
 do_create_ubinize_tele_config[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs"
+do_create_squash_ubinize_config_ab[depends] += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'do_maketelaf_squashfs', '', d)}"
 
 do_create_ubinize_tele_config() {
 vol_id=0
@@ -258,6 +264,8 @@ EOF
 
 # Squahshfs cfg
 do_create_squash_ubinize_config_ab[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
+do_create_squash_ubinize_config_ab[depends] += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'do_maketelaf_squashfs', '', d)}"
+
 do_create_squash_ubinize_config_ab() {
 vol_id=0
     cat << EOF > ${SQUASHFS_UBINIZE_CFG_AB}
@@ -317,6 +325,14 @@ vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
         cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 [telaf_a_volume]
 mode=ubi
+EOF
+        if [ -f ${TELAF_RO_SQUASHFS_TARGET} ]; then
+            cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
+image="${TELAF_RO_SQUASHFS_TARGET}"
+EOF
+        fi
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
+cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 vol_id=$vol_id
 vol_type=dynamic
 vol_name=telaf_a
@@ -324,7 +340,15 @@ vol_size="${TELAF_SQUASHFS_VOLUME_SIZE}"
 
 [telaf_b_volume]
 mode=ubi
-vol_id=$((++vol_id))
+EOF
+        if [ -f ${TELAF_RO_SQUASHFS_TARGET} ]; then
+            cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
+image="${TELAF_RO_SQUASHFS_TARGET}"
+EOF
+        fi
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
+cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=telaf_b
 vol_size="${TELAF_SQUASHFS_VOLUME_SIZE}"
@@ -453,6 +477,17 @@ fakeroot do_makesystem_squashfs() {
     ubinize -o ${SYSTEMIMAGE_SQUASHFS_UBI_AB_TARGET} ${UBINIZE_ARGS} ${SQUASHFS_UBINIZE_CFG_AB}
 }
 
+do_maketelaf_squashfs[depends] += "${@bb.utils.contains('IMAGE_FEATURES', 'telaf-volume', 'telaf-image:do_deploy', '', d)}"
+do_maketelaf_squashfs[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs"
+
+fakeroot do_maketelaf_squashfs() {
+    if [[ "${DISTRO_FEATURES}" =~ "selinux" ]] ; then
+        mksquashfs ${TELAF_RO_IMAGE_PATH} ${TELAF_RO_SQUASHFS_TARGET} -context-file ${TELAF_RO_SELINUX_FILE_CONTEXTS} -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1
+    else
+        mksquashfs ${TELAF_RO_IMAGE_PATH} ${TELAF_RO_SQUASHFS_TARGET} -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1
+    fi
+}
+
 # Need to copy ubinize_vm.cfg file in the deploy directory
 do_create_ubinize_vm_config[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
@@ -483,6 +518,8 @@ python () {
     else:
         bb.build.addtask('do_makesystem_tele_ubi', 'do_image_complete', 'do_makesystem_ubi', d)
         bb.build.addtask('do_makesystem_squashfs', 'do_image_complete', 'do_makesystem_tele_ubi', d)
+        if bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', True, False, d):
+            bb.build.addtask('do_maketelaf_squashfs', 'do_image_complete', 'do_makesystem_ubi', d)
 }
 
 do_patch_ubi_tools() {
