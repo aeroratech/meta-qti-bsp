@@ -88,7 +88,6 @@ VOLATILE_BINDS_sa525m = "\
 /systemrw/data/adpl /etc/data/adpl/\n\
 /systemrw/data/usb /etc/data/usb/\n\
 /systemrw/data/ipa /etc/data/ipa/\n\
-/systemrw/rt_tables /etc/data/iproute2/rt_tables\n\
 /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
 /systemrw/c2c /etc/c2c/\n\
 /systemrw/tel.conf  /etc/tel.conf \n\
