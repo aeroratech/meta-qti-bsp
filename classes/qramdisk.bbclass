@@ -180,6 +180,8 @@ fakeroot do_ramdisk_create() {
             elif ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'true', 'false', d)}; then
                 install -m 744 ${COREBASE}/meta-qti-bsp/recipes-products/images/include/ramdisk-init.sh init
                 cp ${IMAGE_ROOTFS}/usr/sbin/ubi* usr/sbin/
+                cp ${IMAGE_ROOTFS}/usr/bin/nad-abctl usr/bin/nad-abctl
+                cp ${IMAGE_ROOTFS}/usr/lib/libnad_ab_al.so.1 lib/libnad_ab_al.so.1
                 ln -s busybox bin/dd
 
                 # The verity need to work with verified boot lib

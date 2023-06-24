@@ -150,19 +150,36 @@ gracefullReboot () {
 
     LOGD "InitRamFS: Found issue, rebooting ${mode}..."
     busybox sleep 1
-    sys_reboot ${mode}
+    # TODO reboot needs to be handled. sys_reboot cannot be used.
+    #sys_reboot ${mode}
 }
 
 SlotSwitchReboot () {
     local abctl_cmd="/usr/bin/nad-abctl"
     local sys_vol_name=""
     local sys_vol=""
-    local next_slot="none"
-    local ret=""
-    local mtd_device=`${Bgrep} nand_ab_attr /proc/mtd | ${Bawk} -F ':' '{print $1}'`
+    # Set image_set_status fields in recoveryinfo struct
+    #  'A &B' Usable     :  SET_AB_USABLE(0)
+    #  'A' corrupted     :  DONT_USE_SET_A(1)
+    #  'B' corrupted     :  DONT_USE_SET_B(2)
+    #  'A &B' corrupted  :  DONT_USE_SET_AB(3)
 
+    # Set owner fields in recoveryinfo struct
+    #  OWNER_XBL         :  1
+    #  OWNER_HLOS        :  2
+    local owner_hlos=2
+    local dont_use_set_a=1
+    local dont_use_set_ab=3
+    local mtd_device=`${Bgrep} recoveryinfo /proc/mtd | ${Bawk} -F ':' '{print $1}'`
+
+    # TODO GPIO needs to be handled
     if [ ! -e ${abctl_cmd} ]; then
         LOGD "${abctl_cmd} not found."
+        return ${STATUS_ERR}
+    fi
+
+    if [ -z "${mtd_device}" ]; then
+        LOGD " recoveryinfo part not found."
         return ${STATUS_ERR}
     fi
 
@@ -179,40 +196,42 @@ SlotSwitchReboot () {
     sys_vol=${GetUbiVolumeID_RESULT}
     sys_vol_name="/sys/class/ubi/ubi${SYS_UBI_DEV_NUM}_${sys_vol}/name"
 
+
+    # check current slot and image_set_status in recoveryinfo
+    #  'A' corrupted     :  set image_set_status = DONT_USE_SET_A
+    #  'B' corrupted     :  set image_set_status = DONT_USE_SET_B
+    #  'A &B' corrupted  :  set image_set_status = DONT_USE_SET_AB
+    #
     if ${Bgrep} ${sys_vol_name} -e "_a\|_b" > /dev/null; then
         # A/B system case
         curr_slot=`${Bcat} /proc/cmdline | ${Bawk} -F'SLOT_SUFFIX=' '{print $2}' | ${Bawk} '{print $1}' | ${Btr} -d '"'`
+        if [ "x${curr_slot}" == "x" ]; then
+            LOGD "slot_suffix not present"
+            return ${STATUS_ERR}
+        fi
+
+        busybox chmod 666 /dev/${mtd_device}
+
+        # TODO corner case if booted with b slot needs to be handled
         if [ x"${curr_slot}" == "x_a" ]; then
-            next_slot="1"
+            LOGD "rootfs A image is corrupted."
+            ${abctl_cmd} --set_image_set_status ${dont_use_set_a}
         else
-            next_slot="0"
+            LOGD "rootfs A and B image is corrupted."
+            ${abctl_cmd} --set_image_set_status ${dont_use_set_ab}
         fi
     else
-        # Single system (4+4)
+        # Single system (ar)
+        # TODO Behavior needs to be decided for AR
+        LOGD "AR scenario, reboot to edl"
         gracefullReboot edl
     fi
 
-    # check if the cookie in nand_ab_attr is bootloader cookie (i.e. BABC)
-    #  return :  1, if bootloader cookie is found
-    #         :  0, not bootloader cookie (i.e. DABC or empty)
-    #         : -1/255, on failure
-    #
-    chmod 664 /dev/${mtd_device}
-    ${abctl_cmd} --check_bl_cookie
-    ret=$?
-    if [ "$ret" == "1" ]; then
-        gracefullReboot edl
-    elif [ "$ret" == "0" ]; then
-        LOGD "Current slot ${curr_slot}, next active slot: ${next_slot}"
-        ${abctl_cmd} --set_active ${next_slot}
-        if [ $? -ne ${STATUS_OK} ]; then
-            LOGD "Error: ${abctl_cmd} --set_active ${next_slot} failed"
-            return ${STATUS_ERR}
-        fi
-        gracefullReboot
-    else
-        LOGD "Error: ${abctl_cmd} --check_bl_cookie failed"
-    fi
+    # Set owner to HLOS & reboot device
+    ${abctl_cmd} --set_owner ${owner_hlos}
+    LOGD "Reboot device for Slot Switch or EDL"
+    gracefullReboot
+
     return ${STATUS_ERR}
 }
 
