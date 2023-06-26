@@ -91,6 +91,7 @@ VOLATILE_BINDS_sa525m = "\
 /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
 /systemrw/c2c /etc/c2c/\n\
 /systemrw/tel.conf /etc/tel.conf\n\
+/systemrw/enable /etc/cv2x/enable\n\
 "
 
 VOLATILE_BINDS_sa525m-televm = "\
