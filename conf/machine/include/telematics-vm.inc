@@ -14,6 +14,7 @@ PREFERRED_VERSION_dtc-android-build ?= "5.15"
 PREFERRED_VERSION_mkbootimg-gki-native ?= "5.15"
 PREFERRED_VERSION_dtc-android-build-native ?= "5.15"
 PREFERRED_VERSION_mkdtimg-gki-native ?= "5.15"
+PREFERRED_VERSION:securemsmdlkm ?= "1.0"
 
 KERNEL_VARIANT = ""
 KERNEL_VARIANT_qti-distro-debug = "debug_"
@@ -28,7 +29,7 @@ KERNEL_CMD_PARAMS = ""
 KERNEL_DYNAMIC_DEFCONFIG = "True"
 SERIAL_CONSOLE = "115200 hvc0"
 
-MACHINE_FEATURES += "qti-vm-guest gh-loader qti-location qti-sensors"
+MACHINE_FEATURES += "qti-vm-guest gh-loader qti-location qti-sensors qti-vm-systemrw tele-squashfs-ubi"
 
 MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 TOYBOX_RAMDISK = "False"
@@ -39,7 +40,11 @@ MACHINE_SUPPORTS_USB = "False"
 MACHINE_SUPPORTS_ANDROID_PROPERTIES = "True"
 MACHINE_SUPPORTS_DISPLAY = "False"
 MACHINE_SUPPORTS_SECUREMSM = "False"
-MACHINE_MNT_POINTS = ""
+
+MACHINE_MNT_POINTS = " \
+    /systemrw \
+"
+
 ENABLE_ADB = "True"
 
 # Formats of root filesystem images.
@@ -48,6 +53,12 @@ IMAGE_INIT_MANAGER = "systemd"
 
 SYSTEMIMAGE_TARGET = "system.img"
 VMIMAGE_TARGET = "vm-bootsys.img"
+VMSYSTEMRW_TARGET = "vm-systemrw.img"
+
+SYSTEMRW_SIZE_EXT4 = "10485760"
+VM_SYSTEMRW_SIZE_EXT4 = "20971520"
+
+VM_SPLIT_BINS_PATH = "boot"
 
 # UBI arguments
 UBINIZE_ARGS = "-m 4096 -p 256KiB -s 4096"

@@ -4,6 +4,8 @@
 
 require qti-tele-image.inc
 
+IMAGE_FEATURES += "vm-bootsys-volume vm-systemrw-volume"
+
 # Install km-loader for selected machines
 EVDEVMODULE ?= 'False'
 EVDEVMODULE_sa515m = 'True'
@@ -45,6 +47,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         modem-shutdown \
         ${@bb.utils.contains('MACHINE_FEATURES', 'qti-virtualization', 'packagegroup-qti-virtualization', '', d)} \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
+        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'packagegroup-qti-telaf', '', d)} \
 "
 
 # Following packages will be enabled later
@@ -52,5 +55,4 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
        subsystem-ramdump \
        qmi-shutdown-modem modem-shutdown \
        packagegroup-qti-security-test \
-       packagegroup-support-utils \
 "

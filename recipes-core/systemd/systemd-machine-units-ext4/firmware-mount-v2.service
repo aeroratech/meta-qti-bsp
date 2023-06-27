@@ -1,0 +1,29 @@
+# Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+[Unit]
+Description=Mount modem partition to /firmware mount point
+ConditionDirectoryNotEmpty=!/firmware
+
+BindsTo=dev-disk-by\x2dpartlabel-modem.device dev-disk-by\x2dpartlabel-modem_b.device
+After=dev-disk-by\x2dpartlabel-modem.device dev-disk-by\x2dpartlabel-modem_b.device
+Before=local-fs.target
+DefaultDependencies=no
+
+IgnoreOnIsolate=true
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+PassEnvironment="SLOT_SUFFIX"
+ExecStartPre=/bin/sh -c " \
+                cd /dev/disk/by-partlabel/; \
+                if [[ -e modem  && ! -e modem_a ]]; \
+                    then ln -s modem modem_a; \
+                fi \
+            "
+ExecStart=/bin/mount -o noexec,nodev,ro,context=system_u:object_r:firmware_t:s0 -t vfat /dev/disk/by-partlabel/modem${SLOT_SUFFIX} /firmware
+Nice=-20
+
+[Install]
+WantedBy=local-fs.target

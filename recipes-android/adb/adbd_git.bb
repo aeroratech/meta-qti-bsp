@@ -19,6 +19,8 @@ EXTRA_OECONF = " \
                   --with-core-includes=${WORKSPACE}/system/core/include \
 "
 
+EXTRA_OECONF:append:qti-distro-user = "--disable-adb-root"
+
 ADB_OVER_PCIE = "${@d.getVar('MACHINE_SUPPORTS_ADB_OVER_PCIE') or "False"}"
 
 do_install_append() {

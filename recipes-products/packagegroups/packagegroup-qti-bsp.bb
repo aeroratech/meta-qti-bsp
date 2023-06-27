@@ -24,13 +24,15 @@ RDEPENDS_packagegroup-startup-scripts = "\
     packagegroup-startup-scripts-base \
     "
 # Other essential utilites
-CHRONY ?= "chrony"
-CHRONY_sa410m = ""
-
 RDEPENDS_packagegroup-support-utils = "\
-    ${CHRONY} \
+    chrony \
     libinput \
     libinput-bin \
     libnl \
     libxml2 \
+    "
+
+# Sa525m overwrite the packagegroup to only include chrony
+RDEPENDS_packagegroup-support-utils_sa525m = "\
+    chrony \
     "

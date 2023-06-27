@@ -10,11 +10,17 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'packagegroup-selinux-minimal', '', d)} \
     ${@oe.utils.conditional('ENABLE_SECUREMSM', 'True', 'packagegroup-qti-securemsm', '', d)} \
     post-boot \
+    libgpiod libgpiod-tools \
     systemd-machine-units \
     ${@bb.utils.contains('MACHINE_FEATURES', 'qti-location', 'packagegroup-qti-location-vm', '', d)} \
     packagegroup-qti-telematics \
     packagegroup-qti-data-vm \
     ${@bb.utils.contains('DISTRO_FEATURES', 'qti-telux', 'packagegroup-qti-telsdk', '', d)} \
+    packagegroup-support-utils \
+"
+
+CORE_IMAGE_EXTRA_INSTALL_append_sa525m += " \
+    packagegroup-qti-core-vm \
 "
 
 # Exclude packages

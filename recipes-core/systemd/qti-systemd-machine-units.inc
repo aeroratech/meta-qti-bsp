@@ -5,6 +5,10 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 SRC_URI = "file://*"
 S = "${WORKDIR}"
 
+inherit features_check
+
+CONFLICT_COMBINED_FEATURES += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', '', 'qti-recoveryinfo', d)}"
+
 IMAGETYPE ??= ""
 OVERLAY_MNT_POINTS ??= "etc data cache"
 OVERLAY_MNT_POINTS_qrb5165 = "etc data cache usr-share"
@@ -29,7 +33,11 @@ add_mount_files () {
         mountname="${entry:1}"
         if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" || "$mountname" == "vm-bootsys" ]] && \
            [[ "${IMAGETYPE}" == "ubi" || "${COMBINED_FEATURES}" =~ .*qti-ab-boot.* ]] ; then
-            install -m 0644 ${S}/${mountname}-mount.service ${D}${systemd_unitdir}/system/${mountname}-mount-${IMAGETYPE}.service
+                if [[ "${COMBINED_FEATURES}" =~ .*qti-recoveryinfo.* ]] ; then
+                    install -m 0644 ${S}/${mountname}-mount-v2.service ${D}${systemd_unitdir}/system/${mountname}-mount-${IMAGETYPE}.service
+                else
+                    install -m 0644 ${S}/${mountname}-mount.service ${D}${systemd_unitdir}/system/${mountname}-mount-${IMAGETYPE}.service
+                fi
         else
             install -m 0644 ${S}/${mountname}.mount ${D}${systemd_unitdir}/system/${mountname}-${IMAGETYPE}.mount
         fi
@@ -68,6 +76,7 @@ fix_sepolicies () {
     sed -i "s#,rootcontext=system_u:object_r:persist_t:s0##g" ${WORKDIR}/persist.mount
     sed -i "s#,rootcontext=system_u:object_r:system_data_t:s0##g" ${WORKDIR}/systemrw.mount
     sed -i "s#,context=system_u:object_r:vm-bootsys_t:s0##g" ${WORKDIR}/vm-bootsys.mount
+    sed -i "s#,context=system_u:object_r:vm-bootsys_t:s0##g" ${WORKDIR}/vm-bootsys-mount.service
 
     # TODO: figure out the selinux context for the overlays
     sed -i "s#,rootcontext=system_u:object_r:overlay_t:s0##g" ${WORKDIR}/overlay.mount

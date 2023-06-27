@@ -5,6 +5,7 @@ FILESEXTRAPATHS_prepend_sa410m := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sa525m := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sa515m := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend_sa415m := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend_mdm9607 := "${THISDIR}/files:"
 
 REQUIRED_DISTRO_FEATURES = ""
 SRC_URI += "\
@@ -113,6 +114,12 @@ VOLATILE_BINDS_sa415m = "\
 /systemrw/data/usb /etc/data/usb/\n\
 /systemrw/data/ipa /etc/data/ipa/\n\
 /systemrw/rt_tables /etc/data/iproute2/rt_tables\n\
+/systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
+/systemrw/boot_hsic_comp /etc/usb/boot_hsic_comp\n\
+"
+
+VOLATILE_BINDS_mdm9607 = "\
+/systemrw/adb_devid /etc/adb_devid\n\
 /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
 /systemrw/boot_hsic_comp /etc/usb/boot_hsic_comp\n\
 "

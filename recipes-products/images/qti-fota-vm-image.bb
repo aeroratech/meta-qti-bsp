@@ -9,9 +9,11 @@ CORE_IMAGE_EXTRA_INSTALL += " \
     packagegroup-android-utils \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'packagegroup-selinux-minimal', '', d)} \
     ${@oe.utils.conditional('ENABLE_SECUREMSM', 'True', 'packagegroup-qti-securemsm', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'qti-telux', 'packagegroup-qti-telsdk', '', d)} \
     post-boot \
     systemd-machine-units \
     packagegroup-qti-telematics \
+    packagegroup-qti-data-vm \
 "
 
 # Exclude packages

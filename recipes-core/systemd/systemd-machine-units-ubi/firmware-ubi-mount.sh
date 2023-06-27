@@ -58,6 +58,18 @@ FindAndMountUBI () {
     done
 }
 
+FindAndMountUBIVolume () {
+   partition=$1
+   dir=$2
+   extra_opts=$3
+
+   mkdir -p $dir
+   eval mount -t ubifs $partition $dir -o bulk_read$extra_opts
+   if [ $? -ne 0 ] ; then
+       echo "Modem $partition mount failed" > /dev/kmsg
+   fi
+}
+
 mtd_file=/proc/mtd
 if [ -x /sbin/restorecon ]; then
     firmware_selinux_opt=",context=system_u:object_r:firmware_t:s0"
@@ -65,22 +77,33 @@ else
     firmware_selinux_opt=""
 fi
 
-if [ $SLOT_SUFFIX ]
+
+cmdline=`cat /proc/cmdline | grep -i -w SLOT_SUFFIX`
+
+if [ ! -z "$cmdline" ];
 then
-    mtd_block_number=`cat $mtd_file | grep -i modem_a | sed 's/^mtd//' | awk -F ':' '{print $1}'`
-    ubiattach -m $mtd_block_number -d 1 /dev/ubi_ctrl
-
-    mtd_block_number=`cat $mtd_file | grep -i modem_b | sed 's/^mtd//' | awk -F ':' '{print $1}'`
-    ubiattach -m $mtd_block_number -d 2 /dev/ubi_ctrl
-
-    eval FindAndMountUBI modem$SLOT_SUFFIX /firmware $firmware_selinux_opt
-
-    mtd_block_number=`cat $mtd_file | grep -i misc | sed 's/^mtd//' | awk -F ':' '{print $1}'`
-    chown 1000:6 /dev/mtd$mtd_block_number
+    modem_var="firmware$SLOT_SUFFIX"
+    is_modem_vol_enabled=`ubinfo -a | grep -i -w -E $modem_var | sed 's/^Name://' | sed 's/ //g'`
+    if [ ! -z "$is_modem_vol_enabled" ];
+    then
+        eval FindAndMountUBIVolume ubi0:$is_modem_vol_enabled /firmware $firmware_selinux_opt
+    else
+        ubi_dev_id=1
+        modem_part_name="modem$SLOT_SUFFIX|modem"
+        if [ "$SLOT_SUFFIX" = "_b" ];
+        then
+            ubi_dev_id=2
+            modem_part_name="modem$SLOT_SUFFIX"
+        fi
+        mtd_block_number=`cat $mtd_file | grep -i -w -E $modem_part_name | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+        ubiattach -m $mtd_block_number -d $ubi_dev_id /dev/ubi_ctrl
+        eval FindAndMountUBI modem$SLOT_SUFFIX /firmware $firmware_selinux_opt
+        mtd_block_number=`cat $mtd_file | grep -i misc | sed 's/^mtd//' | awk -F ':' '{print $1}'`
+        chown 1000:6 /dev/mtd$mtd_block_number
+    fi
 else
     mtd_block_number=`cat $mtd_file | grep -i -w modem | sed 's/^mtd//' | awk -F ':' '{print $1}'`
     ubiattach -m $mtd_block_number -d 1 /dev/ubi_ctrl
-
     eval FindAndMountUBI modem /firmware $firmware_selinux_opt
 fi
 

@@ -18,8 +18,8 @@ do_compile[noexec] = "1"
 
 do_copy_cert_files() {
     cp -a ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/signing_key.pem ${B}/signing_key.pem
-    cp -a ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/signing_key.pem ${B}/verity_key.pem
-    cp -a ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/signing_key.pem ${B}/verity_cert.pem
+    cp -a ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/verity_key.pem ${B}/verity_key.pem
+    cp -a ${KERNEL_PREBUILT_PATH}/../msm-kernel/certs/verity_cert.pem ${B}/verity_cert.pem
 
 }
 

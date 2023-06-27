@@ -583,7 +583,7 @@ MountSystem () {
                 return ${STATUS_ERR}
             fi
         elif [ "${image_type}" == "ubifs" ]; then
-            busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -orw
+            busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read
             if [ $? -ne ${STATUS_OK} ]; then
                 LOGD "Error: mount ubifs ${char_device} failed"
                 return ${STATUS_ERR}

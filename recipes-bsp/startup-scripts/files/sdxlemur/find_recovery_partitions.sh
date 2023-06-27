@@ -153,7 +153,13 @@ FindAndMountMTD () {
 
 echo -n > $fstab_file
 
-if [ -d $emmc_dir ]
+extract_cmdline() {
+   sed -e 's/ /\n/g' /proc/cmdline | sed -n 's/^'"$1"'=\(.*\)$/\1/p'
+}
+
+emmc_dev="$(extract_cmdline "androidboot.bootdevice")"
+
+if [ $emmc_dev ]
 then
     fstype="EXT4"
     eval FindAndMountEXT4 system   /system   1

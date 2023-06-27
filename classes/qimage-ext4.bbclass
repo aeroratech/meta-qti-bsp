@@ -72,7 +72,7 @@ create_symlink_systemd_ext4_mount_rootfs() {
     # Symlink ext4 mount files to systemd targets
     for entry in ${MACHINE_MNT_POINTS}; do
         mountname="${entry:1}"
-        if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" ]] && \
+        if [[ "$mountname" == "firmware" || "$mountname" == "bt_firmware" || "$mountname" == "dsp" || "$mountname" == "vm-bootsys" ]] && \
            [[ "${COMBINED_FEATURES}" =~ .*qti-ab-boot.* ]] ; then
             cp ${IMAGE_ROOTFS_EXT4}/lib/systemd/system/${mountname}-mount-ext4.service ${IMAGE_ROOTFS_EXT4}/lib/systemd/system/${mountname}-mount.service
             ln -sf ${systemd_unitdir}/system/${mountname}-mount.service ${IMAGE_ROOTFS_EXT4}/lib/systemd/system/local-fs.target.requires/${mountname}-mount.service
