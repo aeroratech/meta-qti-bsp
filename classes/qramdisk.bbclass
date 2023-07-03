@@ -232,9 +232,8 @@ fakeroot do_ramdisk_create() {
 
         if ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains_any('MACHINE_FEATURES', 'dm-verity-initramfs dm-verity-initramfs-v3 dm-verity-initramfs-v4', 'true', 'false', d), 'false', d)}; then
 
-            if ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'true', 'false', d)}; then
-                cp ${IMAGE_ROOTFS}/usr/sbin/veritysetup bin/
-            else
+            cp ${IMAGE_ROOTFS}/usr/sbin/veritysetup bin/
+            if ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'false', 'true', d)}; then
                 cp ${WORKDIR}/verity.env etc/
                 cp ${WORKDIR}/verity_sig.txt etc/
             fi
