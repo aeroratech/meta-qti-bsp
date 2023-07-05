@@ -89,6 +89,7 @@ VOLATILE_BINDS_sa525m = "\
 /systemrw/data/usb /etc/data/usb/\n\
 /systemrw/data/ipa /etc/data/ipa/\n\
 /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp\n\
+/systemrw/misc/wifi /etc/misc/wifi/\n\
 /systemrw/c2c /etc/c2c/\n\
 /systemrw/tel.conf /etc/tel.conf\n\
 /systemrw/enable /etc/cv2x/enable\n\
