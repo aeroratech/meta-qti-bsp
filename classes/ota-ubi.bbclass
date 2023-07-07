@@ -107,6 +107,29 @@ do_recovery_ubi() {
 
         # change system partitions fs_type to squashfs and the block-device instead of mtd device's name
         echo /system   squashfs  /dev/block/bootdevice/by-name/system >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/recovery.fstab
+
+        if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
+            if ${@bb.utils.contains('IMAGE_FEATURES', 'nad-modem-volume', 'true', 'false', d)}; then
+                echo /modem squashfs /dev/block/bootdevice/by-name/modem >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/recovery.fstab
+                if [ -f ${DEPLOY_DIR_IMAGE}/NON-HLOS.squash ]; then
+                    squashfs2sparse  ${DEPLOY_DIR_IMAGE}/NON-HLOS.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/modem.img
+                fi
+            fi
+
+            if ${@bb.utils.contains('IMAGE_FEATURES', 'telaf-volume', 'true', 'false', d)}; then
+                echo /telaf squashfs /dev/block/bootdevice/by-name/telaf >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/recovery.fstab
+                if [ -f ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/squashfs/telaf_ro.squashfs ]; then
+                    squashfs2sparse  ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/squashfs/telaf_ro.squashfs ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/telaf.img
+                fi
+            fi
+
+            if ${@bb.utils.contains('IMAGE_FEATURES', 'vm-bootsys_volume', 'true', 'false', d)}; then
+                echo /vm-bootsys squashfs /dev/block/bootdevice/by-name/vm-bootsys >> ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/recovery.fstab
+                if [ -f ${DEPLOY_DIR_IMAGE}/vm-bootsys.squash ]; then
+                    squashfs2sparse  ${DEPLOY_DIR_IMAGE}/vm-bootsys.squash ${OTA_TARGET_IMAGE_ROOTFS_UBI}/IMAGES/vm-bootsys.img
+                fi
+            fi
+        fi
     else
         # File-based OTA upgrade
 
