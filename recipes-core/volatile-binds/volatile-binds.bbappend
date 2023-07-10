@@ -92,6 +92,7 @@ VOLATILE_BINDS_sa525m = "\
 /systemrw/c2c /etc/c2c/\n\
 /systemrw/tel.conf /etc/tel.conf\n\
 /systemrw/enable /etc/cv2x/enable\n\
+/systemrw/ObeConfig.conf /etc/ObeConfig.conf\n\
 "
 
 VOLATILE_BINDS_sa525m-televm = "\
@@ -99,6 +100,7 @@ VOLATILE_BINDS_sa525m-televm = "\
 /systemrw/data /etc/data/\n\
 /systemrw/power_state.conf /etc/power_state.conf\n\
 /systemrw/tel.conf /etc/tel.conf\n\
+/systemrw/ObeConfig.conf /etc/ObeConfig.conf\n\
 "
 
 VOLATILE_BINDS_sa525m-fotavm = "\
