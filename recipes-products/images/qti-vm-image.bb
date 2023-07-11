@@ -20,7 +20,6 @@ CORE_IMAGE_EXTRA_INSTALL += " ${@oe.utils.conditional('ENABLE_TOUCH', 'True', 'p
 CORE_IMAGE_EXTRA_INSTALL += " ${@oe.utils.conditional('ENABLE_SECUREMSM', 'True', 'packagegroup-qti-securemsm', '', d)}"
 CORE_IMAGE_EXTRA_INSTALL += " ${@bb.utils.contains('MACHINE_FEATURES', 'qti-dsp_trusted', 'adsprpc-kernel', '', d)}"
 CORE_IMAGE_EXTRA_INSTALL += " ${@bb.utils.contains('MACHINE_FEATURES', 'vm-dynamic-memresize', 'psi-daemon', '', d)}"
-CORE_IMAGE_EXTRA_INSTALL += " ${@bb.utils.contains_any('BASEMACHINE', 'trustedvm', 'packagegroup-qti-security-test', '', d)}"
 
 #Exclude packages
 PACKAGE_EXCLUDE += "readline"
