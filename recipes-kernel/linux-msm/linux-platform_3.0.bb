@@ -11,6 +11,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 DEPENDS += "virtual/mkdtimg-native bison-native"
 
+do_setup_module_compilation[lockfiles] = "${TMPDIR}/build_modules.lock"
+
 do_unpack[cleandirs] += " ${S}"
 
 do_unpack () {
