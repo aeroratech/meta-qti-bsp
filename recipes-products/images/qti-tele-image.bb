@@ -9,6 +9,10 @@ EVDEVMODULE ?= 'False'
 EVDEVMODULE_sa515m = 'True'
 EVDEVMODULE_sa415m = 'True'
 
+# Install powerapp for selected machines
+POWERAPPMODULE ?= 'False'
+POWERAPPMODULE_mdm9607 = 'True'
+
 CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'e2fsprogs e2fsprogs-e2fsck e2fsprogs-mke2fs', '', d)} \
         glib-2.0 \
@@ -42,6 +46,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'mtd-utils-ubifs', '', d)} \
         qmi-shutdown-modem \
         modem-shutdown \
+        ${@oe.utils.conditional('POWERAPPMODULE', 'True', 'powerapp powerapp-powerconfig', '', d)} \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'packagegroup-qti-telaf', '', d)} \
 "
