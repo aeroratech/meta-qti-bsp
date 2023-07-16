@@ -7,7 +7,7 @@ ENABLE_ADB ?= "True"
 ENABLE_ADB_qti-distro-base-user ?= "False"
 PACKAGE_INSTALL += "${@oe.utils.conditional('ENABLE_ADB', 'True', 'adbd usb-composition usb-composition-usbd', '', d)}"
 PACKAGE_INSTALL += "${@oe.utils.conditional('TOYBOX_RAMDISK', 'True', 'toybox mksh gawk coreutils ethtool iputils devmem2 tcpdump', '', d)}"
-PACKAGE_INSTALL += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'nbd-client techpack-ecpri', '', d)}"
+PACKAGE_INSTALL += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'nbd-client techpack-ecpri csm-ru-nwboot-client', '', d)}"
 DEPENDS += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'binutils-cross-${TARGET_ARCH}', '', d)}"
 
 # Adding mtd-utils to support dm-verity v4 for NAND
@@ -143,6 +143,8 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/usr/share/dhcpcd/hooks/10-wpa_supplicant usr/share/dhcpcd/hooks/
             cp ${IMAGE_ROOTFS}/usr/share/dhcpcd/hooks/15-timezone usr/share/dhcpcd/hooks/
             cp ${IMAGE_ROOTFS}/usr/share/dhcpcd/hooks/29-lookup-hostname usr/share/dhcpcd/hooks/
+            #install csm_ru_nwboot_client
+            cp ${IMAGE_ROOTFS}/usr/sbin/csm_ru_nwboot_client usr/sbin
         fi
 
         if ${@bb.utils.contains('IMAGE_FEATURES', 'vm', 'true', 'false', d)}; then
