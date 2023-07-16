@@ -600,8 +600,17 @@ case $fstab_suffix in
         done
         echo "Server Address : $HOST_ADDR"
 
+        # get the Device Serial No. from the HOST RU Manager
+        DEVICE_SERIAL=$(/usr/sbin/csm_ru_nwboot_client $LOCAL_INTERFACE $HOST_ADDR | grep "Device Serial :" | cut -d':' -f2)
+
+        if [[ -z $DEVICE_SERIAL || $DEVICE_SERIAL == "-1" ]]; then
+            echo "Failed to get Device Serial No."
+            start_rdshell
+        fi
+        echo "Got Device Serial No. From HOST : $DEVICE_SERIAL"
+
         # Create /etc/nbdtab and nbd-client connect remote nbdkit
-        portno="$(( 14809 ))"
+        portno="$(( 14809 + $DEVICE_SERIAL ))"
         config_portno="$(( 0 ))"
 
         do_nbdtab $HOST_ADDR $portno $config_portno "usb"
