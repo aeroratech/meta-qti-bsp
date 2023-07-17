@@ -532,6 +532,8 @@ fakeroot do_make_vmbootsys_squashfs() {
 python () {
     if bb.utils.contains('IMAGE_FEATURES', 'vm', True, False, d):
         bb.build.addtask('do_make_vmbootsys_squashfs', 'do_image_complete', 'do_compose_vmimage', d)
+        if bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'qti-vm-guest', True, False, d):
+            bb.build.addtask('do_sign_vmbootsys_squashfs', 'do_image_complete', 'do_make_vmbootsys_squashfs', d)
     elif bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
         bb.build.addtask('do_makesystem_gluebi', 'do_image_complete', 'do_image', d)
     else:
@@ -611,3 +613,16 @@ do_sign_telaf_squashfs () {
         --do_not_generate_fec --rollback_index 0
 }
 do_sign_telaf_squashfs[depends] += "avbtool-native:do_install"
+
+# Sign the vmbootsys image
+do_sign_vmbootsys_squashfs[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/"
+do_sign_vmbootsys_squashfs () {
+    ${TMPDIR}/work-shared/avbtool/avbtool add_hashtree_footer \
+        --image ${VM_IMAGE_SQUASHFS_TARGET} \
+        --partition_name vm-bootsys \
+        --algorithm SHA256_RSA2048 \
+        --key ${TMPDIR}/work-shared/avbtool/qpsa_attestca.key \
+        --public_key_metadata ${TMPDIR}/work-shared/avbtool/qpsa_attestca.der \
+        --do_not_generate_fec --rollback_index 0
+}
+do_sign_vmbootsys_squashfs[depends] += "avbtool-native:do_install"
