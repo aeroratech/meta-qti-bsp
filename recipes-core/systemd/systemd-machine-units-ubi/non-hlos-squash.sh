@@ -64,6 +64,11 @@ GetFirmwareVolumeID () {
     fi
 }
 
+IsGPIOEnabled () {
+    gpio_enable_status=`cat /proc/cmdline | awk -F'recoveryinfo_gpio=' '{print $2}' | awk '{print $1}' | tr -d '"'`
+    return ${gpio_enable_status}
+}
+
 SlotSwitchReboot () {
     local abctl_cmd="/usr/bin/nad-abctl"
     # Set image_set_status fields in recoveryinfo struct
@@ -83,7 +88,6 @@ SlotSwitchReboot () {
     local firmware_b="firmware_b"
     local current_image_set_status=0
 
-    # TODO GPIO needs to be handled
     if [ ! -e ${abctl_cmd} ]; then
         echo "${abctl_cmd} not found, reboot to edl " > /dev/kmsg
         /bin/sh -c 'reboot edl'
@@ -97,6 +101,7 @@ SlotSwitchReboot () {
         exit 0
     fi
 
+    chmod 664 /dev/${mtd_device}
     firmware_ab_name=$(cat /sys/class/ubi/ubi0_${volid}/name)
     if [ "$firmware_ab_name" == "$firmware_a" ] || [ "$firmware_ab_name" == "$firmware_b" ] ; then
         if [ "x${SLOT_SUFFIX}" == "x" ]; then
@@ -198,13 +203,31 @@ FindAndMountUBIVol () {
        mount -t ubifs $device $dir -o bulk_read
    else
        echo "not an ubi partiton" > /dev/kmsg
-       SlotSwitchReboot
+       IsGPIOEnabled
+       if [ $? -eq 1 ]; then
+           #GPIO Enabled keeping behavior similar to Mount failure.
+           echo "GPIO Enabled donot switch slots" > /dev/kmsg
+       elif [ $? -eq 0 ]; then
+           echo "GPIO disabled switch slots" > /dev/kmsg
+           SlotSwitchReboot
+       else
+           echo "GPIO status invalid" > /dev/kmsg
+       fi
        exit 0
    fi
 
    if [ $? -ne 0 ] ; then
       echo "Unable to mount firmware volume " > /dev/kmsg
-      SlotSwitchReboot
+      IsGPIOEnabled
+      if [ $? -eq 1 ]; then
+          #GPIO Enabled keeping behavior similar to Mount failure.
+          echo "GPIO Enabled donot switch slots" > /dev/kmsg
+      elif [ $? -eq 0 ]; then
+          echo "GPIO disabled switch slots" > /dev/kmsg
+          SlotSwitchReboot
+      else
+          echo "GPIO status invalid" > /dev/kmsg
+      fi
       exit 0
    fi
 }
