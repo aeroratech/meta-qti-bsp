@@ -146,12 +146,22 @@ UmountModem () {
 
 gracefullReboot () {
     local mode=$1
+    local abctl_cmd="/usr/bin/nad-abctl"
     UmountModem
+
+    if [ ! -e ${abctl_cmd} ]; then
+        LOGD "${abctl_cmd} not found."
+        return ${STATUS_ERR}
+    fi
 
     LOGD "InitRamFS: Found issue, rebooting ${mode}..."
     busybox sleep 1
-    # TODO reboot needs to be handled. sys_reboot cannot be used.
-    #sys_reboot ${mode}
+
+    ${abctl_cmd} --reboot ${mode}
+    if [ "$?" -eq "-1" ]; then
+        LOGD "Error: reboot failed"
+        return ${STATUS_ERR}
+    fi
 }
 
 SlotSwitchReboot () {
@@ -169,7 +179,9 @@ SlotSwitchReboot () {
     #  OWNER_HLOS        :  2
     local owner_hlos=2
     local dont_use_set_a=1
+    local dont_use_set_b=2
     local dont_use_set_ab=3
+    local current_image_set_status=0
     local mtd_device=`${Bgrep} recoveryinfo /proc/mtd | ${Bawk} -F ':' '{print $1}'`
 
     # TODO GPIO needs to be handled
@@ -196,12 +208,12 @@ SlotSwitchReboot () {
     sys_vol=${GetUbiVolumeID_RESULT}
     sys_vol_name="/sys/class/ubi/ubi${SYS_UBI_DEV_NUM}_${sys_vol}/name"
 
-
     # check current slot and image_set_status in recoveryinfo
     #  'A' corrupted     :  set image_set_status = DONT_USE_SET_A
     #  'B' corrupted     :  set image_set_status = DONT_USE_SET_B
     #  'A &B' corrupted  :  set image_set_status = DONT_USE_SET_AB
     #
+
     if ${Bgrep} ${sys_vol_name} -e "_a\|_b" > /dev/null; then
         # A/B system case
         curr_slot=`${Bcat} /proc/cmdline | ${Bawk} -F'SLOT_SUFFIX=' '{print $2}' | ${Bawk} '{print $1}' | ${Btr} -d '"'`
@@ -209,16 +221,38 @@ SlotSwitchReboot () {
             LOGD "slot_suffix not present"
             return ${STATUS_ERR}
         fi
-
         busybox chmod 666 /dev/${mtd_device}
 
-        # TODO corner case if booted with b slot needs to be handled
-        if [ x"${curr_slot}" == "x_a" ]; then
-            LOGD "rootfs A image is corrupted."
+        #Get current image set status
+        (${abctl_cmd} --get_image_set_status)
+        current_image_set_status=$?
+
+        if [ "$current_image_set_status" -eq "-1" ]; then
+            LOGD "Error: incorrect image set status"
+            return ${STATUS_ERR}
+        fi
+
+        if [ "$curr_slot" = "_a" ] && [ "$current_image_set_status" != "$dont_use_set_b" ]; then
+            LOGD "rootfs A volume corrupted "
             ${abctl_cmd} --set_image_set_status ${dont_use_set_a}
+            if [ "$?" -eq "-1" ]; then
+                LOGD "Error: image set status failed"
+                return ${STATUS_ERR}
+            fi
+        elif [ "$curr_slot" = "_b" ] && [ "$current_image_set_status" != "$dont_use_set_a" ]; then
+            LOGD "rootfs B volume corrupted "
+            ${abctl_cmd} --set_image_set_status ${dont_use_set_b}
+            if [ "$?" -eq "-1" ]; then
+                LOGD "Error: image set status failed"
+                return ${STATUS_ERR}
+                fi
         else
-            LOGD "rootfs A and B image is corrupted."
+            LOGD "rootfs A and B volume is corrupted."
             ${abctl_cmd} --set_image_set_status ${dont_use_set_ab}
+            if [ "$?" -eq "-1" ]; then
+                LOGD "Error: image set status failed"
+                return ${STATUS_ERR}
+            fi
         fi
     else
         # Single system (ar)
@@ -229,6 +263,10 @@ SlotSwitchReboot () {
 
     # Set owner to HLOS & reboot device
     ${abctl_cmd} --set_owner ${owner_hlos}
+    if [ "$?" -eq "-1" ]; then
+        LOGD "Error: owner set failed"
+        return ${STATUS_ERR}
+    fi
     LOGD "Reboot device for Slot Switch or EDL"
     gracefullReboot
 
