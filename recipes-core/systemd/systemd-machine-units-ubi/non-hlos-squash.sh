@@ -77,9 +77,11 @@ SlotSwitchReboot () {
     #  OWNER_HLOS        :  2
     local owner_hlos=2
     local dont_use_set_a=1
+    local dont_use_set_b=2
     local dont_use_set_ab=3
     local firmware_a="firmware_a"
     local firmware_b="firmware_b"
+    local current_image_set_status=0
 
     # TODO GPIO needs to be handled
     if [ ! -e ${abctl_cmd} ]; then
@@ -94,7 +96,6 @@ SlotSwitchReboot () {
         /bin/sh -c 'reboot edl'
         exit 0
     fi
-    chmod 666 /dev/${mtd_device}
 
     firmware_ab_name=$(cat /sys/class/ubi/ubi0_${volid}/name)
     if [ "$firmware_ab_name" == "$firmware_a" ] || [ "$firmware_ab_name" == "$firmware_b" ] ; then
@@ -104,19 +105,50 @@ SlotSwitchReboot () {
             exit 0
         fi
 
-        # TODO corner case if booted with b slot needs to be handled
-        if [ "$SLOT_SUFFIX" = "_a" ]; then
+        #Get current image set status
+        (${abctl_cmd} --get_image_set_status)
+        current_image_set_status=$?
+
+        if [ "$current_image_set_status" -eq "-1" ]; then
+            echo "Error: incorrect image set status" > /dev/kmsg
+            /bin/sh -c 'reboot edl'
+            exit 0
+        fi
+
+        if [ "$SLOT_SUFFIX" = "_a" ] && [ "$current_image_set_status" != "$dont_use_set_b" ]; then
             echo "firmware A volume corrupted " > /dev/kmsg
             ${abctl_cmd} --set_image_set_status ${dont_use_set_a}
+            if [ "$?" -eq "-1" ]; then
+                echo "Error: image set status failed" > /dev/kmsg
+                /bin/sh -c 'reboot edl'
+                exit 0
+            fi
+        elif [ "$SLOT_SUFFIX" = "_b" ] && [ "$current_image_set_status" != "$dont_use_set_a" ]; then
+            echo "firmware B volume corrupted " > /dev/kmsg
+            ${abctl_cmd} --set_image_set_status ${dont_use_set_b}
+            if [ "$?" -eq "-1" ]; then
+                echo "Error: image set status failed" > /dev/kmsg
+                /bin/sh -c 'reboot edl'
+                exit 0
+            fi
         else
             echo "firmware A and B volume corrupted" > /dev/kmsg
             ${abctl_cmd} --set_image_set_status ${dont_use_set_ab}
+            if [ "$?" -eq "-1" ]; then
+                echo "Error: image set status failed" > /dev/kmsg
+                /bin/sh -c 'reboot edl'
+                exit 0
+            fi
         fi
         ${abctl_cmd} --set_owner ${owner_hlos}
+        if [ "$?" -eq "-1" ]; then
+            echo "Error: set owner failed" > /dev/kmsg
+            /bin/sh -c 'reboot edl'
+            exit 0
+        fi
         echo "Reboot for switching slots or EDL mode" > /dev/kmsg
         /bin/sh -c 'reboot'
     else
-        # TODO Behavior needs to be decided for AR
         echo "non a/b volumes , reboot to edl " > /dev/kmsg
         /bin/sh -c 'reboot edl'
         exit 0
@@ -148,12 +180,11 @@ FindAndMountUBIVol () {
         ubiblock --create $device
    fi
 
-   char_device=/dev/ubi0_0
    # Check if the image type is squashfs in UBI volume
-   if dd if=${char_device}\
+   if dd if=${device}\
        count=1 bs=4 2>/dev/null | grep 'hsqs' > /dev/null; then
        image_type="squashfs"
-   elif dd if=${char_device} count=1 bs=4 2>/dev/null |\
+   elif dd if=${device} count=1 bs=4 2>/dev/null |\
        hexdump | grep "${UBIFS_VOL_HEADER}" > /dev/null; then
        image_type="ubifs"
    else
@@ -162,11 +193,13 @@ FindAndMountUBIVol () {
    echo "root fstype is $image_type " > /dev/kmsg
 
    if [ "$image_type" == "squashfs" ]; then
-       echo "mounting modem squashfs image " > /dev/kmsg
        mount -t squashfs $block_device $dir -o ro
-   else
-       echo "mounting modem ubifs image " > /dev/kmsg
+   elif [ "$image_type" == "ubifs" ]; then
        mount -t ubifs $device $dir -o bulk_read
+   else
+       echo "not an ubi partiton" > /dev/kmsg
+       SlotSwitchReboot
+       exit 0
    fi
 
    if [ $? -ne 0 ] ; then
