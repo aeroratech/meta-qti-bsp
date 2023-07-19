@@ -542,6 +542,8 @@ python () {
         if bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', True, False, d):
             bb.build.addtask('do_sign_system_squashfs', 'do_image_complete', 'do_makesystem_squashfs', d)
             bb.build.addtask('do_makesystem_squashfs_ubi', 'do_image_complete', 'do_sign_system_squashfs', d)
+            if bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', True, False, d):
+                bb.build.addtask('do_sign_telaf_squashfs', 'do_image_complete', 'do_maketelaf_squashfs', d)
         else:
             bb.build.addtask('do_makesystem_squashfs_ubi', 'do_image_complete', 'do_makesystem_squashfs', d)
 }
@@ -594,3 +596,18 @@ python() {
     elif bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d):
         bb.build.addtask('do_verity_ubinize', 'do_image_complete', 'do_makesystem_gluebi', d)
 }
+
+#telaf squashfs files
+TELAF_IMAGE_SQUASHFS_TARGET = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/telaf_ro.squashfs"
+
+# Sign the telaf image
+do_sign_telaf_squashfs () {
+    ${TMPDIR}/work-shared/avbtool/avbtool add_hashtree_footer \
+        --image ${TELAF_IMAGE_SQUASHFS_TARGET} \
+        --partition_name telaf \
+        --algorithm SHA256_RSA2048 \
+        --key ${TMPDIR}/work-shared/avbtool/qpsa_attestca.key \
+        --public_key_metadata ${TMPDIR}/work-shared/avbtool/qpsa_attestca.der \
+        --do_not_generate_fec --rollback_index 0
+}
+do_sign_telaf_squashfs[depends] += "avbtool-native:do_install"
