@@ -83,8 +83,10 @@ USBCOMPOSITION = "90DB"
 # On msm-5.4 or above ufs driver supports BSG Device.
 UFS_BSG_DEV_USAGE = "True"
 
-PREFERRED_VERSION_protobuf = "3.11.4"
-PREFERRED_VERSION_protobuf-native = "3.11.4"
+PREFERRED_VERSION_protobuf = "3.19.6"
+PREFERRED_VERSION_protobuf-native = "3.19.6"
+PREFERRED_VERSION_openssl = "3.0.9"
+PREFERRED_VERSION_openssl-native = "3.0.9"
 
 # Fixes for boot image dtb appending
 BOOT_HEADER_VERSION = "2"

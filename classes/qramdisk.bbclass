@@ -244,8 +244,13 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/usr/lib/libpopt.so.0 lib/
             cp ${IMAGE_ROOTFS}/lib/libuuid.so.1 lib/
             cp ${IMAGE_ROOTFS}/usr/lib/libdevmapper.so.1.02 lib/
-            cp ${IMAGE_ROOTFS}/usr/lib/libssl.so.1.1 lib/
-            cp ${IMAGE_ROOTFS}/usr/lib/libcrypto.so.1.1 lib/
+            if ${@bb.utils.contains_any('PREFERRED_VERSION_openssl', '3.0.9', 'true', 'false', d)}; then
+                cp ${IMAGE_ROOTFS}/usr/lib/libssl.so.3 lib/
+                cp ${IMAGE_ROOTFS}/usr/lib/libcrypto.so.3 lib/
+            else
+                cp ${IMAGE_ROOTFS}/usr/lib/libssl.so.1.1 lib/
+                cp ${IMAGE_ROOTFS}/usr/lib/libcrypto.so.1.1 lib/
+            fi
             cp ${IMAGE_ROOTFS}/usr/lib/libjson-c.so.4 lib/
             cp ${IMAGE_ROOTFS}/lib/libudev.so.1 lib/
             cp ${IMAGE_ROOTFS}/lib/libmount.so.1 lib/
