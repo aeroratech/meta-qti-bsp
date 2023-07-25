@@ -182,12 +182,6 @@ else
     vm_bootsys_selinux_opt=""
 fi
 
-# SLOT_SUFFIX is not available it is hardcode for now
-num_volume=`ubinfo -a | grep -o -i "vm-bootsys" | wc -l`
-if [ "x${SLOT_SUFFIX}" == "x" ] && [ ${num_volume} == "2" ]; then
-    SLOT_SUFFIX="_a"
-fi
-
 mtd_file=/proc/mtd
 vm_bootsys_part_name="vm-bootsys$SLOT_SUFFIX"
 is_vm_bootsys_vol_enabled=`ubinfo -d 0 -N $vm_bootsys_part_name`
