@@ -61,9 +61,6 @@ SYS_PART_NAME="rootfs"
 # they are not present at the same time.
 UBI_PART_NAME="system|nad_ubi"
 
-# Set UBI bad block percentage for current partition
-MTD_UBI_BEB_LIMIT_PER1024="30"
-
 # UBI device number for system image
 SYS_UBI_DEV_NUM="0"
 
@@ -544,7 +541,7 @@ MountSystem () {
     # Check if it is UBI partition
     if ${Bdd} if=/dev/mtd${DEV_NUM} count=1 bs=4 2>/dev/null | ${Bgrep} 'UBI#' > /dev/null; then
 
-        ubiattach -m ${DEV_NUM} -d ${SYS_UBI_DEV_NUM} -b ${MTD_UBI_BEB_LIMIT_PER1024}
+        ubiattach -m ${DEV_NUM} -d ${SYS_UBI_DEV_NUM}
         WaitDevReady "-e" "/sys/class/ubi/ubi${SYS_UBI_DEV_NUM}/volumes_count"
         if [ $? -ne ${STATUS_OK} ]; then
             LOGD "Error: /sys/class/ubi/ubi${SYS_UBI_DEV_NUM}/volumes_count not found"
