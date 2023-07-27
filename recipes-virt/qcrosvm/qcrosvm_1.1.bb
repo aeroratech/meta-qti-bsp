@@ -12,12 +12,12 @@ DEPENDS += "cargo-native libcap rust-native rust-llvm-native"
 
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "\
-        file://telematics/apps/open-source/qcrosvm/ \
+        file://vendor/qcom/opensource/crosvm-gunyah \
         file://external/crosvm/ \
         file://external/rust/crates/ \
         file://external/minijail/ \
 "
 
-S = "${WORKDIR}/telematics/apps/open-source/qcrosvm"
+S = "${WORKDIR}/vendor/qcom/opensource/crosvm-gunyah"
 
 CARGO_DISABLE_BITBAKE_VENDORING = "1"
