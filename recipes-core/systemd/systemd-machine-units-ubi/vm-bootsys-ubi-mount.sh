@@ -166,11 +166,9 @@ FindAndMountUBIVolume () {
        if [ "$?" -eq "1" ]; then
           #GPIO Enabled keeping behavior similar to Mount failure.
           echo "GPIO Enabled donot switch slots" > /dev/kmsg
-       elif [ "$?" -eq "0" ]; then
-          echo "GPIO disabled switch slots" > /dev/kmsg
-          SlotSwitchReboot
        else
-          echo "GPIO status invalid" > /dev/kmsg
+          echo "GPIO disabled switch the slots or boot to EDL " > /dev/kmsg
+          SlotSwitchReboot
        fi
        exit 0
     fi

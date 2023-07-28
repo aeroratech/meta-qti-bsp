@@ -699,11 +699,9 @@ MainBoot() {
             if [ $? -eq 1 ]; then
                 #GPIO Enabled keeping behavior similar to Mount failure.
                 LOGD "GPIO Enabled donot switch slots "
-            elif [ $? -eq 0 ]; then
-                LOGD "GPIO disabled switch slots "
-                SlotSwitchReboot
             else
-                LOGD "GPIO status invalid "
+                LOGD "GPIO disabled switch the slots or boot to EDL "
+                SlotSwitchReboot
             fi
             return ${STATUS_ERR}
         else
