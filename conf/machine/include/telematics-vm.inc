@@ -66,3 +66,5 @@ MKUBIFS_ARGS = "-m 4096 -e 253952 -c 2146 -F"
 
 # On msm-5.4 or above ufs driver supports BSG Device.
 UFS_BSG_DEV_USAGE = "True"
+
+SYSTEMD_COREDUMP_PATH = "/systemrw/coredump"
