@@ -40,12 +40,14 @@ multi_image_qti.mbn     /dev/block/bootdevice/by-name/multiimgqti
 hyp.mbn                 /dev/block/bootdevice/by-name/qhee
 Quantum.fv              /dev/block/bootdevice/by-name/quantumfv
 quantumsdk.fv           /dev/block/bootdevice/by-name/quantumsdk
+qupv3fw.elf             /dev/block/bootdevice/by-name/qupfw
 xbl_no_preamble.elf     /dev/block/bootdevice/by-name/sbl
 sec.elf                 /dev/block/bootdevice/by-name/sec
+shrm.elf                /dev/block/bootdevice/by-name/shrm
 tools32.fv              /dev/block/bootdevice/by-name/toolsfv
 tz.mbn                  /dev/block/bootdevice/by-name/tz
 devcfg.mbn              /dev/block/bootdevice/by-name/tz_devcfg
 uefi.elf                /dev/block/bootdevice/by-name/uefi
-xbl_s.melf                     /dev/block/bootdevice/by-name/xbl
+xbl_s.melf              /dev/block/bootdevice/by-name/xbl
 xbl_config.elf          /dev/block/bootdevice/by-name/xbl_config
 xbl_ramdump.elf         /dev/block/bootdevice/by-name/xbl_ramdump
