@@ -21,6 +21,11 @@ do_install(){
    install -d ${TMPDIR}/work-shared/avbtool/
    install -m 0555 ${WORKDIR}/avbtool ${TMPDIR}/work-shared/avbtool/
 
+   install -d ${D}${datadir}/avb_py_tool/keys
+   install -m 0555 ${WORKDIR}/avbtool ${D}${datadir}/avb_py_tool/
+   install -m 0444 ${WORKDIR}/qpsa_attest.key ${D}${datadir}/avb_py_tool/keys/
+   install -m 0444 ${WORKDIR}/qpsa_attest.der ${D}${datadir}/avb_py_tool/keys/
+
    install -d "${D}${sysconfdir}/keys"
    install -m 0444 ${WORKDIR}/qpsa_rootca.der ${D}${sysconfdir}/keys/x509_root.der
    install -m 0444 ${WORKDIR}/qpsa_attest.key ${TMPDIR}/work-shared/avbtool/
@@ -34,4 +39,5 @@ do_install(){
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
 
+FILES_${PN}_append_class-nativesdk += "${datadir}/avb_py_tool/*"
 BBCLASSEXTEND =+ "native nativesdk"

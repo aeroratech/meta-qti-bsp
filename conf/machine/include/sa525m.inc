@@ -59,6 +59,9 @@ KERNEL_BUILD_CONFIG ?= "msm-kernel/build.config.msm.sa525"
 
 MACHINE_FEATURES += "qti-sdx dm-verity-initramfs-v4 qti-sensors qti-mvm qti-security qseecompat qti-tzlog qti-data-modem qti-location qti-audio qti-smciqseecomd qti-recovery qti-wwan-plus-cv2x qti-wlan qti-bluetooth qwesd android-binder qti-c2c qti-cv2x-compensator qti-dynamic-tsensreset qti-nad-telaf qti-nad-mrc qti-softsku"
 
+# For sdk toolcahin
+DISTRO_FEATURES_NATIVESDK += " dm-verity-initramfs-v4"
+
 CONFLICT_MACHINE_FEATURES += "qti-cv2x"
 
 MACHINE_MNT_POINTS = " \
