@@ -12,9 +12,9 @@ QcomCate.fv             /dev/block/bootdevice/by-name/catefv
 Core_NON-HLOS.bin       /dev/block/bootdevice/by-name/core_nhlos
 zeros_5sectors.bin      /dev/block/bootdevice/by-name/ddr
 featenabler.mbn         /dev/block/bootdevice/by-name/featenabler
-hyp.mbn                 /dev/block/bootdevice/by-name/hyp
+hypvm.mbn               /dev/block/bootdevice/by-name/hyp
 imagefv.elf             /dev/block/bootdevice/by-name/imagefv
-km4.mbn                 /dev/block/bootdevice/by-name/keymaster
+km41.mbn                /dev/block/bootdevice/by-name/keymaster
 logfs_ufs_8mb.bin       /dev/block/bootdevice/by-name/logfs
 multi_image.mbn         /dev/block/bootdevice/by-name/multiimgoem
 persist.img             /dev/block/bootdevice/by-name/persist
@@ -27,7 +27,7 @@ sbl1.mbn                /dev/block/bootdevice/by-name/sbl1
 tz.mbn                  /dev/block/bootdevice/by-name/tz
 rpm.mbn                 /dev/block/bootdevice/by-name/rpm
 emmc_appsboot.mbn       /dev/block/bootdevice/by-name/aboot
-dspso.bin              /dev/block/bootdevice/by-name/dsp
+dspso.bin               /dev/block/bootdevice/by-name/dsp
 cmnlib.mbn              /dev/block/bootdevice/by-name/cmnlib
 cmnlib64.mbn            /dev/block/bootdevice/by-name/cmnlib64
 devcfg.mbn              /dev/block/bootdevice/by-name/devcfg
