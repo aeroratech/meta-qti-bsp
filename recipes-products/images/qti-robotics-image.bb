@@ -45,4 +45,5 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         packagegroup-support-utils \
         systemd-machine-units \
         ${@bb.utils.contains('DISTRO_FEATURES','selinux', 'packagegroup-selinux-minimal', '', d)} \
+        ${@bb.utils.contains_any("BASEMACHINE", "qrbx210 qcs6490", "qti-c2-module", "", d)} \
 "
