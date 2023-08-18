@@ -101,7 +101,7 @@ SlotSwitchReboot () {
         exit 0
     fi
 
-    chmod 664 /dev/${mtd_device}
+    chmod 666 /dev/${mtd_device}
     firmware_ab_name=$(cat /sys/class/ubi/ubi0_${volid}/name)
     if [ "$firmware_ab_name" == "$firmware_a" ] || [ "$firmware_ab_name" == "$firmware_b" ] ; then
         if [ "x${SLOT_SUFFIX}" == "x" ]; then
@@ -151,6 +151,7 @@ SlotSwitchReboot () {
             /bin/sh -c 'reboot edl'
             exit 0
         fi
+        chmod 660 /dev/${mtd_device}
         echo "Reboot for switching slots or EDL mode" > /dev/kmsg
         /bin/sh -c 'reboot'
     else
