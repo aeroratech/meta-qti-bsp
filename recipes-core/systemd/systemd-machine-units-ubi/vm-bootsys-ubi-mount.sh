@@ -6,6 +6,9 @@ UBI_SYS_CLASS="/sys/class/ubi/ubi0"
 UBI_DEV_BLOCK="/dev/ubiblock0"
 SQUASHFS_IMG="1"
 
+# verity feature status for vm-bootsys
+VERITY_ENV="/etc/verity.env"
+
 GetVMBootSysVolumeID () {
     partition=$1
     volcount=`cat ${UBI_SYS_CLASS}/volumes_count`
@@ -22,6 +25,22 @@ GetVMBootSysVolumeID () {
 IsGPIOEnabled () {
     gpio_enable_status=`cat /proc/cmdline | awk -F'recoveryinfo_gpio=' '{print $2}' | awk '{print $1}' | tr -d '"'`
     return ${gpio_enable_status}
+}
+
+WaitDevReady()
+{
+    local maxTrials=200
+    local ret=0
+
+    while [ ! "$1" "$2" ]; do
+        usleep 10000
+        maxTrials=$( echo $(( ${maxTrials} - 1 )) )
+        if [ ${maxTrials} -eq 0 ]; then
+            ret=1
+            break
+        fi
+    done
+    return ${ret}
 }
 
 FindAndMountUBI () {
@@ -82,6 +101,7 @@ SlotSwitchReboot () {
     fi
     chmod 666 /dev/${mtd_device}
 
+    volid=$(GetVMBootSysVolumeID $partition)
     vmbootsys_ab_name=$(cat /sys/class/ubi/ubi0_${volid}/name)
     if [ "$vmbootsys_ab_name" == "$vmbootsys_a" ] || [ "$vmbootsys_ab_name" == "$vmbootsys_b" ];
     then
@@ -147,7 +167,7 @@ FindAndMountUBIVolume () {
     volid=$(GetVMBootSysVolumeID $partition)
     if [ "$volid" == "" ]; then
         echo "volume index not found for $partition volume "  > /dev/kmsg
-        exit 0
+        return 1
     fi
 
     device=/dev/ubi0_$volid
@@ -155,22 +175,48 @@ FindAndMountUBIVolume () {
 
     if [ "$SQUASHFS_IMG" == "1" ]; then
         ubiblock --create $device
+        WaitDevReady "-b" "${block_device}"
+        if [ $? -ne 0 ]; then
+           echo "Failed to wait on ${block_device}, exiting." > /dev/kmsg
+           return 1
+        fi
+
+        if [ ! -e "${VERITY_ENV}" ]; then
+          VERITY_ENV="/proc/cmdline"
+        fi
+        if grep 'nad_avb=1' ${VERITY_ENV} > /dev/null; then
+          # The system certificate CA is in the rootfs volume, verified-boot utility
+          # need to use this CA to verify the user certificate.
+          volid=$(GetVMBootSysVolumeID "rootfs$SLOT_SUFFIX")
+          if [ "$volid" == "" ]; then
+            echo "volume index not found for rootfs$SLOT_SUFFIX "  > /dev/kmsg
+            return 1
+          fi
+          if dd if=/dev/ubi0_$volid count=1 bs=4 2>/dev/null | grep 'hsqs' > /dev/null; then
+            CERT_CA_PATH=/dev/ubiblock0_$volid
+          else
+            CERT_CA_PATH=/dev/mapper/system
+          fi
+          dm_verity_name=vm-bootsys
+          dm_verity_device=/dev/mapper/${dm_verity_name}
+          verified-boot -n ${dm_verity_name} -d $block_device -p ${CERT_CA_PATH} -v > /dev/kmsg
+          if [ $? -ne 0 ] ; then
+            echo CERT_CA_PATH=${CERT_CA_PATH} > /dev/kmsg
+            echo "Creation of dm-verity device ${dm_verity_device} failed." > /dev/kmsg
+            return 1
+          fi
+
+          WaitDevReady "-b" "${dm_verity_device}"
+          if [ $? -ne 0 ]; then
+             echo "Failed to wait on ${dm_verity_device}, exiting." > /dev/kmsg
+             return 1
+          fi
+          block_device=${dm_verity_device}
+        fi
+
         eval mount -t squashfs $block_device $dir -o ro$extra_opts
     else
         eval mount -t ubifs ubi$ubi_dev_id:$partition $dir -o bulk_read$extra_opts
-    fi
-
-    if [ $? -ne 0 ] ; then
-       echo "$partition volume mount failed" > /dev/kmsg
-       IsGPIOEnabled
-       if [ "$?" -eq "1" ]; then
-          #GPIO Enabled keeping behavior similar to Mount failure.
-          echo "GPIO Enabled donot switch slots" > /dev/kmsg
-       else
-          echo "GPIO disabled switch the slots or boot to EDL " > /dev/kmsg
-          SlotSwitchReboot
-       fi
-       exit 0
     fi
 }
 
@@ -188,6 +234,18 @@ if [ ! -z "$is_vm_bootsys_vol_enabled" ];
 then
     ubi_dev_id=0
     eval FindAndMountUBIVolume $vm_bootsys_part_name /vm-bootsys $vm_bootsys_selinux_opt $ubi_dev_id
+    if [ $? -ne 0 ] ; then
+       echo "vm-bootsys volume mount failed" > /dev/kmsg
+       IsGPIOEnabled
+       if [ "$?" -eq "1" ]; then
+          #GPIO Enabled keeping behavior similar to Mount failure.
+          echo "GPIO Enabled, donot switch slots" > /dev/kmsg
+       else
+           echo "GPIO disabled, switch slots" > /dev/kmsg
+           SlotSwitchReboot
+       fi
+       exit 0
+    fi
 else
     ubi_dev_id=4
     if [ "$SLOT_SUFFIX" != "_b" ];
@@ -204,3 +262,4 @@ fi
 chown -R root:root /vm-bootsys
 
 exit 0
+

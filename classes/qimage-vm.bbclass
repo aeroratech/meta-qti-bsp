@@ -62,9 +62,22 @@ vol_flags=autoresize
 EOF
 }
 
+do_sign_vm_squashfs () {
+    echo VMPACKIMAGE_SQUASHFS_TARGET_1=${VMPACKIMAGE_SQUASHFS_TARGET} >> ${WORKSPACE}/img_paths.txt
+    ${TMPDIR}/work-shared/avbtool/avbtool add_hashtree_footer \
+        --image ${VMPACKIMAGE_SQUASHFS_TARGET} \
+        --partition_name vm-bootsys \
+        --algorithm SHA256_RSA2048 \
+        --key ${TMPDIR}/work-shared/avbtool/qpsa_attestca.key \
+        --public_key_metadata ${TMPDIR}/work-shared/avbtool/qpsa_attestca.der \
+        --do_not_generate_fec --rollback_index 0
+}
+do_sign_vm_squashfs[depends] += "avbtool-native:do_install"
+
 do_pack_vm_images[nostamp] = "1"
 do_pack_vm_images[prefuncs] += 'do_setup_package'
 do_pack_vm_images[prefuncs] += "${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'do_create_ubinize_vmpack_config', '', d)}"
+do_pack_vm_images[postfuncs] += "${@bb.utils.contains('MACHINE_FEATURES', 'tele-squashfs-ubi', 'do_sign_vm_squashfs', '', d)}"
 do_pack_vm_images[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative', 'do_patch_ubitools do_patch_ubi_tools', '', d)}"
 do_pack_vm_images[depends] += "${PN}:do_make_vmbootsys_ubi"
 
