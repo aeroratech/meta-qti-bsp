@@ -27,7 +27,9 @@ RUNTIME = "llvm"
 
 LDFLAGS_aarch64 = "-O1 --hash-style=gnu --as-needed"
 TARGET_CXXFLAGS += "-Wno-format"
+BINDER_IPC_32BIT = "-DBINDER_IPC_32BIT=1"
 KERNEL_CC = "${STAGING_BINDIR_NATIVE}/clang -target ${TARGET_ARCH}${TARGET_VENDOR}-${TARGET_OS}"
+KERNEL_CC_append_sdxlemur = " ${BINDER_IPC_32BIT}"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
