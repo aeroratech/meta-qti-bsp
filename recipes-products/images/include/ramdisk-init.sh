@@ -120,6 +120,7 @@ EarlySetup() {
     busybox mkdir -p /var/run
 
     busybox mkdir -p ${ROOT_MOUNT}
+    echo -n 'M - Ramdisk-init Start' >> /sys/kernel/boot_kpi/kpi_values
     return ${STATUS_OK}
 }
 
@@ -707,6 +708,7 @@ MainBoot() {
         else
             LOGD "Init: ${task1}"
         fi
+    echo -n 'M - Ramdisk-init End' >> /sys/kernel/boot_kpi/kpi_values
     done
 
     local tasks_list2="
