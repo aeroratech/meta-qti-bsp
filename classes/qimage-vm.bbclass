@@ -7,7 +7,7 @@ IMAGE_FEATURES += "vm"
 do_gen_partition_bin[noexec] = "1"
 do_compose_vmimage[recrdeptask] = "do_ramdisk_create"
 
-DEPENDS += "ext4-utils-native mtd-utils-native"
+DEPENDS += "ext4-utils-native mtd-utils-native avbtool"
 
 # Add list of VMs to pack together
 VM_IMAGES ?= "televm fotavm"
