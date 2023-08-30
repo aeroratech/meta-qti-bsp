@@ -2,9 +2,9 @@
 # Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+UBIFS_VOL_HEADER="1831 0610"
 UBI_SYS_CLASS="/sys/class/ubi/ubi0"
 UBI_DEV_BLOCK="/dev/ubiblock0"
-SQUASHFS_IMG="1"
 
 # verity feature status for vm-bootsys
 VERITY_ENV="/etc/verity.env"
@@ -173,7 +173,19 @@ FindAndMountUBIVolume () {
     device=/dev/ubi0_$volid
     block_device=${UBI_DEV_BLOCK}_$volid
 
-    if [ "$SQUASHFS_IMG" == "1" ]; then
+    # Check if the image type is squashfs in UBI volume
+    if dd if=${device}\
+        count=1 bs=4 2>/dev/null | grep 'hsqs' > /dev/null; then
+        image_type="squashfs"
+    elif dd if=${device} count=1 bs=4 2>/dev/null |\
+        hexdump | grep "${UBIFS_VOL_HEADER}" > /dev/null; then
+        image_type="ubifs"
+    else
+        image_type="unknown"
+    fi
+    echo "root fstype is $image_type " > /dev/kmsg
+
+    if [ "$image_type" == "squashfs" ]; then
         ubiblock --create $device
         WaitDevReady "-b" "${block_device}"
         if [ $? -ne 0 ]; then
@@ -215,8 +227,11 @@ FindAndMountUBIVolume () {
         fi
 
         eval mount -t squashfs $block_device $dir -o ro$extra_opts
-    else
+    elif [ "$image_type" == "ubifs" ]; then
         eval mount -t ubifs ubi$ubi_dev_id:$partition $dir -o bulk_read$extra_opts
+    else
+        echo "unknown image type " > /dev/kmsg
+        exit 0
     fi
 }
 
