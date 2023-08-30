@@ -8,6 +8,7 @@ require qti-tele-image.inc
 EVDEVMODULE ?= 'False'
 EVDEVMODULE_sa515m = 'True'
 EVDEVMODULE_sa415m = 'True'
+EVDEVMODULE_mdm9607 = 'True'
 
 # Install powerapp for selected machines
 POWERAPPMODULE ?= 'False'
