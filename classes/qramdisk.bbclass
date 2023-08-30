@@ -15,6 +15,8 @@ DEPENDS += "${@oe.utils.conditional('FLASHLESS_MCU', 'True', 'binutils-cross-${T
 # Adding mtd-utils to support dm-verity v4 for NAND
 PACKAGE_INSTALL += "${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'mtd-utils avbtool cryptsetup', '', d)}"
 
+inherit qdlkm
+
 do_ramdisk_create[depends] += "virtual/kernel:do_deploy"
 do_ramdisk_create[cleandirs] += "${RAMDISKDIR}"
 fakeroot do_ramdisk_create() {
@@ -130,8 +132,16 @@ fakeroot do_ramdisk_create() {
             cp ${IMAGE_ROOTFS}/usr/lib/modules/lassen_secure_eip.ko lib/modules/
             cp ${IMAGE_ROOTFS}/usr/lib/modules/ecpri_core.ko lib/modules/
             cp ${IMAGE_ROOTFS}/lib/firmware/qcom_aw_phy/eth_custom_rates_1.hex lib/firmware/qcom_aw_phy/
-            # strip debug symbols from kos
-            ${STRIP} --strip-unneeded lib/modules/*ko
+            
+            # strip and sign the KOs
+            do_strip_and_sign_dlkm lib/modules/gsim.ko
+            do_strip_and_sign_dlkm lib/modules/ecpri_dmam.ko
+            do_strip_and_sign_dlkm lib/modules/fpc_qsfp.ko
+            do_strip_and_sign_dlkm lib/modules/lassen_qcom_aw_phy.ko
+            do_strip_and_sign_dlkm lib/modules/lassen_mtip.ko
+            do_strip_and_sign_dlkm lib/modules/lassen_secure_eip.ko
+            do_strip_and_sign_dlkm lib/modules/ecpri_core.ko
+
             # install dhcpcd
             cp ${IMAGE_ROOTFS}/etc/dhcpcd.conf etc/
             cp ${IMAGE_ROOTFS}/usr/lib/dhcpcd/dev/udev.so usr/lib/dhcpcd/dev/
