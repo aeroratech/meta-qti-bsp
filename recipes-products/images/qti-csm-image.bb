@@ -35,6 +35,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-core \
               packagegroup-qti-transceiver \
               packagegroup-transceiver-perf-measurement \
+              packagegroup-transceiver-fault-management \
 "
 
 do_merge_dtbs() {
