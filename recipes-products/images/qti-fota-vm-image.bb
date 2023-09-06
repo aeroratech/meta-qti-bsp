@@ -6,6 +6,7 @@ ENABLE_SECUREMSM = "${@d.getVar('MACHINE_SUPPORTS_SECUREMSM') or "True"}"
 
 CORE_IMAGE_EXTRA_INSTALL += " \
     coreutils \
+    sdcard-scripts-automount \
     e2fsprogs-mke2fs \
     packagegroup-android-utils \
     packagegroup-qti-core-vm \
