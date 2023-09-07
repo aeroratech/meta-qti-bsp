@@ -62,6 +62,9 @@ do_recovery_ubi() {
     ln -snf ../run var/run
 
     #copy contents of recovery rootfs
+    if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
+        rm -rf ${RECOVERY_IMAGE_ROOTFS}/cache
+    fi
     cp -r ${RECOVERY_IMAGE_ROOTFS}/. ${OTA_TARGET_IMAGE_ROOTFS_UBI}/RECOVERY/.
 
     #generate recovery.fstab which is used by the updater-script

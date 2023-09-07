@@ -7,7 +7,7 @@ QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota
 
 inherit ${QIMGUBICLASSES}
 
-IMAGE_FEATURES[validitems] += "nand2x gluebi modem-volume persist-volume vm-bootsys-volume vm-systemrw-volume"
+IMAGE_FEATURES[validitems] += "nand2x gluebi modem-volume cache-volume persist-volume vm-bootsys-volume vm-systemrw-volume"
 IMAGE_FEATURES[validitems] += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'telaf-volume', '', d)}"
 
 CORE_IMAGE_EXTRA_INSTALL += "\
@@ -236,16 +236,24 @@ vol_type=dynamic
 vol_name=usrfs
 vol_flags=autoresize
 
+EOF
+vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
+    if $(echo ${IMAGE_FEATURES} | grep -q "cache-volume"); then
+        cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [cache_volume]
 mode=ubi
-vol_id=$((++vol_id))
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=cachefs
 vol_size="${CACHE_VOLUME_SIZE}"
 
+EOF
+    fi
+vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_SYSTEM_CFG}))
+cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [systemrw_volume]
 mode=ubi
-vol_id=$((++vol_id))
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=systemrw
 vol_size="${SYSTEMRW_VOLUME_SIZE}"
@@ -375,16 +383,24 @@ vol_type=dynamic
 vol_name=usrfs
 vol_flags=autoresize
 
+EOF
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
+    if $(echo ${IMAGE_FEATURES} | grep -q "cache-volume"); then
+        cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 [cache_volume]
 mode=ubi
-vol_id=$((++vol_id))
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=cachefs
 vol_size="${CACHE_VOLUME_SIZE}"
 
+EOF
+    fi
+vol_id=$(echo $(grep -rc "vol_id" ${SQUASHFS_UBINIZE_CFG_AB}))
+cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 [systemrw_volume]
 mode=ubi
-vol_id=$((++vol_id))
+vol_id=$vol_id
 vol_type=dynamic
 vol_name=systemrw
 vol_size="${SYSTEMRW_VOLUME_SIZE}"
@@ -453,6 +469,9 @@ do_makesystem_tele_ubi[postfuncs] += "${@bb.utils.contains('INHERIT', 'uninative
 do_makesystem_tele_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_makesystem_tele_ubi() {
+   mkdir ${USER_IMAGE_ROOTFS}/cache
+   rm -rf ${IMAGE_ROOTFS_SQUASHFS_UBI}/cache
+   ln -sf /data/cache ${IMAGE_ROOTFS_SQUASHFS_UBI}/cache
    mkfs.ubifs -r ${USER_IMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS_DATA} -o ${USER_IMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
    if ${@bb.utils.contains('IMAGE_FEATURES', 'modem-volume', 'true', 'false', d)}; then
        if [ -d ${MODEM_IMAGE_DIR} ]; then

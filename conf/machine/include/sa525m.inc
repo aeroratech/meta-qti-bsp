@@ -69,7 +69,6 @@ MACHINE_MNT_POINTS = " \
     /systemrw \
     /persist \
     /data \
-    /cache \
 "
 
 PAGE_SIZE ?= '4096'
