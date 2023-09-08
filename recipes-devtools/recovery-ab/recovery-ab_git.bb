@@ -33,6 +33,7 @@ PARALLEL_MAKE = ""
 EXTRA_OECONF_append = " ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'TARGET_SUPPORTS_AB=true', '', d)}"
 EXTRA_OECONF_append = " ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'TARGET_NAND_BOOT=true', '', d)}"
 EXTRA_OECONF_append = " ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', bb.utils.contains('MACHINE_FEATURES', 'qti-ab-mirror-sync', 'TARGET_SUPPORTS_MIRROR_AB_COPY=true', '', d), '', d)}"
+EXTRA_OECONF_append = " ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', bb.utils.contains('MACHINE_FEATURES', 'qti-mplane-spec', 'TARGET_SUPPORTS_MPLANE_SPEC=true', '', d), '', d)}"
 
 FILES_${PN}  = "${bindir} ${libdir} ${systemd_unitdir} ${includedir} /res /cache"
 SYSTEMD_SERVICE_${PN} = " ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', bb.utils.contains('MACHINE_FEATURES', 'qti-ab-mirror-sync', 'mirror_copy.service', '', d), '', d)}"

@@ -57,6 +57,7 @@ block_based=" "
 python_version="python3"
 system_path=" "
 mirror_sync= ""
+install_only=" "
 
 if [ "$#" -gt 5 ]; then
     IFS=' ' read -a allopts <<< "$@"
@@ -70,6 +71,8 @@ if [ "$#" -gt 5 ]; then
            sign_ota_package="${allopts[${i}]}"
        elif [ "${allopts[${i}]}" = "--mirror_sync" ]; then
            mirror_sync="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--install_only" ]; then
+           install_only="${allopts[${i}]}"
        else
            FSCONFIGFOPTS=$FSCONFIGFOPTS${allopts[${i}]}" "
        fi
@@ -110,7 +113,7 @@ fi
 
 cd $target_files && zip -q $2 META/*filesystem_config.txt SYSTEM/build.prop && cd ..
 
-$python_version ./ota_from_target_files $block_based  $mirror_sync -n -v -d $device_type -v -p . -m linux_embedded --no_signing --system_mount_path $system_path -i $1 $2 update_incr_$4.zip > ota_debug.txt 2>&1
+$python_version ./ota_from_target_files $block_based  $mirror_sync $install_only -n -v -d $device_type -v -p . -m linux_embedded --no_signing --system_mount_path $system_path -i $1 $2 update_incr_$4.zip > ota_debug.txt 2>&1
 
 if [[ $? = 0 ]]; then
     echo "OTA zip signing started"

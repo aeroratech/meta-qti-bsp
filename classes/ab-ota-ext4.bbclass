@@ -22,6 +22,7 @@ MACHINE_FILESMAP_FULL_PATH = "${@machine_search(d.getVar('MACHINE_FILESMAP_CONF'
 
 SIGN_OTA_PACKAGE ?= "${@bb.utils.contains('MACHINE_FEATURES', 'ota-package-verification', '--sign', '', d)}"
 MIRROR_SYNC ?= "${@bb.utils.contains('MACHINE_FEATURES', 'qti-ab-mirror-sync', '--mirror_sync', '', d)}"
+INSTALL_ONLY ?= "${@bb.utils.contains('MACHINE_FEATURES', 'qti-mplane-spec', '--install_only', '', d)}"
 
 #Create directory structure for targetfiles.zip
 do_recovery_ext4[cleandirs] += "${OTA_TARGET_IMAGE_ROOTFS_EXT4}"
@@ -156,7 +157,7 @@ do_gen_ota_incremental_zip_ext4() {
 
 do_gen_ota_full_zip_ext4[dirs] += "${DEPLOY_DIR_IMAGE}/ota-scripts"
 do_gen_ota_full_zip_ext4() {
-    ./full_ota.sh ${OTA_TARGET_FILES_EXT4_PATH} ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT} ${SIGN_OTA_PACKAGE} ${MIRROR_SYNC}
+    ./full_ota.sh ${OTA_TARGET_FILES_EXT4_PATH} ${IMAGE_ROOTFS} ext4 --block --system_path ${IMAGE_SYSTEM_MOUNT_POINT} ${SIGN_OTA_PACKAGE} ${MIRROR_SYNC} ${INSTALL_ONLY}
 
     cp update_ext4.zip ${DEPLOY_DIR_IMAGE}/${IMAGE_BASENAME}/${OTA_FULL_UPDATE_EXT4}
 }
