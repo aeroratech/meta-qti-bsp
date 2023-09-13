@@ -24,7 +24,7 @@ MODEM_UBIFS_IMAGE = "${WORKSPACE}/NON-HLOS.ubifs"
 VM_IMAGE_UBI_TARGET ?= "vm-bootsys.ubi"
 VM_IMAGE_SQUASHFS_TARGET ?= "vm-bootsys.squash"
 VM_IMAGE_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/vm-images/"
-VM_BOOTSYS_VOLUME_SIZE ??= "128MiB"
+VM_BOOTSYS_SQUASHFS_VOLUME_SIZE ??= "80MiB"
 
 UBINIZE_SYSTEM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/ubinize_system.cfg"
 SQUASHFS_UBINIZE_VM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/squashfs_ubinize_vm.cfg"
@@ -410,14 +410,14 @@ mode=ubi
 vol_id=$vol_id
 vol_type=dynamic
 vol_name=vm-bootsys_a
-vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+vol_size="${VM_BOOTSYS_SQUASHFS_VOLUME_SIZE}"
 
 [vm-bootsys_b_volume]
 mode=ubi
 vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=vm-bootsys_b
-vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+vol_size="${VM_BOOTSYS_SQUASHFS_VOLUME_SIZE}"
 
 EOF
     fi
@@ -503,7 +503,7 @@ image="${VM_IMAGE_SQUASHFS_TARGET}"
 vol_id=0
 vol_type=dynamic
 vol_name=vm-bootsys
-vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+vol_size="${VM_BOOTSYS_SQUASHFS_VOLUME_SIZE}"
 
 [vm_systemrw_volume]
 mode=ubi
