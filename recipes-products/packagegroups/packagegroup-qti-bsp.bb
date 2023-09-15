@@ -26,6 +26,7 @@ RDEPENDS_packagegroup-startup-scripts = "\
 # Other essential utilites
 RDEPENDS_packagegroup-support-utils = "\
     chrony \
+    chronyc \
     libinput \
     libinput-bin \
     libnl \
@@ -35,4 +36,5 @@ RDEPENDS_packagegroup-support-utils = "\
 # Sa525m overwrite the packagegroup to only include chrony
 RDEPENDS_packagegroup-support-utils_sa525m = "\
     chrony \
+    chronyc \
     "
