@@ -61,9 +61,6 @@ SYS_PART_NAME="rootfs"
 # they are not present at the same time.
 UBI_PART_NAME="system|nad_ubi"
 
-# Set UBI bad block percentage for current partition
-MTD_UBI_BEB_LIMIT_PER1024="30"
-
 # UBI device number for system image
 SYS_UBI_DEV_NUM="0"
 
@@ -72,6 +69,12 @@ CERT_CA_PATH="/etc/keys/x509_root.der"
 
 # FDE Encryption path
 FDE_ENCRYPTION_PATH="/tmp/test.img"
+
+# Recoveryfs partition or volume name
+RECOVERYFS_DEV="recoveryfs"
+
+# verity feature status
+VERITY_ENV="/etc/verity.env"
 
 #------------------------------------------------------------
 
@@ -117,6 +120,7 @@ EarlySetup() {
     busybox mkdir -p /var/run
 
     busybox mkdir -p ${ROOT_MOUNT}
+    echo -n 'M - Ramdisk-init Start' >> /sys/kernel/boot_kpi/kpi_values
     return ${STATUS_OK}
 }
 
@@ -140,23 +144,56 @@ UmountModem () {
 
 gracefullReboot () {
     local mode=$1
+    local abctl_cmd="/usr/bin/nad-abctl"
     UmountModem
+
+    if [ ! -e ${abctl_cmd} ]; then
+        LOGD "${abctl_cmd} not found."
+        return ${STATUS_ERR}
+    fi
 
     LOGD "InitRamFS: Found issue, rebooting ${mode}..."
     busybox sleep 1
-    sys_reboot ${mode}
+
+    ${abctl_cmd} --reboot ${mode}
+    if [ "$?" -eq "-1" ]; then
+        LOGD "Error: reboot failed"
+        return ${STATUS_ERR}
+    fi
+}
+
+IsGPIOEnabled () {
+    gpio_enable_status=`${Bcat} /proc/cmdline | ${Bawk} -F'recoveryinfo_gpio=' '{print $2}' | ${Bawk} '{print $1}' | ${Btr} -d '"'`
+    return ${gpio_enable_status}
 }
 
 SlotSwitchReboot () {
     local abctl_cmd="/usr/bin/nad-abctl"
     local sys_vol_name=""
     local sys_vol=""
-    local next_slot="none"
-    local ret=""
-    local mtd_device=`${Bgrep} nand_ab_attr /proc/mtd | ${Bawk} -F ':' '{print $1}'`
+    # Set image_set_status fields in recoveryinfo struct
+    #  'A &B' Usable     :  SET_AB_USABLE(0)
+    #  'A' corrupted     :  DONT_USE_SET_A(1)
+    #  'B' corrupted     :  DONT_USE_SET_B(2)
+    #  'A &B' corrupted  :  DONT_USE_SET_AB(3)
+
+    # Set owner fields in recoveryinfo struct
+    #  OWNER_XBL         :  1
+    #  OWNER_HLOS        :  2
+    local owner_hlos=2
+    local dont_use_set_a=1
+    local dont_use_set_b=2
+    local dont_use_set_ab=3
+    local current_image_set_status=0
+    local mtd_device=`${Bgrep} recoveryinfo /proc/mtd | ${Bawk} -F ':' '{print $1}'`
 
     if [ ! -e ${abctl_cmd} ]; then
         LOGD "${abctl_cmd} not found."
+        return ${STATUS_ERR}
+    fi
+
+    if [ -z "${mtd_device}" ]; then
+        LOGD " recoveryinfo part not found."
         return ${STATUS_ERR}
     fi
 
@@ -173,40 +210,68 @@ SlotSwitchReboot () {
     sys_vol=${GetUbiVolumeID_RESULT}
     sys_vol_name="/sys/class/ubi/ubi${SYS_UBI_DEV_NUM}_${sys_vol}/name"
 
+    # check current slot and image_set_status in recoveryinfo
+    #  'A' corrupted     :  set image_set_status = DONT_USE_SET_A
+    #  'B' corrupted     :  set image_set_status = DONT_USE_SET_B
+    #  'A &B' corrupted  :  set image_set_status = DONT_USE_SET_AB
+    #
+
     if ${Bgrep} ${sys_vol_name} -e "_a\|_b" > /dev/null; then
         # A/B system case
         curr_slot=`${Bcat} /proc/cmdline | ${Bawk} -F'SLOT_SUFFIX=' '{print $2}' | ${Bawk} '{print $1}' | ${Btr} -d '"'`
-        if [ x"${curr_slot}" == "x_a" ]; then
-            next_slot="1"
+        if [ "x${curr_slot}" == "x" ]; then
+            LOGD "slot_suffix not present"
+            return ${STATUS_ERR}
+        fi
+        busybox chmod 666 /dev/${mtd_device}
+
+        #Get current image set status
+        (${abctl_cmd} --get_image_set_status)
+        current_image_set_status=$?
+
+        if [ "$current_image_set_status" -eq "-1" ]; then
+            LOGD "Error: incorrect image set status"
+            return ${STATUS_ERR}
+        fi
+
+        if [ "$curr_slot" = "_a" ] && [ "$current_image_set_status" != "$dont_use_set_b" ]; then
+            LOGD "rootfs A volume corrupted "
+            ${abctl_cmd} --set_image_set_status ${dont_use_set_a}
+            if [ "$?" -eq "-1" ]; then
+                LOGD "Error: image set status failed"
+                return ${STATUS_ERR}
+            fi
+        elif [ "$curr_slot" = "_b" ] && [ "$current_image_set_status" != "$dont_use_set_a" ]; then
+            LOGD "rootfs B volume corrupted "
+            ${abctl_cmd} --set_image_set_status ${dont_use_set_b}
+            if [ "$?" -eq "-1" ]; then
+                LOGD "Error: image set status failed"
+                return ${STATUS_ERR}
+                fi
         else
-            next_slot="0"
+            LOGD "rootfs A and B volume is corrupted."
+            ${abctl_cmd} --set_image_set_status ${dont_use_set_ab}
+            if [ "$?" -eq "-1" ]; then
+                LOGD "Error: image set status failed"
+                return ${STATUS_ERR}
+            fi
         fi
     else
-        # Single system (4+4)
+        # Single system (ar)
+        # TODO Behavior needs to be decided for AR
+        LOGD "AR scenario, reboot to edl"
         gracefullReboot edl
     fi
 
-    # check if the cookie in nand_ab_attr is bootloader cookie (i.e. BABC)
-    #  return :  1, if bootloader cookie is found
-    #         :  0, not bootloader cookie (i.e. DABC or empty)
-    #         : -1/255, on failure
-    #
-    chmod 664 /dev/${mtd_device}
-    ${abctl_cmd} --check_bl_cookie
-    ret=$?
-    if [ "$ret" == "1" ]; then
-        gracefullReboot edl
-    elif [ "$ret" == "0" ]; then
-        LOGD "Current slot ${curr_slot}, next active slot: ${next_slot}"
-        ${abctl_cmd} --set_active ${next_slot}
-        if [ $? -ne ${STATUS_OK} ]; then
-            LOGD "Error: ${abctl_cmd} --set_active ${next_slot} failed"
-            return ${STATUS_ERR}
-        fi
-        gracefullReboot
-    else
-        LOGD "Error: ${abctl_cmd} --check_bl_cookie failed"
+    # Set owner to HLOS & reboot device
+    ${abctl_cmd} --set_owner ${owner_hlos}
+    if [ "$?" -eq "-1" ]; then
+        LOGD "Error: owner set failed"
+        return ${STATUS_ERR}
     fi
+    LOGD "Reboot device for Slot Switch or EDL"
+    gracefullReboot
+
     return ${STATUS_ERR}
 }
 
@@ -446,10 +511,26 @@ MountSystem () {
     local nad_fde_status="disabled"
     local sys_key_index="0"
     local vb_parameter="-k /etc/keys/x509_root.der"
+    local vb_option=
 
     if [ ! -e /bin/dd ]; then
         LOGD "Error: cmd: /bin/dd not found"
         return ${STATUS_ERR}
+    fi
+
+    if [ "x${VERITY_ENV}" == "x" ]; then
+        VERITY_ENV="/proc/cmdline"
+    fi
+
+    if ${Bgrep} 'recovery=' /proc/cmdline > /dev/null; then
+        LOGD "Runing to recovery mode"
+        if ${Bgrep} -Ew "${RECOVERYFS_DEV}" /proc/mtd > /dev/null; then
+            # Recoveryfs is a partition and use ${DM_SYST_NAME} as volume name
+            parti_name="${RECOVERYFS_DEV}"
+        else
+            # Recoveryfs is a UBI volume name in partition: ${parti_name}
+            DM_SYST_NAME="${RECOVERYFS_DEV}"
+        fi
     fi
 
     GetStorageDev "${parti_name}"
@@ -461,23 +542,21 @@ MountSystem () {
     # Check if it is UBI partition
     if ${Bdd} if=/dev/mtd${DEV_NUM} count=1 bs=4 2>/dev/null | ${Bgrep} 'UBI#' > /dev/null; then
 
-        ubiattach -m ${DEV_NUM} -d ${SYS_UBI_DEV_NUM} -b ${MTD_UBI_BEB_LIMIT_PER1024}
+        ubiattach -m ${DEV_NUM} -d ${SYS_UBI_DEV_NUM}
         WaitDevReady "-e" "/sys/class/ubi/ubi${SYS_UBI_DEV_NUM}/volumes_count"
         if [ $? -ne ${STATUS_OK} ]; then
             LOGD "Error: /sys/class/ubi/ubi${SYS_UBI_DEV_NUM}/volumes_count not found"
             return ${STATUS_ERR}
         fi
 
-        if ${Bgrep} 'recovery=' /proc/cmdline > /dev/null; then
-            SYS_IMAGE_VOL=`${Bcat} /proc/cmdline | ${Bawk} -F 'recovery=' '{print $2}' | ${Bawk} '{print $1}'`
-        else
-            GetUbiVolumeID ${SYS_UBI_DEV_NUM} ${DM_SYST_NAME}
-            if [ "${GetUbiVolumeID_RESULT}" == "" ]; then
-                LOGD "Cannot get ${DM_SYST_NAME} volume."
-                return ${STATUS_ERR}
-            fi
-            SYS_IMAGE_VOL=${GetUbiVolumeID_RESULT}
+        # Get the boot system volume number
+        GetUbiVolumeID ${SYS_UBI_DEV_NUM} ${DM_SYST_NAME}
+        if [ "${GetUbiVolumeID_RESULT}" == "" ]; then
+            LOGD "Cannot get ${DM_SYST_NAME} volume."
+            return ${STATUS_ERR}
         fi
+        SYS_IMAGE_VOL=${GetUbiVolumeID_RESULT}
+
         if [ "${SYS_IMAGE_VOL}" == "" ]; then
             LOGD "Cannot get ${DM_SYST_NAME} volume."
             return ${STATUS_ERR}
@@ -499,7 +578,7 @@ MountSystem () {
 
         # UBIFS don't support signing, so won't work with FDE
         if [ "${image_type}" != "ubifs" ]; then
-            if ${Bgrep} 'nad_fde=1' /proc/cmdline > /dev/null; then
+            if ${Bgrep} 'nad_fde=1' ${VERITY_ENV} > /dev/null; then
 
                 # 4+4 device has not enough ram size for FDE encryption
                 # So, skip encryption if the memory is smaller than ${RAM_SIZE_LIMIT_VOL}
@@ -561,9 +640,13 @@ MountSystem () {
                 fi
 
             # For root file system Verified boot enabling
-            elif ${Bgrep} 'nad_avb=1' /proc/cmdline > /dev/null; then
+            elif ${Bgrep} 'nad_avb=1' ${VERITY_ENV} > /dev/null; then
                 dm_verity_device=/dev/mapper/${DM_SYST_NAME}
-                verified-boot -n ${DM_SYST_NAME} -d ${block_device} -k ${CERT_CA_PATH}
+                if ${Bgrep} 'secure=1' /proc/cmdline > /dev/null; then
+                    vb_option="-s"
+                fi
+                verified-boot -n ${DM_SYST_NAME} -d ${block_device} -k ${CERT_CA_PATH} ${vb_option}
+
                 if [ $? -ne ${STATUS_OK} ] ; then
                     LOGD "Created dm-verity device ${dm_verity_device} failed."
                     return ${STATUS_ERR}
@@ -583,7 +666,7 @@ MountSystem () {
                 return ${STATUS_ERR}
             fi
         elif [ "${image_type}" == "ubifs" ]; then
-            busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read
+            busybox.suid mount -t ${image_type} "${char_device}" ${ROOT_MOUNT} -o bulk_read,ro
             if [ $? -ne ${STATUS_OK} ]; then
                 LOGD "Error: mount ubifs ${char_device} failed"
                 return ${STATUS_ERR}
@@ -613,11 +696,19 @@ MainBoot() {
             LOGD "Error: ${task1} failed"
 
             # According to the conditions does system switch or reboot
-            SlotSwitchReboot
+            IsGPIOEnabled
+            if [ $? -eq 1 ]; then
+                #GPIO Enabled keeping behavior similar to Mount failure.
+                LOGD "GPIO Enabled donot switch slots "
+            else
+                LOGD "GPIO disabled switch the slots or boot to EDL "
+                SlotSwitchReboot
+            fi
             return ${STATUS_ERR}
         else
             LOGD "Init: ${task1}"
         fi
+    echo -n 'M - Ramdisk-init End' >> /sys/kernel/boot_kpi/kpi_values
     done
 
     local tasks_list2="

@@ -137,7 +137,7 @@ append_verity_metadata_to_system_image2() {
      echo "WORKDIR ${WORKDIR}"
      echo  "KERNEL_PREBUILT_DISTDIR  : ${KERNEL_PREBUILT_DISTDIR}"
      echo "IMGDEPLOYDIR :  ${IMGDEPLOYDIR}"
-    openssl smime -sign -nocerts -noattr -binary -in ${WORKDIR}/roothash.txt -inkey ${STAGING_DIR_TARGET}/kernel-certs/verity_key.pem  -signer ${STAGING_DIR_TARGET}/kernel-certs/verity_cert.pem  -outform der -out ${WORKDIR}/verity_sig.txt
+    openssl smime -sign -nocerts -noattr -binary -in ${WORKDIR}/roothash.txt -inkey ${STAGING_KERNEL_BUILDDIR}/certs/verity_key.pem  -signer ${STAGING_KERNEL_BUILDDIR}/certs/verity_cert.pem  -outform der -out ${WORKDIR}/verity_sig.txt
 
     # Clean up large files that are no longer needed
     rm ${VERITY_HASH_DEVICE}

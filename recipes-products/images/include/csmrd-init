@@ -449,12 +449,13 @@ do_mounts
 
 # do_nbdtab - create nbd tab and negotiate images on nbd blocks. Then mount systemfs ans switch root
 # @1:  HOST_ADDR
-# @2:  MHI Channel no
-# @3: Debug transport
+# @2:  Images Port no
+# @3:  Config files port no
+# @4:  Debug transport
 do_nbdtab()
 {
-    portno="$(( 10809 + $2 ))"
-    config_portno="$(( 12809 + $2 ))"
+    portno="$2"
+    config_portno="$3"
     # Create nbd-server config
     echo "nbd0 $1 system.img.raw persist" > /etc/nbdtab
     echo "nbd1 $1 systemrw.img.raw  persist" >> /etc/nbdtab
@@ -470,7 +471,9 @@ do_nbdtab()
     nbdclient nbd3 $portno # connect remote userdata.img
     nbdclient nbd4 $portno # connect remote cache.img
     nbdclient nbd5 $portno # connect NON-HLOS
-    nbdclient nbd6 $config_portno # connect Modem config files
+    if [ $config_portno != "0" ]; then
+        nbdclient nbd6 $config_portno # connect Modem config files
+    fi
 
     # if nbd negotiation fails, drop to ramdsik
     if [ "$?" -ne 0 ]; then
@@ -484,10 +487,12 @@ do_nbdtab()
     mount -o rw /dev/nbd0 $mnt_dir
     #umount /sys/kernel/debug /sys /proc /dev
 
-    # mount hostmgr config readonly
-    mnt_hostmgr_dir="/mnt/system/etc/csm/x100"
-    mkdir -p $mnt_hostmgr_dir
-    mount /dev/nbd6p1 $mnt_hostmgr_dir
+    if [ $config_portno != "0" ]; then
+        # mount hostmgr config readonly
+        mnt_hostmgr_dir="/mnt/system/etc/csm/x100"
+        mkdir -p $mnt_hostmgr_dir
+        mount /dev/nbd6p1 $mnt_hostmgr_dir
+    fi
 
     # update systemd mount files to mount it from nbd devices
     cd $mnt_dir/lib/systemd/system/
@@ -506,12 +511,12 @@ do_nbdtab()
     fi
 
     # set debug transport
-    echo "Set debug transport to $3"
+    echo "Set debug transport to $4"
     # mount userdata.img
     mnt_data_dir="/mnt/system/data"
     mkdir -p $mnt_data_dir
     mount -o rw /dev/nbd3 $mnt_data_dir
-    echo $3 > $mnt_data_dir/debug_transport.conf
+    echo $4 > $mnt_data_dir/debug_transport.conf
     umount $mnt_data_dir
 
     # Switch root to remote sysfs
@@ -595,8 +600,20 @@ case $fstab_suffix in
         done
         echo "Server Address : $HOST_ADDR"
 
+        # get the Device Serial No. from the HOST RU Manager
+        DEVICE_SERIAL=$(/usr/sbin/csm_ru_nwboot_client $LOCAL_INTERFACE $HOST_ADDR | grep "Device Serial :" | cut -d':' -f2)
+
+        if [[ -z $DEVICE_SERIAL || $DEVICE_SERIAL == "-1" ]]; then
+            echo "Failed to get Device Serial No."
+            start_rdshell
+        fi
+        echo "Got Device Serial No. From HOST : $DEVICE_SERIAL"
+
         # Create /etc/nbdtab and nbd-client connect remote nbdkit
-        do_nbdtab $HOST_ADDR 0 "usb"
+        portno="$(( 14809 + $DEVICE_SERIAL ))"
+        config_portno="$(( 0 ))"
+
+        do_nbdtab $HOST_ADDR $portno $config_portno "usb"
 
         ;;
     emmc)
@@ -718,7 +735,10 @@ fi   # end of  if verity file exist check.
             echo "Failed to config interface: $MPLANE_INTERFACE"
         fi
         # Create /etc/nbdtab and nbd-client connect remote nbdkit
-        do_nbdtab $HOST_ADDR $config_string $debug_transport
+        portno="$(( 10809 + $config_string ))"
+        config_portno="$(( 12809 + $config_string ))"
+
+        do_nbdtab $HOST_ADDR $portno $config_portno $debug_transport
         ;;
     rdshell)
         echo "Starting ramdisk shell"

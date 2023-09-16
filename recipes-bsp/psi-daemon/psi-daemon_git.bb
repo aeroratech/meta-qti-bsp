@@ -10,6 +10,7 @@ PR = "r1"
 
 FILESPATH =+ "${WORKSPACE}/vendor/qcom/opensource/:"
 SRC_URI   = "file://psi_daemon"
+SRC_URI  += "file://psi_daemon/psi_daemon.service"
 
 S = "${WORKDIR}/psi_daemon"
 DEPENDS += "virtual/kernel libcutils liblog libutils libbase libvmmem libvmmem-headers linux-msm-headers"
@@ -22,6 +23,12 @@ EXTRA_OECONF = " --with-sanitized-headers=${STAGING_INCDIR}/linux-msm/usr/includ
 
 PACKAGES +="${PN}-test-bin"
 
-FILES_${PN} = "${bindir}/*"
+FILES_${PN} = "${bindir}/* ${systemd_unitdir}/system"
+
+do_install_append() {
+    install -d ${D}${systemd_unitdir}/system/multi-user.target.wants
+    install -m 0644 ${S}/psi_daemon.service -D ${D}${systemd_unitdir}/system/psi_daemon.service
+    ln -sf ${systemd_unitdir}/system/psi_daemon.service ${D}${systemd_unitdir}/system/multi-user.target.wants/psi_daemon.service
+}
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"

@@ -19,6 +19,7 @@ FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://OTA/recovery/"
 SRC_URI += "file://fstab_AB"
 SRC_URI += "file://fstab_AB_cache_ext4"
+SRC_URI += "file://fstab_AB_nad"
 SRC_URI += "file://mirror_copy.service"
 
 S = "${WORKDIR}/OTA/recovery/"
@@ -30,10 +31,11 @@ CFLAGS += "-lsparse -llog"
 PARALLEL_MAKE = ""
 
 EXTRA_OECONF_append = " ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', 'TARGET_SUPPORTS_AB=true', '', d)}"
+EXTRA_OECONF_append = " ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'TARGET_NAND_BOOT=true', '', d)}"
 EXTRA_OECONF_append = " ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', bb.utils.contains('MACHINE_FEATURES', 'qti-ab-mirror-sync', 'TARGET_SUPPORTS_MIRROR_AB_COPY=true', '', d), '', d)}"
 
 FILES_${PN}  = "${bindir} ${libdir} ${systemd_unitdir} ${includedir} /res /cache"
-SYSTEMD_SERVICE_${PN} = "mirror_copy.service"
+SYSTEMD_SERVICE_${PN} = " ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', bb.utils.contains('MACHINE_FEATURES', 'qti-ab-mirror-sync', 'mirror_copy.service', '', d), '', d)}"
 RM_WORK_EXCLUDE += "${PN}"
 INITSCRIPT_NAME = "mirror_copy"
 INITSCRIPT_PARAMS = "defaults"
@@ -54,9 +56,18 @@ do_install_append() {
                 install -m 0755 ${WORKDIR}/fstab_AB_cache_ext4 -D ${D}/res/recovery_volume_config
             fi
         fi
+
+        if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'true', 'false', d)}; then
+            install -m 0755 ${WORKDIR}/fstab_AB_nad -D ${D}/res/recovery_volume_config
+        fi
+
         install -d ${D}${systemd_unitdir}/system/
-        install -m 0644 ${WORKDIR}/mirror_copy.service -D \
-                 ${D}${systemd_unitdir}/system/mirror_copy.service
+
+        if ${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-boot', bb.utils.contains('MACHINE_FEATURES', 'qti-ab-mirror-sync', 'true', 'false', d), 'false', d)}; then
+            install -m 0644 ${WORKDIR}/mirror_copy.service -D \
+                     ${D}${systemd_unitdir}/system/mirror_copy.service
+        fi
+
         if ${@bb.utils.contains('MACHINE_FEATURES', 'ota-package-verification', 'true', 'false', d)}; then
             install -m 0755 ${WORKDIR}/public.pem -D ${D}/res/public.pem
         fi

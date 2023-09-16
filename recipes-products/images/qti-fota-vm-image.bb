@@ -5,8 +5,11 @@ DEPENDS += "virtual/kernel"
 ENABLE_SECUREMSM = "${@d.getVar('MACHINE_SUPPORTS_SECUREMSM') or "True"}"
 
 CORE_IMAGE_EXTRA_INSTALL += " \
+    coreutils \
+    sdcard-scripts-automount \
     e2fsprogs-mke2fs \
     packagegroup-android-utils \
+    packagegroup-qti-core-vm \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'packagegroup-selinux-minimal', '', d)} \
     ${@oe.utils.conditional('ENABLE_SECUREMSM', 'True', 'packagegroup-qti-securemsm', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'qti-telux', 'packagegroup-qti-telsdk', '', d)} \

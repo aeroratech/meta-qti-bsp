@@ -7,10 +7,13 @@ QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota
 
 inherit ${QIMGUBICLASSES}
 
-IMAGE_FEATURES[validitems] += "nand2x gluebi nad-modem-volume persist-volume vm-bootsys-volume vm-systemrw-volume"
+IMAGE_FEATURES[validitems] += "nand2x gluebi modem-volume persist-volume vm-bootsys-volume vm-systemrw-volume"
 IMAGE_FEATURES[validitems] += "${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'telaf-volume', '', d)}"
 
-CORE_IMAGE_EXTRA_INSTALL += "systemd-machine-units-ubi"
+CORE_IMAGE_EXTRA_INSTALL += "\
+                            systemd-machine-units-ubi \
+                            ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-core', 'recovery-ab', '', d)} \
+                            "
 
 SYSTEM_IMAGE_UBI_TARGET ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/sysfs.ubi"
 SYSTEM_IMAGE_UBIFS_TARGET ?= "${@bb.utils.contains('IMAGE_FEATURES', 'gluebi', bb.utils.contains('DISTRO_FEATURES', 'dm-verity', '${IMGDEPLOYDIR}/${IMAGE_BASENAME}/verity/${SYSTEMIMAGE_GLUEBI_TARGET}/${SYSTEMIMAGE_GLUEBI_TARGET}', '${SYSTEMIMAGE_GLUEBI_TARGET}', d), 'squashfs/sysfs.ubifs', d)}"
@@ -21,7 +24,7 @@ MODEM_UBIFS_IMAGE = "${WORKSPACE}/NON-HLOS.ubifs"
 VM_IMAGE_UBI_TARGET ?= "vm-bootsys.ubi"
 VM_IMAGE_SQUASHFS_TARGET ?= "vm-bootsys.squash"
 VM_IMAGE_ROOTFS ?= "${DEPLOY_DIR_IMAGE}/vm-images/"
-VM_BOOTSYS_VOLUME_SIZE ??= "128MiB"
+VM_BOOTSYS_SQUASHFS_VOLUME_SIZE ??= "80MiB"
 
 UBINIZE_SYSTEM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/ubinize_system.cfg"
 SQUASHFS_UBINIZE_VM_CFG ?= "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/squashfs_ubinize_vm.cfg"
@@ -163,7 +166,7 @@ vol_name=rootfs_b
 vol_size="${ROOTFS_VOLUME_SIZE}"
 
 EOF
-    if $(echo ${IMAGE_FEATURES} | grep -q "nad-modem-volume"); then
+    if $(echo ${IMAGE_FEATURES} | grep -q "modem-volume"); then
         cat << EOF >> ${UBINIZE_SYSTEM_CFG}
 [modem_a_volume]
 mode=ubi
@@ -286,7 +289,7 @@ vol_name=rootfs_b
 vol_size="${SYSTEM_SQUASHFS_VOLUME_SIZE}"
 
 EOF
-    if $(echo ${IMAGE_FEATURES} | grep -q "nad-modem-volume"); then
+    if $(echo ${IMAGE_FEATURES} | grep -q "modem-volume"); then
         cat << EOF >> ${SQUASHFS_UBINIZE_CFG_AB}
 [modem_a_volume]
 mode=ubi
@@ -407,14 +410,14 @@ mode=ubi
 vol_id=$vol_id
 vol_type=dynamic
 vol_name=vm-bootsys_a
-vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+vol_size="${VM_BOOTSYS_SQUASHFS_VOLUME_SIZE}"
 
 [vm-bootsys_b_volume]
 mode=ubi
 vol_id=$((++vol_id))
 vol_type=dynamic
 vol_name=vm-bootsys_b
-vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+vol_size="${VM_BOOTSYS_SQUASHFS_VOLUME_SIZE}"
 
 EOF
     fi
@@ -451,7 +454,7 @@ do_makesystem_tele_ubi[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_makesystem_tele_ubi() {
    mkfs.ubifs -r ${USER_IMAGE_ROOTFS} ${IMAGE_UBIFS_SELINUX_OPTIONS_DATA} -o ${USER_IMAGE_UBIFS_TARGET} ${MKUBIFS_ARGS}
-   if ${@bb.utils.contains('IMAGE_FEATURES', 'nad-modem-volume', 'true', 'false', d)}; then
+   if ${@bb.utils.contains('IMAGE_FEATURES', 'modem-volume', 'true', 'false', d)}; then
        if [ -d ${MODEM_IMAGE_DIR} ]; then
            mkfs.ubifs -r ${MODEM_IMAGE_DIR} --selinux=${SELINUX_CONTEXT_MODEM} -o ${MODEM_UBIFS_IMAGE} ${MKUBIFS_ARGS}
        fi
@@ -464,7 +467,7 @@ do_makesystem_squashfs[prefuncs] += "do_create_squash_ubinize_config_ab"
 do_makesystem_squashfs[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 
 fakeroot do_makesystem_squashfs() {
-    if ${@bb.utils.contains('IMAGE_FEATURES', 'nad-modem-volume', 'true', 'false', d)}; then
+    if ${@bb.utils.contains('IMAGE_FEATURES', 'modem-volume', 'true', 'false', d)}; then
         if [ -d ${MODEM_IMAGE_DIR} ]; then
             mksquashfs ${MODEM_IMAGE_DIR} ${MODEM_SQUASHFS_IMAGE} -context-file ${SELINUX_CONTEXT_MODEM} -noappend -comp gzip -Xcompression-level 9 -noI -b 65536 -processors 1
         fi
@@ -474,6 +477,8 @@ fakeroot do_makesystem_squashfs() {
     else
         mksquashfs ${IMAGE_ROOTFS_SQUASHFS_UBI} ${SYSTEMIMAGE_SQUASHFS_TARGET} -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1
     fi
+}
+do_makesystem_squashfs_ubi () {
     ubinize -o ${SYSTEMIMAGE_SQUASHFS_UBI_AB_TARGET} ${UBINIZE_ARGS} ${SQUASHFS_UBINIZE_CFG_AB}
 }
 
@@ -482,9 +487,9 @@ do_maketelaf_squashfs[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs"
 
 fakeroot do_maketelaf_squashfs() {
     if [[ "${DISTRO_FEATURES}" =~ "selinux" ]] ; then
-        mksquashfs ${TELAF_RO_IMAGE_PATH} ${TELAF_RO_SQUASHFS_TARGET} -context-file ${TELAF_RO_SELINUX_FILE_CONTEXTS} -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1
+        mksquashfs ${TELAF_RO_IMAGE_PATH} ${TELAF_RO_SQUASHFS_TARGET} -context-file ${TELAF_RO_SELINUX_FILE_CONTEXTS} -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1 -all-root
     else
-        mksquashfs ${TELAF_RO_IMAGE_PATH} ${TELAF_RO_SQUASHFS_TARGET} -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1
+        mksquashfs ${TELAF_RO_IMAGE_PATH} ${TELAF_RO_SQUASHFS_TARGET} -noappend -comp xz -Xdict-size 32K -noI -Xbcj arm -b 65536 -processors 1 -all-root
     fi
 }
 
@@ -498,7 +503,7 @@ image="${VM_IMAGE_SQUASHFS_TARGET}"
 vol_id=0
 vol_type=dynamic
 vol_name=vm-bootsys
-vol_size="${VM_BOOTSYS_VOLUME_SIZE}"
+vol_size="${VM_BOOTSYS_SQUASHFS_VOLUME_SIZE}"
 
 [vm_systemrw_volume]
 mode=ubi
@@ -527,6 +532,8 @@ fakeroot do_make_vmbootsys_squashfs() {
 python () {
     if bb.utils.contains('IMAGE_FEATURES', 'vm', True, False, d):
         bb.build.addtask('do_make_vmbootsys_squashfs', 'do_image_complete', 'do_compose_vmimage', d)
+        if bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'qti-vm-guest', True, False, d):
+            bb.build.addtask('do_sign_vmbootsys_squashfs', 'do_image_complete', 'do_make_vmbootsys_squashfs', d)
     elif bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d) and bb.utils.contains('DISTRO_FEATURES', 'dm-verity', True, False, d):
         bb.build.addtask('do_makesystem_gluebi', 'do_image_complete', 'do_image', d)
     else:
@@ -534,6 +541,13 @@ python () {
         bb.build.addtask('do_makesystem_squashfs', 'do_image_complete', 'do_makesystem_tele_ubi', d)
         if bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', True, False, d):
             bb.build.addtask('do_maketelaf_squashfs', 'do_image_complete', 'do_makesystem_ubi', d)
+        if bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', True, False, d):
+            bb.build.addtask('do_sign_system_squashfs', 'do_image_complete', 'do_makesystem_squashfs', d)
+            bb.build.addtask('do_makesystem_squashfs_ubi', 'do_image_complete', 'do_sign_system_squashfs', d)
+            if bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', True, False, d):
+                bb.build.addtask('do_sign_telaf_squashfs', 'do_image_complete', 'do_maketelaf_squashfs', d)
+        else:
+            bb.build.addtask('do_makesystem_squashfs_ubi', 'do_image_complete', 'do_makesystem_squashfs', d)
 }
 
 do_patch_ubi_tools() {
@@ -584,3 +598,31 @@ python() {
     elif bb.utils.contains('IMAGE_FEATURES', 'gluebi', True, False, d):
         bb.build.addtask('do_verity_ubinize', 'do_image_complete', 'do_makesystem_gluebi', d)
 }
+
+#telaf squashfs files
+TELAF_IMAGE_SQUASHFS_TARGET = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/telaf_ro.squashfs"
+
+# Sign the telaf image
+do_sign_telaf_squashfs () {
+    ${TMPDIR}/work-shared/avbtool/avbtool add_hashtree_footer \
+        --image ${TELAF_IMAGE_SQUASHFS_TARGET} \
+        --partition_name telaf \
+        --algorithm SHA256_RSA2048 \
+        --key ${TMPDIR}/work-shared/avbtool/qpsa_attestca.key \
+        --public_key_metadata ${TMPDIR}/work-shared/avbtool/qpsa_attestca.der \
+        --do_not_generate_fec --rollback_index 0
+}
+do_sign_telaf_squashfs[depends] += "avbtool-native:do_install"
+
+# Sign the vmbootsys image
+do_sign_vmbootsys_squashfs[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}/squashfs/"
+do_sign_vmbootsys_squashfs () {
+    ${TMPDIR}/work-shared/avbtool/avbtool add_hashtree_footer \
+        --image ${VM_IMAGE_SQUASHFS_TARGET} \
+        --partition_name vm-bootsys \
+        --algorithm SHA256_RSA2048 \
+        --key ${TMPDIR}/work-shared/avbtool/qpsa_attestca.key \
+        --public_key_metadata ${TMPDIR}/work-shared/avbtool/qpsa_attestca.der \
+        --do_not_generate_fec --rollback_index 0
+}
+do_sign_vmbootsys_squashfs[depends] += "avbtool-native:do_install"

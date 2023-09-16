@@ -11,6 +11,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               kernel-modules \
               coreutils \
               powerapp \
+              binder \
               powerapp-powerconfig \
               powerapp-reboot \
               powerapp-shutdown \

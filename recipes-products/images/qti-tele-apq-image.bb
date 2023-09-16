@@ -1,10 +1,12 @@
-# QTI Linux Telematics Host VM image file.
+# QTI Linux Telematics APQ image file.
 # Provides packages required to build
-# QTI Linux Telematics Host VM image.
+# QTI Linux Telematics APQ image.
+#
+# The QTI Linux Telematics APQ Image File
+# is used for generate SA525m fusion flavour
+# builds.
 
 require qti-tele-image.inc
-
-IMAGE_FEATURES += "vm-bootsys-volume vm-systemrw-volume"
 
 # Install km-loader for selected machines
 EVDEVMODULE ?= 'False'
@@ -22,7 +24,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         libgpiod libgpiod-tools \
         spitools \
         coreutils \
-        android-tools \
         packagegroup-android-utils \
         packagegroup-qti-core \
         ${@bb.utils.contains('MACHINE_FEATURES', 'android-binder', 'binder', '', d)} \
@@ -45,7 +46,6 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('MACHINE_FEATURES', 'nand-boot', 'mtd-utils-ubifs', '', d)} \
         qmi-shutdown-modem \
         modem-shutdown \
-        ${@bb.utils.contains('MACHINE_FEATURES', 'qti-virtualization', 'packagegroup-qti-virtualization', '', d)} \
         ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'packagegroup-qti-telaf', '', d)} \
 "
@@ -55,3 +55,11 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
        qmi-shutdown-modem modem-shutdown \
        packagegroup-qti-security-test \
 "
+
+# Following packages will be enabled later
+CORE_IMAGE_EXTRA_INSTALL_remove_mdm9607 = "\
+       ${@bb.utils.contains('DISTRO_FEATURES', 'qti-telux', 'packagegroup-qti-telsdk', '', d)} \
+       subsystem-ramdump \
+       qmi-shutdown-modem \
+"
+

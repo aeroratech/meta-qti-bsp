@@ -29,17 +29,19 @@ KERNEL_CMD_PARAMS = ""
 KERNEL_DYNAMIC_DEFCONFIG = "True"
 SERIAL_CONSOLE = "115200 hvc0"
 
-MACHINE_FEATURES += "qti-vm-guest gh-loader qti-location qti-sensors qti-vm-systemrw tele-squashfs-ubi"
+MACHINE_FEATURES += "qti-vm-guest gh-loader qti-vm-systemrw tele-squashfs-ubi qti-sdx"
 
 MACHINE_SUPPORTS_INIT_RAMDISK = "False"
 TOYBOX_RAMDISK = "False"
 MACHINE_USES_KERNEL_PREBUILTS = "True"
 MACHINE_SUPPORTS_USB = "False"
+MACHINE_SUPPORTS_PDMAPPER = "False"
+MACHINE_SUPPORTS_DISPLAY = "False"
+MACHINE_SUPPORTS_SECUREMSM = "False"
+MACHINE_SUPPORTS_USB_AUTOSUSPEND = "False"
 
 # Required to set service.adb.tcp.port for SVM
 MACHINE_SUPPORTS_ANDROID_PROPERTIES = "True"
-MACHINE_SUPPORTS_DISPLAY = "False"
-MACHINE_SUPPORTS_SECUREMSM = "False"
 
 MACHINE_MNT_POINTS = " \
     /systemrw \
@@ -66,3 +68,5 @@ MKUBIFS_ARGS = "-m 4096 -e 253952 -c 2146 -F"
 
 # On msm-5.4 or above ufs driver supports BSG Device.
 UFS_BSG_DEV_USAGE = "True"
+
+SYSTEMD_COREDUMP_PATH = "/systemrw/coredump"

@@ -1,8 +1,10 @@
 inherit qimage populate_sdk_qti ${@bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v4', 'qramdisk', '', d)}
 
-IMAGE_FEATURES += "read-only-rootfs ${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'persist-volume', '', d)} \
-                   ${@bb.utils.contains('MACHINE_FEATURES', 'tele-squashfs-ubi', 'nad-modem-volume', '', d)} \
-                   ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'telaf-volume', '', d)}"
+IMAGE_FEATURES += " \
+        read-only-rootfs ${@bb.utils.contains('IMAGE_FSTYPES', 'ubi', 'persist-volume', '', d)} \
+        ${@bb.utils.contains('MACHINE_FEATURES', 'tele-squashfs-ubi', 'modem-volume', '', d)} \
+        ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'telaf-volume', '', d)} \
+"
 
 python () {
     if d.getVar('PREFERRED_VERSION_linux-msm') == "5.15":
@@ -28,6 +30,8 @@ do_copy_abl() {
         install -m 0644 ${KERNEL_PREBUILT_PATH}/abl_userdebug.elf ${DEPLOY_DIR_IMAGE}/${PN}/abl_userdebug.elf
     fi
 }
+
+TOOLCHAIN_TARGET_TASK += "sensor-hal-daemon-hdr telux"
 
 # Remove unsupported SDK packages
 TOOLCHAIN_TARGET_TASK_remove = "ath6kl-utils-staticdev"

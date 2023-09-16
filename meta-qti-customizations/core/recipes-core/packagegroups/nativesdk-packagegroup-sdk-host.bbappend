@@ -15,4 +15,5 @@ RDEPENDS_${PN}_qti-distro-base = "\
     nativesdk-meson \
     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'nativesdk-wayland', '', d)} \
     nativesdk-sdk-provides-dummy \
+    ${@bb.utils.contains('DISTRO_FEATURES_NATIVESDK', 'dm-verity-initramfs-v4', 'nativesdk-avbtool', '', d)} \
     "

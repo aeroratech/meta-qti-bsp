@@ -121,10 +121,12 @@ do_makesystem[prefuncs] += "create_symlink_systemd_ext4_mount_rootfs"
 do_makesystem[prefuncs] += "${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-bootloader', 'adjust_system_size_for_verity', '', d), '', d)}"
 
 do_makesystem() {
-    # Empty the /persist folder so that it doesn't end up
-    # in system image as well
-    rm -rf ${IMAGE_ROOTFS_EXT4}/persist/*
-    cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig.conf
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'qti-vm-tele', 'false', 'true', d)}; then
+        # Empty the /persist folder so that it doesn't end up
+        # in system image as well
+        rm -rf ${IMAGE_ROOTFS_EXT4}/persist/*
+        cp ${MACHINE_FSCONFIG_CONF_FULL_PATH} ${WORKDIR}/rootfs-fsconfig.conf
+    fi
     # An ugly hack to mitigate a bug in libsparse were random
     # asserts are observed during unsparsing if image size is large.
     # Unsparsing is needed for appending verity metadata to image.
@@ -208,7 +210,8 @@ do_makesystemrw[dirs] = "${IMGDEPLOYDIR}/${IMAGE_BASENAME}"
 do_makesystemrw() {
     make_ext4fs  -a /systemrw ${IMAGE_EXT4_SELINUX_OPTIONS} \
                  -s -b 4096 -l ${SYSTEMRW_IMAGE_ROOTFS_SIZE} \
-                 ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMRWIMAGE_TARGET}
+                 ${IMGDEPLOYDIR}/${IMAGE_BASENAME}/${SYSTEMRWIMAGE_TARGET} \
+                 ${IMAGE_ROOTFS}/systemrw
 }
 
 python() {

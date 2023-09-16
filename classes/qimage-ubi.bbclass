@@ -4,7 +4,7 @@ GENERATE_AB_OTA_PACKAGE ?= "${@bb.utils.contains('COMBINED_FEATURES', 'qti-ab-bo
 QIMGUBICLASSES  = ""
 # To be implemented
 QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-recovery', 'ota-ubi', '', d)}"
-
+QIMGUBICLASSES += "${@bb.utils.contains('MACHINE_FEATURES', 'qti-ab-boot', 'ab-ota-ubi', '', d)}"
 inherit ${QIMGUBICLASSES}
 
 IMAGE_FEATURES[validitems] += "persist-volume nand2x gluebi vm-bootsys-volume vm-systemrw-volume"
@@ -186,7 +186,7 @@ vol_size="${PERSIST_VOLUME_SIZE}"
 EOF
     fi
 vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_CFG}))
-    if $(echo ${IMAGE_FEATURES} | grep -q -w "^modem-volume$"); then
+    if $(echo ${IMAGE_FEATURES} | grep -q "modem-volume"); then
         cat << EOF >> ${UBINIZE_CFG}
 [modem_a_volume]
 mode=ubi
@@ -281,7 +281,7 @@ vol_size="${PERSIST_VOLUME_SIZE}"
 EOF
     fi
 vol_id=$(echo $(grep -rc "vol_id" ${UBINIZE_CFG}))
-    if $(echo ${IMAGE_FEATURES} | grep -q -w "^modem-volume$"); then
+    if $(echo ${IMAGE_FEATURES} | grep -q "modem-volume"); then
         cat << EOF >> ${UBINIZE_CFG}
 [modem_volume]
 mode=ubi

@@ -172,6 +172,10 @@ do_prebuilt_shared_workdir() {
     install -m 0755 ${B}/scripts/sign-file ${STAGING_KERNEL_BUILDDIR}/scripts/sign-file
     install -m 0755 ${B}/certs/signing_key.x509 ${STAGING_KERNEL_BUILDDIR}/certs/signing_key.x509
     install -m 0755 ${B}/certs/signing_key.pem ${STAGING_KERNEL_BUILDDIR}/certs/signing_key.pem
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'dm-verity', bb.utils.contains('MACHINE_FEATURES', 'dm-verity-initramfs-v3', 'true', 'false', d), 'false', d)}; then
+        install -m 0755 ${B}/certs/verity_cert.pem ${STAGING_KERNEL_BUILDDIR}/certs/verity_cert.pem
+        install -m 0644 ${B}/certs/verity_key.pem ${STAGING_KERNEL_BUILDDIR}/certs/verity_key.pem
+    fi
     install -m 0644 include/config/kernel.release $kerneldir/include/config/kernel.release
     if [ -e "${B}/scripts/module.lds" ]; then
         install -m 0644 ${B}/scripts/module.lds ${STAGING_KERNEL_BUILDDIR}/scripts/module.lds
