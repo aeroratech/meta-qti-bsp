@@ -36,6 +36,9 @@ do_install_append() {
         # Run adb as part of local-fs.target
         sed -i '/Requires=usb.service/s/$/ diag-router.service/' ${D}${systemd_unitdir}/system/adbd.service
         sed -i 's/default.target/local-fs.target/g' ${D}${systemd_unitdir}/system/adbd.service
+        if ${@bb.utils.contains_any('MACHINE_FEATURES', 'qti-vm-guest', 'true', 'false', d)}; then
+            sed -i 's/Requires=/Wants=/g' ${D}${systemd_unitdir}/system/adbd.service
+        fi
     fi
 
     if ${@oe.utils.conditional('ADB_OVER_PCIE', 'True', 'true', 'false', d)}; then
