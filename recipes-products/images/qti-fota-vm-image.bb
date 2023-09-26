@@ -5,9 +5,11 @@ DEPENDS += "virtual/kernel"
 ENABLE_SECUREMSM = "${@d.getVar('MACHINE_SUPPORTS_SECUREMSM') or "True"}"
 
 CORE_IMAGE_EXTRA_INSTALL += " \
+    busybox-syslog \
+    ca-certificates \
+    util-linux-libuuid \
     coreutils \
     sdcard-scripts-automount \
-    e2fsprogs-mke2fs \
     packagegroup-android-utils \
     packagegroup-qti-core-vm \
     ${@bb.utils.contains('DISTRO_FEATURES', 'selinux', 'packagegroup-selinux-minimal', '', d)} \
@@ -24,3 +26,5 @@ PACKAGE_EXCLUDE += "readline"
 
 ROOTFS_POSTPROCESS_COMMAND_remove = " do_fsconfig;"
 USE_DEPMOD = "0"
+
+PACKAGE_EXCLUDE += "systemd-machine-units-ubi"

@@ -17,13 +17,9 @@ POWERAPPMODULE_mdm9607 = 'True'
 CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'e2fsprogs e2fsprogs-e2fsck e2fsprogs-mke2fs', '', d)} \
         glib-2.0 \
-        i2c-tools \
         kernel-modules \
         ${@oe.utils.conditional('EVDEVMODULE', 'True', 'km-loader', '', d)} \
-        net-tools \
-        pps-tools \
-        libgpiod libgpiod-tools \
-        spitools \
+        libgpiod \
         coreutils \
         packagegroup-android-utils \
         packagegroup-qti-core \
@@ -48,7 +44,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         qmi-shutdown-modem \
         modem-shutdown \
         ${@oe.utils.conditional('POWERAPPMODULE', 'True', 'powerapp powerapp-powerconfig', '', d)} \
-        ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
+        ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools libgpiod-tools', '', d )} \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'packagegroup-qti-telaf', '', d)} \
 "
 
@@ -62,3 +58,5 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
 CORE_IMAGE_EXTRA_INSTALL_remove_mdm9607 = "\
        qmi-shutdown-modem \
 "
+
+PACKAGE_EXCLUDE += "shared-mime-info openssl-bin e2fsprogs-e2fsck"

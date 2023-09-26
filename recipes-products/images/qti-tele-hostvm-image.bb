@@ -14,13 +14,9 @@ EVDEVMODULE_sa415m = 'True'
 CORE_IMAGE_EXTRA_INSTALL += "\
         ${@bb.utils.contains('MACHINE_FEATURES', 'emmc-boot', 'e2fsprogs e2fsprogs-e2fsck e2fsprogs-mke2fs', '', d)} \
         glib-2.0 \
-        i2c-tools \
         kernel-modules \
         ${@oe.utils.conditional('EVDEVMODULE', 'True', 'km-loader', '', d)} \
-        net-tools \
-        pps-tools \
-        libgpiod libgpiod-tools \
-        spitools \
+        libgpiod \
         coreutils \
         android-tools \
         packagegroup-android-utils \
@@ -46,7 +42,7 @@ CORE_IMAGE_EXTRA_INSTALL += "\
         qmi-shutdown-modem \
         modem-shutdown \
         ${@bb.utils.contains('MACHINE_FEATURES', 'qti-virtualization', 'packagegroup-qti-virtualization', '', d)} \
-        ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools', '', d )} \
+        ${@oe.utils.conditional('DEBUG_BUILD', '1', 'packagegroup-qti-debug-tools libgpiod-tools', '', d )} \
         ${@bb.utils.contains('COMBINED_FEATURES', 'qti-nad-telaf', 'packagegroup-qti-telaf', '', d)} \
 "
 
@@ -55,3 +51,5 @@ CORE_IMAGE_EXTRA_INSTALL_remove_sa525m = "\
        qmi-shutdown-modem modem-shutdown \
        packagegroup-qti-security-test \
 "
+
+PACKAGE_EXCLUDE += "shared-mime-info openssl-bin e2fsprogs-e2fsck"
