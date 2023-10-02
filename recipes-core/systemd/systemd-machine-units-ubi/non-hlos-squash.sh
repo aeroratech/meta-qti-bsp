@@ -206,8 +206,9 @@ FindAndMountUBIVol () {
        echo "not an ubi partiton" > /dev/kmsg
        IsGPIOEnabled
        if [ $? -eq 1 ]; then
-           #GPIO Enabled keeping behavior similar to Mount failure.
-           echo "GPIO Enabled donot switch slots" > /dev/kmsg
+           #GPIO Enabled moving device to EDL.
+           echo "GPIO Enabled boot to EDL" > /dev/kmsg
+           /bin/sh -c 'reboot edl'
        else
            echo "GPIO disabled switch the slots or boot to EDL" > /dev/kmsg
            SlotSwitchReboot
@@ -219,8 +220,9 @@ FindAndMountUBIVol () {
       echo "Unable to mount firmware volume " > /dev/kmsg
       IsGPIOEnabled
       if [ $? -eq 1 ]; then
-          #GPIO Enabled keeping behavior similar to Mount failure.
-          echo "GPIO Enabled donot switch slots" > /dev/kmsg
+           #GPIO Enabled moving device to EDL.
+           echo "GPIO Enabled boot to EDL" > /dev/kmsg
+           /bin/sh -c 'reboot edl'
       else
           echo "GPIO disabled switch the slots or boot to EDL" > /dev/kmsg
           SlotSwitchReboot

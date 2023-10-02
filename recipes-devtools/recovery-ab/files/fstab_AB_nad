@@ -27,5 +27,4 @@
 #
 # In A/B mode, recovery/updater primarily needs
 # cache and userdata entries only
-/dev/mtd54    /cache     ubifs     defaults     0  0
 /dev/mtd51    /data      ubifs     defaults     0  0
