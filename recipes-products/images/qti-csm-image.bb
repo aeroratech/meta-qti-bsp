@@ -36,7 +36,8 @@ CORE_IMAGE_EXTRA_INSTALL += "\
               packagegroup-qti-transceiver \
               packagegroup-transceiver-perf-measurement \
               packagegroup-transceiver-fault-management \
-	      packagegroup-sw-management \
+              packagegroup-sw-management \
+              libbootreason \
 "
 
 do_merge_dtbs() {
