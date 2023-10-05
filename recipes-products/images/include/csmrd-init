@@ -538,9 +538,6 @@ case $fstab_suffix in
 
         LOCAL_INTERFACE="eth00"
 
-        # change log level
-        echo 2 > /proc/sys/kernel/printk
-
         # source /usr/bin/ecpri_install
         /sbin/insmod /lib/modules/gsim.ko
         /sbin/insmod /lib/modules/ecpri_dmam.ko
@@ -665,9 +662,6 @@ fi   # end of  if verity file exist check.
         ;;
     default)
         # default --> flashless
-        # change log level
-        echo 2 > /proc/sys/kernel/printk
-
         # ECPRI module load
         insmod /lib/modules/gsim.ko
         insmod /lib/modules/ecpri_dmam.ko
