@@ -61,6 +61,13 @@ cache_location=" "
 sign_ota_package=" "
 mirror_sync=" "
 install_only=" "
+package_name=""
+generate_package_name=false
+vendor_code=""
+ru_type=""
+update_release=""
+maintainance_release=""
+build_type=""
 
 if [ "$#" -gt 4 ]; then
     IFS=' ' read -a allopts <<< "$@"
@@ -78,6 +85,23 @@ if [ "$#" -gt 4 ]; then
            mirror_sync="${allopts[${i}]}"
        elif [ "${allopts[${i}]}" = "--install_only" ]; then
            install_only="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--package_name" ]; then
+           generate_package_name=true
+       elif [ "${allopts[${i}]}" = "--vendor_code" ]; then
+           i=$((i+1))
+           vendor_code="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--ru_type" ]; then
+           i=$((i+1))
+           ru_type="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--update_release" ]; then
+           i=$((i+1))
+           update_release="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--maintainance_release" ]; then
+           i=$((i+1))
+           maintainance_release="${allopts[${i}]}"
+       elif [ "${allopts[${i}]}" = "--build_type" ]; then
+           i=$((i+1))
+           build_type="${allopts[${i}]}"
        else
            FSCONFIGFOPTS=$FSCONFIGFOPTS${allopts[${i}]}" "
        fi
@@ -120,30 +144,35 @@ fi
 
 cd $target_files && zip -q $1 META/*filesystem_config.txt SYSTEM/build.prop BOOT/RAMDISK/empty && cd ..
 
+if $generate_package_name; then
+    package_name=$vendor_code$ru_type"ORU"$(date +%y%q)$update_release$maintainance_release$build_type$(date +%Y%m%d)".zip"
+else
+    package_name="update_$3.zip"
+fi
 
-$python_version ./ota_from_target_files $block_based $mirror_sync $install_only $ubuntu -n -v -d $device_type -p . -m linux_embedded --no_signing --system_mount_path $system_path $1 update_$3.zip > ota_debug.txt 2>&1
+$python_version ./ota_from_target_files $block_based $mirror_sync $install_only $ubuntu -n -v -d $device_type -p . -m linux_embedded --no_signing --system_mount_path $system_path $1 $package_name > ota_debug.txt 2>&1
 
 if [[ $? = 0 ]]; then
     if [ "${sign_ota_package}" = "--sign" ]; then
         # Pipe the contents of OTA zip to openssl to generate the signature of the OTA zip
-        unzip -p update_$3.zip | openssl dgst -sha256 -sign private.pem -out update.sig
+        unzip -p $package_name | openssl dgst -sha256 -sign private.pem -out update.sig
         if [[ $? = 0 ]]; then
-            zip -q -u update_$3.zip update.sig
+            zip -q -u $package_name update.sig
             echo "OTA zip signing is successful"
         else
             echo "OTA zip signing is failed"
             # Add the python script errors back into the target-files zip
             zip -q $1 ota_debug.txt
-            rm update_$3.zip # delete the half-baked update.zip if any;
+            rm $package_name # delete the half-baked update.zip if any;
         fi
     else
-        echo "update_$3.zip generation was successful"
+        echo "$package_name generation was successful"
     fi
 else
-    echo "update_$3.zip generation failed"
+    echo "$package_name generation failed"
     # Add the python script errors back into the target-files zip
     zip -q $1 ota_debug.txt
-    rm update_$3.zip # delete the half-baked update.zip if any;
+    rm $package_name # delete the half-baked update.zip if any;
 fi
 
 # Clean up temporary folder.
