@@ -538,9 +538,6 @@ case $fstab_suffix in
 
         LOCAL_INTERFACE="eth00"
 
-        # change log level
-        echo 2 > /proc/sys/kernel/printk
-
         # source /usr/bin/ecpri_install
         /sbin/insmod /lib/modules/gsim.ko
         /sbin/insmod /lib/modules/ecpri_dmam.ko
@@ -550,7 +547,7 @@ case $fstab_suffix in
         /sbin/insmod /lib/modules/lassen_secure_eip.ko
         /sbin/insmod /lib/modules/ecpri_core.ko
         ethtool -s $LOCAL_INTERFACE msglvl 1
-        ethtool -s $LOCAL_INTERFACE autoneg off
+        ethtool -s $LOCAL_INTERFACE speed 25000 autoneg off
 
         # Dynamic IP
         INTERFACE_TIMEOUT=60
@@ -665,9 +662,6 @@ fi   # end of  if verity file exist check.
         ;;
     default)
         # default --> flashless
-        # change log level
-        echo 2 > /proc/sys/kernel/printk
-
         # ECPRI module load
         insmod /lib/modules/gsim.ko
         insmod /lib/modules/ecpri_dmam.ko

@@ -197,6 +197,8 @@ fakeroot do_ramdisk_create() {
                 cp ${IMAGE_ROOTFS}/usr/sbin/ubi* usr/sbin/
                 cp ${IMAGE_ROOTFS}/usr/bin/nad-abctl usr/bin/nad-abctl
                 cp ${IMAGE_ROOTFS}/usr/lib/libnad_ab_al.so.1 lib/libnad_ab_al.so.1
+                cp ${IMAGE_ROOTFS}/usr/lib/libgthread-2.0.so.0 lib/libgthread-2.0.so.0
+                cp ${IMAGE_ROOTFS}/usr/lib/libglib-2.0.so.0 lib/libglib-2.0.so.0
                 ln -s busybox bin/dd
 
                 # The verity need to work with verified boot lib
