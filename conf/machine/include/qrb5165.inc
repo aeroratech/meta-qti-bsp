@@ -25,6 +25,3 @@ IMAGE_FSTYPES += "ext4"
 # Disable some default features supported from upstream
 MACHINE_FEATURES_BACKFILL_CONSIDERED += "qemu-usermode rtc"
 SDCARD_DEVICE = "mmcblk2p1"
-
-# Default USB compositor: DIAG + ADB + UVC
-USBCOMPOSITION = "90CB"
