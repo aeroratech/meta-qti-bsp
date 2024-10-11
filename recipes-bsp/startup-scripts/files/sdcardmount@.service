@@ -1,0 +1,8 @@
+[Unit]
+Description=SDCard mount service
+BindsTo=dev-%i.device
+
+[Service]
+Type=simple
+ExecStart=/etc/udev/scripts/automountsdcard.sh %I
+KillMode=process

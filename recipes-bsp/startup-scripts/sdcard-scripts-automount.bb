@@ -7,6 +7,7 @@ DESCRIPTION = "Script for automounting SD Card"
 SRC_URI += "\
             file://automountsdcard.sh \
             file://automountsdcard.rules \
+            file://sdcardmount@.service \
 "
 
 PACKAGE_ARCH ?= "${MACHINE_ARCH}"
@@ -24,8 +25,12 @@ do_install() {
         sed -i "s/SLOT/"\"${SDCARD_DEVICE}\""/g" ${WORKDIR}/automountsdcard.rules
         install -d 0644 ${D}${sysconfdir}/udev/rules.d
         install -m 0744 ${WORKDIR}/automountsdcard.rules ${D}${sysconfdir}/udev/rules.d/
+	install -d 0644 ${D}${systemd_unitdir}/system
+	install -m 0644 ${WORKDIR}/sdcardmount@.service ${D}${systemd_unitdir}/system
     else
         install -d ${D}${sysconfdir}/mdev
         install -m 0755 ${WORKDIR}/automountsdcard.sh ${D}${sysconfdir}/mdev/
     fi
 }
+
+FILES_${PN} += "${systemd_unitdir}/system/*"

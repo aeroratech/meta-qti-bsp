@@ -47,5 +47,5 @@
 
 # Automount partitions
 # slot will be replaced with machine conf SDCARD_SLOT variable via busybox recipe
-KERNEL==SLOT, SUBSYSTEM=="block", ACTION=="add"    RUN+="/etc/udev/scripts/automountsdcard.sh %k"
+KERNEL==SLOT, SUBSYSTEM=="block", ACTION=="add"    RUN+="/usr/bin/systemctl --no-block start sdcardmount@%k.service"
 KERNEL==SLOT, SUBSYSTEM=="block", ACTION=="remove" RUN+="/etc/udev/scripts/automountsdcard.sh %k"
