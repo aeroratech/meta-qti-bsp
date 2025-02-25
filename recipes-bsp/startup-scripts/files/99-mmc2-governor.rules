@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="devfreq", KERNEL=="mmc2", ATTR{governor}="performance"
